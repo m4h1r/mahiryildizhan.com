@@ -22,7 +22,7 @@ class SecurityHeadersMiddleware
         $response->headers->set(
             'Content-Security-Policy',
             "default-src 'self'; " .
-            "script-src 'self' 'nonce-{$nonce}' https://www.google.com https://www.gstatic.com; " .
+            "script-src 'self' 'unsafe-eval' 'nonce-{$nonce}' https://www.google.com https://www.gstatic.com; " .
             "img-src 'self' data: https:; " .
             "style-src 'self' 'unsafe-inline'; " .
             "font-src 'self' data:; " .

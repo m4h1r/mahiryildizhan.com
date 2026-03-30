@@ -13,7 +13,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('surname');
             $table->string('second_surname')->nullable();
-            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t            $t       ble->foreignId('gender_id')->nullable()->constrained('genders')->nullOnDelete();
+            $table->date('birthday')->nullable();
+            $table->date('deathday')->nullable();
+            $table->string('birth_place')->nullable();
+            $table->string('death_place')->nullable();
+            $table->foreignId('father_id')->nullable()->constrained('people')->nullOnDelete();
+            $table->foreignId('mother_id')->nullable()->constrained('people')->nullOnDelete();
+            $table->foreignId('partner_id')->nullable()->constrained('people')->nullOnDelete();
+            $table->foreignId('gender_id')->nullable()->constrained('genders')->nullOnDelete();
             $table->foreignId('eye_color_id')->nullable()->constrained('eye_colors')->nullOnDelete();
             $table->foreignId('blood_type_id')->nullable()->constrained('blood_types')->nullOnDelete();
             $table->foreignId('hair_color_id')->nullable()->constrained('hair_colors')->nullOnDelete();

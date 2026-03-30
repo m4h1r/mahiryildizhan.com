@@ -15,11 +15,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            DictionarySeeder::class,
         ]);
+
+        User::query()->updateOrCreate(
+            ['email' => 'admin@mahiryildizhan.com'],
+            [
+                'name' => 'Mahir Yıldızhan',
+                'password' => bcrypt('Martoto.97026'),
+                'is_admin' => true,
+            ]
+        );
+
+        $this->call([
+            CsvImportSeeder::class,
+        ]);
+
     }
 }

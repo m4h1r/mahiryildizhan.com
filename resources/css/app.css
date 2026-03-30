@@ -1,8 +1,5 @@
 @import "tailwindcss";
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/inter/700.css";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -10,13 +7,19 @@
 @source '../**/*.js';
 
 @theme {
-	--color-brand: oklch(55% 0.20 250);
-	--color-brand-dark: oklch(45% 0.20 250);
-	--color-surface: oklch(99% 0.00 0);
-	--color-surface-dark: oklch(15% 0.00 0);
-	--color-muted: oklch(60% 0.00 0);
+	--color-brand: #0071e3;
+	--color-brand-dark: #005bb5;
+	--color-accent: #f97316;
+	--color-surface: #fbfbfd;
+	--color-surface-dark: #0f1115;
+	--color-admin-bg: #f3f4f7;
+	--color-admin-bg-dark: #0a0c11;
+	--color-muted: #6e6e73;
+	--color-heading: #111214;
+	--color-heading-dark: #f4f5f7;
 
-	--font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+	--font-body: "Avenir Next", "Segoe UI", sans-serif;
+	--font-editorial: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
 	--font-mono: "JetBrains Mono", ui-monospace, monospace;
 
 	--spacing-section: 4rem;
@@ -26,6 +29,12 @@
 @layer base {
 	html {
 		font-family: var(--font-body);
+		background-color: var(--color-surface);
+	}
+
+	body {
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
 	}
 
 	:focus-visible {
@@ -47,14 +56,133 @@
 
 @layer components {
 	.card-admin {
-		@apply rounded-xl border border-gray-200 bg-white p-[var(--spacing-card)] shadow-sm dark:border-gray-700 dark:bg-gray-900;
+		@apply rounded-2xl border border-gray-200/90 bg-white/95 p-[var(--spacing-card)] shadow-[0_12px_34px_-30px_rgba(15,23,42,0.9)] dark:border-gray-800 dark:bg-[#11131a];
 	}
 
 	.form-input-admin {
-		@apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-[var(--color-brand)] focus:outline-none dark:border-gray-600 dark:bg-gray-800;
+		@apply w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm transition focus:border-[var(--color-brand)] focus:ring-2 focus:ring-[var(--color-brand)]/25 focus:outline-none dark:border-gray-600 dark:bg-[#0f1117];
+	}
+
+	.admin-nav-link {
+		@apply flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-white hover:text-gray-950 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100;
+	}
+
+	.admin-nav-link-active {
+		@apply bg-white text-gray-950 shadow-sm ring-1 ring-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:ring-gray-700;
+	}
+
+	.admin-btn {
+		@apply inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold transition;
+	}
+
+	.admin-btn-primary {
+		@apply bg-gray-900 text-white hover:bg-black dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200;
+	}
+
+	.admin-btn-ghost {
+		@apply border border-gray-300 text-gray-700 hover:border-gray-400 hover:text-gray-900 dark:border-gray-700 dark:text-gray-200 dark:hover:border-gray-500;
+	}
+
+	.admin-table-shell {
+		@apply overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-[#11131a];
+	}
+
+	.admin-table {
+		@apply min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-800;
+	}
+
+	.admin-table thead {
+		@apply bg-gray-50 dark:bg-gray-900/60;
+	}
+
+	.admin-table th {
+		@apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.08em] text-gray-500 dark:text-gray-400;
+	}
+
+	.admin-table td {
+		@apply px-4 py-3 align-middle;
+	}
+
+	.admin-table tbody {
+		@apply divide-y divide-gray-200 dark:divide-gray-800;
 	}
 
 	.prose-blog {
-		@apply max-w-none text-base leading-relaxed;
+		@apply max-w-none text-[1.08rem] leading-8 text-gray-700 dark:text-gray-200;
+		font-family: var(--font-editorial);
+	}
+
+	.prose-blog h2,
+	.prose-blog h3,
+	.prose-blog h4 {
+		@apply mt-10 mb-4 text-[var(--color-heading)] dark:text-[var(--color-heading-dark)];
+		font-family: var(--font-body);
+		letter-spacing: -0.02em;
+	}
+
+	.prose-blog p,
+	.prose-blog ul,
+	.prose-blog ol,
+	.prose-blog blockquote {
+		@apply my-5;
+	}
+
+	.prose-blog a {
+		@apply underline decoration-[var(--color-brand)] underline-offset-4;
+	}
+
+	.prose-blog blockquote {
+		@apply border-l-4 border-[var(--color-accent)]/70 bg-orange-50/60 px-5 py-3 text-gray-800 dark:bg-orange-500/10 dark:text-gray-100;
+	}
+
+	.public-glass {
+		@apply border border-gray-200/80 bg-white/85 backdrop-blur-xl dark:border-gray-800 dark:bg-gray-900/75;
+	}
+
+	.public-card {
+		@apply rounded-3xl border border-gray-200/95 bg-white/95 transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_48px_-36px_rgba(15,23,42,0.95)] dark:border-gray-800 dark:bg-[#11131a];
+	}
+
+	.public-pill-btn {
+		@apply rounded-full px-5 py-2.5 text-sm font-semibold transition;
+	}
+
+	.public-editorial-heading {
+		font-family: var(--font-editorial);
+		letter-spacing: -0.01em;
+	}
+
+	.public-subtle-grid {
+		background-image:
+			linear-gradient(to right, rgb(148 163 184 / 0.09) 1px, transparent 1px),
+			linear-gradient(to bottom, rgb(148 163 184 / 0.09) 1px, transparent 1px);
+		background-size: 36px 36px;
+	}
+
+	.public-fade-up {
+		animation: public-fade-up 620ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+	}
+
+	.public-delay-1 {
+		animation-delay: 80ms;
+	}
+
+	.public-delay-2 {
+		animation-delay: 160ms;
+	}
+
+	.public-delay-3 {
+		animation-delay: 240ms;
+	}
+}
+
+@keyframes public-fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(16px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
 	}
 }

@@ -18,7 +18,9 @@ return new class extends Migration
             $table->text('body');
             $table->boolean('is_approved')->default(false);
             $table->float('spam_score')->nullable();
-            $            $            $            $            $            $            $            $                 $table->string('user_agent_hash')->nullable();
+            $table->float('recaptcha_score')->nullable();
+            $table->string('ip_hash')->nullable();
+            $table->string('user_agent_hash')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

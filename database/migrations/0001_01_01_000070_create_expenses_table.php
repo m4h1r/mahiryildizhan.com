@@ -14,7 +14,12 @@ return new class extends Migration
             $table->foreignId('stakeholder_id')->nullable()->constrained('stakeholders')->nullOnDelete();
             $table->foreignId('expense_type_id')->nullable()->constrained('expense_types')->nullOnDelete();
             $table->foreignId('currency_id')->constrained('currencies')->restrictOnDelete();
-            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $tab            $t->boolean('company_expense')->default(false);
+            $table->text('description')->nullable();
+            $table->decimal('price', 12, 2)->default(0);
+            $table->decimal('quantity', 12, 3)->default(1);
+            $table->decimal('tax', 12, 2)->default(0);
+            $table->decimal('total', 12, 2)->default(0);
+            $table->boolean('company_expense')->default(false);
             $table->boolean('paid_by_others')->default(false);
             $table->softDeletes();
             $table->timestamps();

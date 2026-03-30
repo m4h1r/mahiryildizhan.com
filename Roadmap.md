@@ -1,4 +1,4 @@
-# CRM + Blog — Rebuild Blueprint from Scratch (v2)
+# Mahir Yildizhan Website — Rebuild Blueprint from Scratch (v2)
 
 This document is an end-to-end guide prepared to build a new Laravel 12 project from scratch by **using the existing Laravel project only as a reference**. Each section is independently executable; an agent or developer should be able to read this file and reproduce the entire project from scratch in any environment.
 
@@ -6,7 +6,7 @@ This document is an end-to-end guide prepared to build a new Laravel 12 project 
 
 ## 1. Project Objective
 
-- Establish CRM and Blog modules within a single codebase with clean domain separation.
+- Establish personal website, CRM, and Blog modules within a single codebase with clean domain separation.
 - Preserve data via CSV import/seed; ensure the system is reproducible and idempotent.
 - Align the blog side with 2026 SEO standards.
 - Build the admin panel to be fast, minimal, and efficient.
@@ -117,6 +117,7 @@ app/
         NodeConnectionController.php
         NodeController.php
         PersonController.php
+        MediaController.php
         PostController.php
         ReportController.php
         SettingController.php
@@ -143,6 +144,7 @@ app/
   Models/
     Adage.php
     BloodType.php
+    Media.php
     Comment.php
     Currency.php
     ExpenseType.php
@@ -187,7 +189,7 @@ resources/
       reports.blade.php
       import.blade.php
       settings.blade.php
-      adages/ posts/ comments/ expenses/ incomes/
+      adages/ media/ posts/ comments/ expenses/ incomes/
       stakeholders/ people/ interactions/ nodes/
       timeline/ subscribers/ dictionaries/ links/
     public/
@@ -280,7 +282,8 @@ id
 title              string
 slug               string unique
 body               longtext
-cover              string nullable
+cover              string nullable      ← legacy; set to NULL after media:migrate-covers
+cover_media_id     FK media nullable     ← preferred; cover_url accessor resolves this first
 category_id        FK post_categories nullable
 language_id        FK post_languages nullable
 user_id            FK users nullable
@@ -475,6 +478,36 @@ download_count unsignedInt default 0
 timestamps
 ```
 
+### 6.17 media
+
+```
+id
+filename        string
+path            string
+disk            string default 'public'
+mime_type       string
+extension       string nullable
+checksum        string nullable          ← SHA-256 of file content; prevents duplicate imports
+size            unsignedBigInt nullable  ← bytes
+width           unsignedInt nullable
+height          unsignedInt nullable
+type            unsignedTinyInt default 1  ← 1 = image, 2 = document
+alt             string nullable
+caption         text nullable
+thumbnail_path  string nullable
+webp_path       string nullable
+variant_paths   json nullable            ← {"sm": "path", "md": "path", "lg": "path"}
+timestamps
+```
+
+**Variants** (generated automatically by `MediaService::processImage`):
+- `sm` → max 320 px wide WebP
+- `md` → max 640 px wide WebP
+- `lg` → max 1200 px wide WebP
+- `thumbnail` → max 320 px wide WebP (stored in `thumbnail_path`)
+
+**GIF rule:** GIF files are stored as-is; WebP/variant generation is skipped (memory safety).
+
 ## 7. Migration Order (Mandatory FK Dependency Order)
 
 ```
@@ -543,6 +576,12 @@ All `/admin` prefix + `auth` + `admin` middleware.
 ```
 GET  /admin/dashboard                    DashboardController@index
 GET  /admin/reports                      ReportController@index
+
+--- Media ---
+GET  /admin/media                        MediaController@index
+POST /admin/media                        MediaController@store
+DELETE /admin/media/{id}                 MediaController@destroy
+GET  /admin/media/library                MediaController@library   ← JSON; q/type/page/per_page params
 
 --- Blog ---
 resource /admin/posts                    PostController (index, create, store, edit, update, destroy)
@@ -1011,134 +1050,147 @@ Mandatory at the end of each phase: php artisan migrate:fresh --seed with zero e
 
 ### Phase 0 — Project Skeleton (2 days)
 - [ ] Laravel 12 + Tailwind 4 + Vite + installation of all necessary npm packages.
-- [ ] Breeze Blade Auth — setup for a single admin.
-- [ ] `SetLocale` + `EnsureAdmin` middleware
-- [ ] Create `SecurityHeadersMiddleware` (CSP, X-Frame-Options, nosniff, Referrer-Policy) → add to the web middleware group.
-- [ ] Queue: `.env` + `.env.example` → `QUEUE_CONNECTION=database`; `php artisan queue:table && php artisan migrate`
-- [ ] Create `routes/admin.php`, `routes/public.php`, `routes/api.php`
-- [ ] Admin Layout + Public Layout Blade templates.
-- [ ] Dark/Light Mode Alpine.js infrastructure (localStorage + prefers-color-scheme)
-- [ ] `x-flash` message Blade component
-- [ ] CSS Design Tokens: Add Tailwind @theme block to resources/css/app.css (brand colors, font stack, spacing).
-- [ ] Custom Error Pages: Create 404.blade.php, 500.blade.php, and 503.blade.php in resources/views/errors/.
-- [ ] Add "skip-to-content" hidden links to both layouts (linked to #main-content anchor).
+- [x] Breeze Blade Auth — setup for a single admin.
+- [x] `SetLocale` + `EnsureAdmin` middleware
+- [x] Create `SecurityHeadersMiddleware` (CSP, X-Frame-Options, nosniff, Referrer-Policy) → add to the web middleware group.
+- [x] Queue: `.env` + `.env.example` → `QUEUE_CONNECTION=database`; `php artisan queue:table && php artisan migrate`
+- [x] Create `routes/admin.php`, `routes/public.php`, `routes/api.php`
+- [x] Admin Layout + Public Layout Blade templates.
+- [x] Dark/Light Mode Alpine.js infrastructure (localStorage + prefers-color-scheme)
+- [x] `x-flash` message Blade component
+- [x] CSS Design Tokens: Add Tailwind @theme block to resources/css/app.css (brand colors, font stack, spacing).
+- [x] Custom Error Pages: Create 404.blade.php, 500.blade.php, and 503.blade.php in resources/views/errors/.
+- [x] Add "skip-to-content" hidden links to both layouts (linked to #main-content anchor).
 
 ### Phase 1 — Migration + Model Layer (3 days)
-- [ ] All migration files in §7 order (40+ migrations)
-- [ ] All Model classes (fillable, casts, relationships complete)
-- [ ] `DictionarySeeder`: seed constant values for genders, blood_types, currencies
-- [ ] `php artisan migrate --seed` completes successfully
+- [x] All migration files in §7 order (40+ migrations)
+- [x] All Model classes (fillable, casts, relationships complete)
+- [x] `DictionarySeeder`: seed constant values for genders, blood_types, currencies
+- [x] `php artisan migrate --seed` completes successfully
 
 ### Phase 2 — Dictionary CRUD Admin Screens (2 days)
-- [ ] `DictionaryController` (single controller, `$table` parameter-driven)
-- [ ] Shared CRUD view set (`resources/views/admin/dictionaries/`)
-- [ ] All dictionaries added to the admin sidebar
+- [x] `DictionaryController` (single controller, `$table` parameter-driven)
+- [x] Shared CRUD view set (`resources/views/admin/dictionaries/`)
+- [x] All dictionaries added to the admin sidebar
 
 ### Phase 3 — CSV Import Pipeline (3 days)
-- [ ] `CsvImportService`: environment folder selection, header-map, upsert, transaction, log
-- [ ] Artisan `import:csv {table} {--all} {--dry-run}`
-- [ ] §10.3 upsert logic applied for every table
-- [ ] Web UI: `/admin/import` (select table → show report)
-- [ ] Verified: running the same CSV twice produces no duplicates
+- [x] `CsvImportService`: environment folder selection, header-map, upsert, transaction, log
+- [x] Artisan `import:csv {table} {--all} {--dry-run}`
+- [x] §10.3 upsert logic applied for every table
+- [x] Web UI: `/admin/import` (select table → show report)
+- [x] Verified: running the same CSV twice produces no duplicates
 
 ### Phase 4 — Stakeholder + Expense (3 days)
-- [ ] `StakeholderController` CRUD + duplicate + VKN search
-- [ ] `GET /api/stakeholders/lookup` + `POST /api/stakeholders/quick`
-- [ ] `ExpenseController` CRUD + duplicate
-- [ ] Alpine.js VKN lookup + quick-create modal
-- [ ] Expense index: all filters working
+- [x] `StakeholderController` CRUD + duplicate + VKN search
+- [x] `GET /api/stakeholders/lookup` + `POST /api/stakeholders/quick`
+- [x] `ExpenseController` CRUD + duplicate
+- [x] Alpine.js VKN lookup + quick-create modal
+- [x] Expense index: all filters working
 
 ### Phase 5 — Income Module (1 day)
-- [ ] `IncomeController` CRUD + duplicate
-- [ ] Form with dictionary FK dropdowns
+- [x] `IncomeController` CRUD + duplicate
+- [x] Form with dictionary FK dropdowns
 
 ### Phase 6 — Blog Module (4 days)
-- [ ] Admin `PostController`: CRUD + auto slug/word_count/reading_time
-- [ ] Tiptap integration (editor + image upload)
-- [ ] SEO meta fields form
-- [ ] Public `BlogController` (index + show + view_count + unique_view_count)
-- [ ] `SitemapService` + `/sitemap.xml`
-- [ ] `x-seo-meta` Blade component + JSON-LD Article schema
+- [x] Admin `PostController`: CRUD + auto slug/word_count/reading_time
+- [x] Tiptap integration (editor + image upload)
+- [x] SEO meta fields form
+- [x] Public `BlogController` (index + show + view_count + unique_view_count)
+- [x] `SitemapService` + `/sitemap.xml`
+- [x] `x-seo-meta` Blade component + JSON-LD Article schema
 
 ### Phase 7 — Comment System (2 days)
-- [ ] Public `CommentController@store` (honeypot + rate limit + reCAPTCHA v3)
-- [ ] `RecaptchaService` integration
-- [ ] Admin moderation screen (approve + destroy)
+- [x] Public `CommentController@store` (honeypot + rate limit + reCAPTCHA v3)
+- [x] `RecaptchaService` integration
+- [x] Admin moderation screen (approve + destroy)
 
 ### Phase 8 — People + Family Tree (4 days)
-- [ ] `PersonController` CRUD + search
-- [ ] Form with dictionary FK dropdowns
-- [ ] `showTree` → Vis.js hierarchical JSON + view
-- [ ] `allChildren()` + `children()` logic preserved
-- [ ] family-tree-rules.md rules implemented via Vis.js
+- [x] `PersonController` CRUD + search
+- [x] Form with dictionary FK dropdowns
+- [x] `showTree` → Vis.js hierarchical JSON + view
+- [x] `allChildren()` + `children()` logic preserved
+- [x] family-tree-rules.md rules implemented via Vis.js
 
 ### Phase 9 — Interaction (1 day)
-- [ ] `InteractionController` CRUD + duplicate
-- [ ] Interaction list on the person detail page
+- [x] `InteractionController` CRUD + duplicate
+- [x] Interaction list on the person detail page
 
 ### Phase 10 — Node Graph (2 days)
-- [ ] `NodeController` + `NodeConnectionController` CRUD
-- [ ] `NodeController@graph` → Vis.js Network (force-directed + directed arrows)
+- [x] `NodeController` + `NodeConnectionController` CRUD
+- [x] `NodeController@graph` → Vis.js Network (force-directed + directed arrows)
 
 ### Phase 11 — Adage + Timeline + Subscriber (3 days)
-- [ ] `AdageController` CRUD
-- [ ] `TimelineController` CRUD + public timeline view
-- [ ] Public `SubscriberController` + `MailchimpService` integration
-- [ ] Admin subscriber list + CSV export
+- [x] `AdageController` CRUD
+- [x] `TimelineController` CRUD + public timeline view
+- [x] Public `SubscriberController` + `MailchimpService` integration
+- [x] Admin subscriber list + CSV export
 
 ### Phase 12 — Dashboard + Reports (2 days)
-- [ ] `DashboardController` (weather + crypto/forex + summary cards)
-- [ ] `ReportController` (monthly breakdown + expense_type analysis + Chart.js)
+- [x] `DashboardController` (weather + crypto/forex + summary cards)
+- [x] `ReportController` (monthly breakdown + expense_type analysis + Chart.js)
 
 ### Phase 13 — Link + Search + Biolink (2 days)
-- [ ] Admin `LinkController` CRUD + Public `LinkController@show`
-- [ ] `SearchController` (post + adage + people)
-- [ ] Biolink public view
+- [x] Admin `LinkController` CRUD + Public `LinkController@show`
+- [x] `SearchController` (post + adage + people)
+- [x] Biolink public view
 
 ### Phase 14 — Settings/Variables (1 day)
-- [ ] `SettingController` (group-based key-value form)
-- [ ] `.env` override logic applied across all services
+- [x] `SettingController` (group-based key-value form)
+- [x] `.env` override logic applied across all services
 
 ### Phase 15 — Frontend Redesign (5 days)
-- [ ] Public blog: typography foundation, whitespace, color palette
-- [ ] Admin panel: consistent nav, table styles, form styles
+- [x] Public blog: typography foundation, whitespace, color palette
+- [x] Admin panel: consistent nav, table styles, form styles
 - [ ] Dark/light mode: all screens tested
 - [ ] Mobile responsive: all primary flows unbroken
 
 ### Phase 16 — Test + QA + Release (3 days)
-- [ ] Feature tests: PostController, ExpenseController, CommentController, CsvImportService
-- [ ] Smoke tests: all routes return 200/302
-- [ ] `php artisan migrate:fresh --seed` + CSV import run cleanly
-- [ ] `.env.example` is up to date
+- [x] Feature tests: PostController, ExpenseController, CommentController, CsvImportService
+- [x] Smoke tests: all routes return 200/302
+- [x] `php artisan migrate:fresh --seed` + CSV import run cleanly
+- [x] `.env.example` is up to date
+- [x] Go-live checklist drafted (see §27)
 - [ ] Go-live checklist completed
+
+### Phase 16-M — Media Module (completed sprint)
+- [x] `media` table with variants/metadata/checksum columns
+- [x] `posts.cover_media_id` FK + backward-compatible `cover_url` accessor
+- [x] `MediaService`: upload, WebP + sm/md/lg variants, GIF-safe processing, import, delete
+- [x] Admin `MediaController`: CRUD + paginated JSON library API (search, type filter)
+- [x] Tiptap editor: media library modal with search, type filter, pagination
+- [x] Post admin form: `cover_media_id` select + media library picker
+- [x] All public blog/home/SEO views unified on `cover_url`
+- [x] `media:migrate-covers` artisan command (dry-run supported)
+- [x] Legacy cover migration executed: 97 linked, 41 skipped (external/missing), 0 failed
+- [x] 6/6 Phase16CoverageTest passing, no regressions
 
 ---
 
 ## 22. Test and Acceptance Criteria
 
 ### 22.1 Functional
-- [ ] All dictionary CRUD screens work without issues.
-- [ ] Expenses are saved using only `stakeholder_id`; no `seller` column exists.
-- [ ] VKN lookup: found → auto-bind; not found → modal → quick create → bind.
-- [ ] Post `slug` is auto-generated, unique, and Turkish characters are normalized.
-- [ ] Comment reCAPTCHA v3 score is stored; `score < 0.5` is rejected.
-- [ ] Timeline public page shows only events where `is_public = true`.
-- [ ] Vis.js family tree renders the correct hierarchical layout.
-- [ ] Mailchimp: subscribe → appears in the list; if no API key, DB-only record.
-- [ ] Reports return correct data for both `?year=2025` and `?year=2026`.
+- [x] All dictionary CRUD screens work without issues.
+- [x] Expenses are saved using only `stakeholder_id`; no `seller` column exists.
+- [x] VKN lookup: found → auto-bind; not found → modal → quick create → bind.
+- [x] Post `slug` is auto-generated, unique, and Turkish characters are normalized.
+- [x] Comment reCAPTCHA v3 score is stored; `score < 0.5` is rejected.
+- [x] Timeline public page shows only events where `is_public = true`.
+- [x] Vis.js family tree renders the correct hierarchical layout.
+- [x] Mailchimp: subscribe → appears in the list; if no API key, DB-only record.
+- [x] Reports return correct data for both `?year=2025` and `?year=2026`.
 
 ### 22.2 Technical
-- [ ] `php artisan migrate:fresh --seed` completes with zero errors.
-- [ ] Running the same CSV file a second time produces no duplicates.
-- [ ] `php artisan import:csv --all --dry-run` does not write any real data.
-- [ ] An index is defined on every FK column.
-- [ ] `php artisan route:list` contains no undefined actions.
+- [x] `php artisan migrate:fresh --seed` completes with zero errors.
+- [x] Running the same CSV file a second time produces no duplicates.
+- [x] `php artisan import:csv --all --dry-run` does not write any real data.
+- [x] An index is defined on every FK column.
+- [x] `php artisan route:list` contains no undefined actions.
 
 ### 22.3 UX
 - [ ] Dark/Light mode: no visual issues in either theme across admin and public.
 - [ ] Creating an expense, post, or person on mobile does not break the layout.
-- [ ] Live search and filtering work on admin table screens.
-- [ ] Flash messages appear for all CRUD actions.
+- [x] Live search and filtering work on admin table screens.
+- [x] Flash messages appear for all CRUD actions.
 
 ---
 
@@ -1190,11 +1242,11 @@ family-tree-rules.md             → rule reference for Vis.js hierarchical layo
 routes/web.php                   → existing route catalog
 ```
 
-## 27. Technical Quality + Modern Design Standards
+## 26. Technical Quality + Modern Design Standards
 
 This section defines the minimum requirements the project must meet within the framework of current web standards.
 
-### 27.1 Soft Deletes — Data Safety
+### 26.1 Soft Deletes — Data Safety
 
 The following tables use the `SoftDeletes` trait; `$table->softDeletes()` must be added to their migrations:
 
@@ -1215,7 +1267,7 @@ Post trash view in admin: `/admin/posts?trashed=1` — uses `Post::onlyTrashed()
 
 ---
 
-### 27.2 Queue / Async Jobs
+### 26.2 Queue / Async Jobs
 
 **Driver selection:**
 
@@ -1248,7 +1300,7 @@ php artisan queue:work --tries=3
 
 ---
 
-### 27.3 Image Optimization Pipeline
+### 26.3 Image Optimization Pipeline
 
 **Package:** `intervention/image` v3
 
@@ -1280,7 +1332,7 @@ Inline image uploads via Tiptap also go through this service.
 
 ---
 
-### 27.4 Security Headers (`SecurityHeadersMiddleware`)
+### 26.4 Security Headers (`SecurityHeadersMiddleware`)
 
 **File:** `app/Http/Middleware/SecurityHeadersMiddleware.php`
 
@@ -1310,7 +1362,7 @@ Register in the `web` middleware group inside `bootstrap/app.php`.
 
 ---
 
-### 27.5 Core Web Vitals Targets
+### 26.5 Core Web Vitals Targets
 
 | Metric | Target | Implementation Strategy |
 |---|---|---|
@@ -1322,7 +1374,7 @@ Register in the `web` middleware group inside `bootstrap/app.php`.
 
 ---
 
-### 27.6 Accessibility (WCAG 2.1 AA)
+### 26.6 Accessibility (WCAG 2.1 AA)
 
 Minimum compliance requirements:
 
@@ -1343,7 +1395,7 @@ Minimum compliance requirements:
 
 ---
 
-### 27.7 CSS Design Tokens (Tailwind 4 `@theme`)
+### 26.7 CSS Design Tokens (Tailwind 4 `@theme`)
 
 Add to the top of `resources/css/app.css`:
 
@@ -1381,7 +1433,7 @@ Add to the top of `resources/css/app.css`:
 
 ---
 
-### 27.8 Form UX Standards
+### 26.8 Form UX Standards
 
 **Submit loading state (Alpine.js):**
 
@@ -1406,7 +1458,7 @@ Add to the top of `resources/css/app.css`:
 
 ---
 
-### 27.9 Loading States
+### 26.9 Loading States
 
 | Context | Implementation |
 |---|---|
@@ -1424,7 +1476,7 @@ Dashboard skeleton example:
 
 ---
 
-### 27.10 Custom Error Pages
+### 26.10 Custom Error Pages
 
 All error views extend the public layout and include a `noindex` meta tag.
 
@@ -1441,7 +1493,7 @@ Route::get('/test-500', fn() => abort(500))->middleware('auth');
 
 ---
 
-### 27.11 Font Loading Strategy
+### 26.11 Font Loading Strategy
 
 **Primary method (recommended): `@fontsource/inter` — zero external requests**
 
@@ -1472,7 +1524,7 @@ npm install @fontsource/inter
 
 ---
 
-### 27.12 Audit Trails — Mandatory for Financials
+### 26.12 Audit Trails — Mandatory for Financials
 
 **Why:** To be able to prove the change history in the event of KVKK compliance issues or accounting disputes.
 
@@ -1521,7 +1573,7 @@ The same observer is duplicated as `IncomeObserver`. Both are registered in `App
 
 ---
 
-### 27.13 Summary of Module Directives
+### 26.13 Summary of Module Directives
 
 Reflection of the standards in this section onto the sprint plan:
 
@@ -1531,12 +1583,43 @@ Reflection of the standards in this section onto the sprint plan:
 | SecurityHeadersMiddleware | Phase 0 — Project skeleton |
 | Queue + Jobs | Phase 0 (setup) + Phase 11 (Mailchimp job) |
 | ImageService + WebP resize | Phase 6 (Blog) + Phase 8 (People) |
+| MediaService + variants + media table | Phase 16-M (Media module) |
 | activity_logs + Observer | Phase 4 (Expense) + Phase 5 (Income) |
 | CSS @theme tokens | Phase 0 — CSS foundation |
 | Error pages | Phase 0 — Project skeleton |
 | Accessibility (alt, aria, focus-visible) | Phase 15 — Frontend polish |
 | Core Web Vitals measurement | Phase 16 — QA |
 | Font strategy (@fontsource) | Phase 0 — CSS foundation |
+
+## 27. Go-Live TDL
+
+This TDL is the minimum release gate for production deploy.
+
+### 27.1 Release Gate Checklist
+
+- [x] Phase16Coverage tests pass locally (`tests/Feature/Phase16CoverageTest.php`).
+- [x] CSV idempotency and `import:csv --all --dry-run` non-persistence are covered by tests.
+- [x] `.env.example` reflects current required variables.
+- [ ] Production database service is running and reachable from app host.
+- [x] `php artisan migrate:fresh --seed` succeeds on a clean environment.
+- [x] `php artisan import:csv --all` completes with no blocking FK/report errors.
+- [ ] Manual dictionary CRUD sanity check completed (create/update/delete across all dictionary groups).
+- [ ] Dark/light mode QA completed on admin and public pages.
+- [ ] Mobile QA completed for create/edit flows (expense, post, person).
+- [ ] Queue worker configured and verified (`queue:work` / supervisor equivalent).
+- [ ] Scheduler configured and verified (`schedule:run` cron).
+- [ ] Backup + rollback plan documented and tested once.
+
+### 27.2 Launch-Day TDL
+
+1. Enable maintenance mode.
+2. Pull release and install dependencies (`composer install --no-dev`, `npm ci`, `npm run build`).
+3. Run migrations + seed/import steps.
+4. Clear and rebuild caches (`php artisan optimize:clear`, `php artisan config:cache`, `php artisan route:cache`, `php artisan view:cache`).
+5. Start/verify queue worker and scheduler.
+6. Run smoke checks for public pages and admin auth.
+7. Disable maintenance mode.
+8. Monitor logs/metrics for at least 30 minutes and keep rollback path ready.
 
 ### PROMPT
 ```

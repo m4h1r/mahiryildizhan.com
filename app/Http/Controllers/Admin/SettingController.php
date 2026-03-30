@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Setting;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\View\View;
+
+class SettingController extends Controller
+{
+    private const DEFINITIONS = [
+        'general' => [
+            ['key' => 'admin_locale', 'label' => 'Admin Language'],
+        ],
+        'analytics' => [
+            ['key' => 'ga_tracking_id', 'label' => 'GA Tracking ID'],
+            ['key' => 'search_console_verification', 'label' => 'Search Console Verification'],
+            ['key' => 'crux_api_key', 'label' => 'CrUX API Key', 'is_secret' => true],
+        ],
+        'advertising' => [
+            ['key' => 'adsense_client_id', 'label' => 'AdSense Client ID'],
+            ['key' => 'adsense_slot_id', 'label' => 'AdSense Slot ID'],
+        ],
+        'seo' => [
+            ['key' => 'site_name', 'label' => 'Site Name'],
+            ['key' => 'default_og_image', 'label' => 'Default OG Image'],
+            ['key' => 'default_meta_description', 'label' => 'Default Meta Description'],
+        ],
+        'mailchimp' => [
+            ['key' => 'mailchimp_api_key', 'label' => 'Mailchimp API Key', 'is_secret' => true],
+            ['key' => 'mailchimp_list_id', 'label' => 'Mailchimp List ID'],
+            ['key' => 'mailchimp_datacenter', 'label' => 'Mailchimp Datacenter'],
+        ],
+        'recaptcha' => [
+            ['key' => 'recaptcha_site_key', 'label' => 'reCAPTCHA Site Key'],
+            ['key' => 'recaptcha_secret_key', 'label' => 'reCAPTCHA Secret Key', 'is_secret' => true],
+        ],
+        'weather' => [
+            ['key' => 'weather_latitude', 'label' => 'Weather Latitude'],
+            ['key' => 'weather_longitude', 'label' => 'Weather Longitude'],
+            ['key' => 'weather_city_name', 'label' => 'Weather City Name'],
+        ],
+    ];
+
+    public function index(): View
+    {
+        $settings = Setting::query()->get()->keyBy('key');
+
+        return view('admin.settings', [
+            'settingsByGroup' => $this->groupedSettings($settings),
+        ]);
+    }
+
+    public function update(Request $request): RedirectResponse
+    {
+        $payload = $request->input('settings', []);
+
+        foreach (self::DEFINITIONS as $group => $items) {
+            foreach ($items as $item) {
+                $key = $item['key'];
+                $value = isset($payload[$key]) ? trim((string) $payload[$key]) : null;
+                $isSecret = (bool) ($item['is_secret'] ?? false);
+
+                Setting::query()->updateOrCreate(
+                    ['key' => $key],
+                    [
+                        'value' => $value !== '' ? $value : null,
+                        'group' => $group,
+                        'is_secret' => $isSecret,
+                        'description' => $item['label'],
+                    ]
+                );
+            }
+        }
+
+        return to_route('admin.settings')->with('success', __('Settings updated.'));
+    }
+
+    private function groupedSettings(Collection $settings): array
+    {
+        $grouped = [];
+
+        foreach (self::DEFINITIONS as $group => $items) {
+            $grouped[$group] = array_map(function (array $item) use ($settings): array {
+                $existing = $settings->get($item['key']);
+
+                return [
+                    'key' => $item['key'],
+                    'label' => $item['label'],
+                    'is_secret' => (bool) ($item['is_secret'] ?? false),
+                    'value' => $existing?->value,
+                ];
+            }, $items);
+        }
+
+        return $grouped;
+    }
+}

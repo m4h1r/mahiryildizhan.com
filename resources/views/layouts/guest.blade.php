@@ -5,7 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name') }}</title>
+        <x-brand-meta />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -17,8 +18,9 @@
 
         <div id="main-content" class="min-h-screen flex flex-col items-center pt-6 sm:justify-center sm:pt-0 bg-gray-100 dark:bg-gray-950">
             <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                <a href="/" class="flex items-center gap-3">
+                    <x-application-logo class="h-12 w-12 rounded-xl object-contain" />
+                    <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ config('app.name') }}</span>
                 </a>
             </div>
 

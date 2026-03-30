@@ -13,7 +13,14 @@ return new class extends Migration
             $table->date('date');
             $table->foreignId('income_source_id')->nullable()->constrained('income_sources')->nullOnDelete();
             $table->foreignId('income_type_id')->nullable()->constrained('income_types')->nullOnDelete();
-            $table->foreignId('currency_id')->constraine            $table->foreignId('currency_id')->constraine            $table->foreignId('currency_id')->constraine            $table->foreignId('currency_id')->constraine            $table->foreignId('currency_id')->constraine            $table->foreignId('currency_id')->constraine            $table->foreignId('currency_id')->constraine   rency_id']);
+            $table->foreignId('currency_id')->constrained('currencies')->restrictOnDelete();
+            $table->decimal('amount', 12, 2)->default(0);
+            $table->text('description')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->softDeletes();
+            $table->timestamps();
+
+            $table->index(['date', 'currency_id']);
         });
     }
 
