@@ -53,21 +53,15 @@
                     {{-- Paternal Grandfather --}}
                     @if($person->father->father)
                     <a href="{{ route('admin.people.graph', $person->father->father->id) }}" class="block w-48 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-700 rounded-xl shadow-lg p-3 border border-blue-200 dark:border-blue-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                        {{-- Blood Type Badge --}}
-                        @if($person->father->father->blood_type)
-                        <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                            {{ $person->father->father->blood_type }}
-                        </div>
-                        @endif
                         
                         {{-- Death Ribbon --}}
                         @if($person->father->father->deathday)
-                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                        <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                         @endif
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 border-blue-200 dark:border-blue-500 shadow-md">
-                                <img src="/assets/img/people/{{ $person->father->father->picture ?? 'user.png' }}" 
+                                <img src="/storage/people/{{ $person->father->father->picture ?? 'user.png' }}" 
                                      alt="{{ $person->father->father->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -79,7 +73,7 @@
                             </div>
                             <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                 @if($person->father->father->birthday)
-                                <p>🎂 {{ $person->father->father->birthday }}</p>
+                                <p>🎂 {{ $person->father->father->birthday->toDateString() }}</p>
                                 @endif
                             </div>
                         </div>
@@ -94,21 +88,15 @@
                     {{-- Paternal Grandmother --}}
                     @if($person->father->mother)
                     <a href="{{ route('admin.people.graph', $person->father->mother->id) }}" class="block w-48 bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-800 dark:to-pink-700 rounded-xl shadow-lg p-3 border border-pink-200 dark:border-pink-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                        {{-- Blood Type Badge --}}
-                        @if($person->father->mother->blood_type)
-                        <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                            {{ $person->father->mother->blood_type }}
-                        </div>
-                        @endif
                         
                         {{-- Death Ribbon --}}
                         @if($person->father->mother->deathday)
-                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                        <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                         @endif
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 border-pink-200 dark:border-pink-500 shadow-md">
-                                <img src="/assets/img/people/{{ $person->father->mother->picture ?? 'user.png' }}" 
+                                <img src="/storage/people/{{ $person->father->mother->picture ?? 'user.png' }}" 
                                      alt="{{ $person->father->mother->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -120,7 +108,7 @@
                             </div>
                             <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                 @if($person->father->mother->birthday)
-                                <p>🎂 {{ $person->father->mother->birthday }}</p>
+                                <p>🎂 {{ $person->father->mother->birthday->toDateString() }}</p>
                                 @endif
                             </div>
                         </div>
@@ -135,21 +123,15 @@
                     {{-- Maternal Grandfather --}}
                     @if($person->mother->father)
                     <a href="{{ route('admin.people.graph', $person->mother->father->id) }}" class="block w-48 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-700 rounded-xl shadow-lg p-3 border border-blue-200 dark:border-blue-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                        {{-- Blood Type Badge --}}
-                        @if($person->mother->father->blood_type)
-                        <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                            {{ $person->mother->father->blood_type }}
-                        </div>
-                        @endif
                         
                         {{-- Death Ribbon --}}
                         @if($person->mother->father->deathday)
-                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                        <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                         @endif
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 border-blue-200 dark:border-blue-500 shadow-md">
-                                <img src="/assets/img/people/{{ $person->mother->father->picture ?? 'user.png' }}" 
+                                <img src="/storage/people/{{ $person->mother->father->picture ?? 'user.png' }}" 
                                      alt="{{ $person->mother->father->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -161,7 +143,7 @@
                             </div>
                             <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                 @if($person->mother->father->birthday)
-                                <p>🎂 {{ $person->mother->father->birthday }}</p>
+                                <p>🎂 {{ $person->mother->father->birthday->toDateString() }}</p>
                                 @endif
                             </div>
                         </div>
@@ -176,21 +158,15 @@
                     {{-- Maternal Grandmother --}}
                     @if($person->mother->mother)
                     <a href="{{ route('admin.people.graph', $person->mother->mother->id) }}" class="block w-48 bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-800 dark:to-pink-700 rounded-xl shadow-lg p-3 border border-pink-200 dark:border-pink-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                        {{-- Blood Type Badge --}}
-                        @if($person->mother->mother->blood_type)
-                        <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                            {{ $person->mother->mother->blood_type }}
-                        </div>
-                        @endif
                         
                         {{-- Death Ribbon --}}
                         @if($person->mother->mother->deathday)
-                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                        <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                         @endif
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 border-pink-200 dark:border-pink-500 shadow-md">
-                                <img src="/assets/img/people/{{ $person->mother->mother->picture ?? 'user.png' }}" 
+                                <img src="/storage/people/{{ $person->mother->mother->picture ?? 'user.png' }}" 
                                      alt="{{ $person->mother->mother->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -202,7 +178,7 @@
                             </div>
                             <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                 @if($person->mother->mother->birthday)
-                                <p>🎂 {{ $person->mother->mother->birthday }}</p>
+                                <p>🎂 {{ $person->mother->mother->birthday->toDateString() }}</p>
                                 @endif
                             </div>
                         </div>
@@ -224,21 +200,15 @@
                 {{-- Father Card --}}
                 @if($person->father)
                 <a href="{{ route('admin.people.graph', $person->father->id) }}" class="block w-48 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-2xl shadow-xl p-4 border-2 border-blue-300 dark:border-blue-700 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                    {{-- Blood Type Badge --}}
-                    @if($person->father->blood_type)
-                    <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                        {{ $person->father->blood_type }}
-                    </div>
-                    @endif
                     
                     {{-- Death Ribbon --}}
                     @if($person->father->deathday)
-                    <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                    <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                     @endif
                     
                     <div class="text-center">
                         <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-4 border-blue-300 dark:border-blue-600 shadow-lg">
-                            <img src="/assets/img/people/{{ $person->father->picture ?? 'user.png' }}" 
+                            <img src="/storage/people/{{ $person->father->picture ?? 'user.png' }}" 
                                  alt="{{ $person->father->fullName() }}"
                                  class="w-full h-full object-cover">
                         </div>
@@ -252,7 +222,7 @@
                             @if($person->father->birthday)
                             <p class="flex items-center justify-center">
                                 <span class="mr-2">🎂</span>
-                                {{ $person->father->birthday }}
+                                {{ $person->father->birthday->toDateString() }}
                             </p>
                             @endif
                         </div>
@@ -268,21 +238,15 @@
                 {{-- Mother Card --}}
                 @if($person->mother)
                 <a href="{{ route('admin.people.graph', $person->mother->id) }}" class="block w-48 bg-gradient-to-br from-pink-100 to-pink-200 dark:from-pink-900 dark:to-pink-800 rounded-2xl shadow-xl p-4 border-2 border-pink-300 dark:border-pink-700 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                    {{-- Blood Type Badge --}}
-                    @if($person->mother->blood_type)
-                    <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                        {{ $person->mother->blood_type }}
-                    </div>
-                    @endif
                     
                     {{-- Death Ribbon --}}
                     @if($person->mother->deathday)
-                    <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                    <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                     @endif
                     
                     <div class="text-center">
                         <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-4 border-pink-300 dark:border-pink-600 shadow-lg">
-                            <img src="/assets/img/people/{{ $person->mother->picture ?? 'user.png' }}" 
+                            <img src="/storage/people/{{ $person->mother->picture ?? 'user.png' }}" 
                                  alt="{{ $person->mother->fullName() }}"
                                  class="w-full h-full object-cover">
                         </div>
@@ -296,7 +260,7 @@
                             @if($person->mother->birthday)
                             <p class="flex items-center justify-center">
                                 <span class="mr-2">🎂</span>
-                                {{ $person->mother->birthday }}
+                                {{ $person->mother->birthday->toDateString() }}
                             </p>
                             @endif
                         </div>
@@ -330,21 +294,15 @@
                 <div class="flex flex-row gap-8 flex-nowrap">
                     @foreach($siblings->where('birthday', '<', $person->birthday ?? '9999-12-31') as $sibling)
                     <a href="{{ route('admin.people.graph', $sibling->id) }}" class="block w-48 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-800 dark:to-indigo-700 rounded-xl shadow-lg p-3 border border-indigo-200 dark:border-indigo-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                        {{-- Blood Type Badge --}}
-                        @if($sibling->blood_type)
-                        <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                            {{ $sibling->blood_type }}
-                        </div>
-                        @endif
                         
                         {{-- Death Ribbon --}}
                         @if($sibling->deathday)
-                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                        <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                         @endif
                         
                         <div class="text-center">
                             <div class="w-14 h-14 mx-auto mb-2 rounded-full overflow-hidden border-2 border-indigo-200 dark:border-indigo-500 shadow-md">
-                                <img src="/assets/img/people/{{ $sibling->picture ?? 'user.png' }}" 
+                                <img src="/storage/people/{{ $sibling->picture ?? 'user.png' }}" 
                                      alt="{{ $sibling->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -356,7 +314,7 @@
                             </div>
                             <div class="text-xs text-gray-700 dark:text-gray-300">
                                 @if($sibling->birthday)
-                                <p>🎂 {{ $sibling->birthday }}</p>
+                                <p>🎂 {{ $sibling->birthday->toDateString() }}</p>
                                 @endif
                             </div>
                         </div>
@@ -384,21 +342,15 @@
                         }
                     @endphp
                     <div class="w-60 {{ $centerCardBg }} rounded-3xl shadow-2xl p-5 border-4 {{ $centerCardBorder }} relative">
-                        {{-- Blood Type Badge --}}
-                        @if($person->blood_type)
-                        <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                            {{ $person->blood_type }}
-                        </div>
-                        @endif
                         
                         {{-- Death Ribbon --}}
                         @if($person->deathday)
-                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                        <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                         @endif
                         
                         <div class="relative text-center">
                             <div class="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden border-4 border-yellow-400 dark:border-yellow-600 shadow-2xl ring-4 {{ $centerPhotoRing }}">
-                                <img src="/assets/img/people/{{ $person->picture ?? 'user.png' }}" 
+                                <img src="/storage/people/{{ $person->picture ?? 'user.png' }}" 
                                      alt="{{ $person->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -413,13 +365,13 @@
                                 @if($person->birthday)
                                 <p class="flex items-center justify-center">
                                     <span class="mr-2 text-base">🎂</span>
-                                    <span class="font-medium">{{ $person->birthday }}</span>
+                                    <span class="font-medium">{{ $person->birthday->toDateString() }}</span>
                                 </p>
                                 @endif
                                 @if($person->deathday)
                                 <p class="flex items-center justify-center">
                                     <span class="mr-2 text-base">⚰️</span>
-                                    <span class="font-medium">{{ $person->deathday }}</span>
+                                    <span class="font-medium">{{ $person->deathday->toDateString() }}</span>
                                 </p>
                                 @endif
                             </div>
@@ -456,21 +408,15 @@
                             }
                         @endphp
                         <a href="{{ route('admin.people.graph', $person->partner->id) }}" class="block w-60 {{ $spouseCardBg }} rounded-3xl shadow-2xl p-5 border-4 {{ $spouseCardBorder }} hover:shadow-3xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                            {{-- Blood Type Badge --}}
-                            @if($person->partner->blood_type)
-                            <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                                {{ $person->partner->blood_type }}
-                            </div>
-                            @endif
                             
                             {{-- Death Ribbon --}}
                             @if($person->partner->deathday)
-                            <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                            <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                             @endif
                             
                             <div class="relative text-center">
                                 <div class="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden border-4 {{ $spousePhotoBorder }} shadow-2xl ring-4 {{ $spousePhotoRing }}">
-                                    <img src="/assets/img/people/{{ $person->partner->picture ?? 'user.png' }}" 
+                                    <img src="/storage/people/{{ $person->partner->picture ?? 'user.png' }}" 
                                          alt="{{ $person->partner->fullName() }}"
                                          class="w-full h-full object-cover">
                                 </div>
@@ -485,7 +431,7 @@
                                     @if($person->partner->birthday)
                                     <p class="flex items-center justify-center">
                                         <span class="mr-2 text-base">🎂</span>
-                                        <span class="font-medium">{{ $person->partner->birthday }}</span>
+                                        <span class="font-medium">{{ $person->partner->birthday->toDateString() }}</span>
                                     </p>
                                     @endif
                                 </div>
@@ -500,21 +446,15 @@
                 <div class="flex flex-row gap-8 flex-nowrap">
                     @foreach($siblings->where('birthday', '>=', $person->birthday ?? '0000-01-01') as $sibling)
                     <a href="{{ route('admin.people.graph', $sibling->id) }}" class="block w-48 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-800 dark:to-indigo-700 rounded-xl shadow-lg p-3 border border-indigo-200 dark:border-indigo-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                        {{-- Blood Type Badge --}}
-                        @if($sibling->blood_type)
-                        <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                            {{ $sibling->blood_type }}
-                        </div>
-                        @endif
                         
                         {{-- Death Ribbon --}}
                         @if($sibling->deathday)
-                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                        <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                         @endif
                         
                         <div class="text-center">
                             <div class="w-14 h-14 mx-auto mb-2 rounded-full overflow-hidden border-2 border-indigo-200 dark:border-indigo-500 shadow-md">
-                                <img src="/assets/img/people/{{ $sibling->picture ?? 'user.png' }}" 
+                                <img src="/storage/people/{{ $sibling->picture ?? 'user.png' }}" 
                                      alt="{{ $sibling->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -526,7 +466,7 @@
                             </div>
                             <div class="text-xs text-gray-700 dark:text-gray-300">
                                 @if($sibling->birthday)
-                                <p>🎂 {{ $sibling->birthday }}</p>
+                                <p>🎂 {{ $sibling->birthday->toDateString() }}</p>
                                 @endif
                             </div>
                         </div>
@@ -565,21 +505,15 @@
                         }
                     @endphp
                     <a href="{{ route('admin.people.graph', $child->id) }}" class="block w-48 {{ $childCardBg }} rounded-xl shadow-lg p-3 border {{ $childCardBorder }} hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                        {{-- Blood Type Badge --}}
-                        @if($child->blood_type)
-                        <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                            {{ $child->blood_type }}
-                        </div>
-                        @endif
                         
                         {{-- Death Ribbon --}}
                         @if($child->deathday)
-                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                        <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                         @endif
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 {{ $childPhotoBorder }} shadow-md">
-                                <img src="/assets/img/people/{{ $child->picture ?? 'user.png' }}" 
+                                <img src="/storage/people/{{ $child->picture ?? 'user.png' }}" 
                                      alt="{{ $child->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -593,7 +527,7 @@
                                 @if($child->birthday)
                                 <p class="flex items-center justify-center">
                                     <span class="mr-2">🎂</span>
-                                    {{ $child->birthday }}
+                                    {{ $child->birthday->toDateString() }}
                                 </p>
                                 @endif
                             </div>
@@ -620,21 +554,15 @@
                         }
                     @endphp
                     <a href="{{ route('admin.people.graph', $child->partner->id) }}" class="block w-48 {{ $childSpouseBg }} rounded-xl shadow-lg p-3 border {{ $childSpouseBorder }} hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                        {{-- Blood Type Badge --}}
-                        @if($child->partner->blood_type)
-                        <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                            {{ $child->partner->blood_type }}
-                        </div>
-                        @endif
                         
                         {{-- Death Ribbon --}}
                         @if($child->partner->deathday)
-                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                        <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                         @endif
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 {{ $childSpousePhotoBorder }} shadow-md">
-                                <img src="/assets/img/people/{{ $child->partner->picture ?? 'user.png' }}" 
+                                <img src="/storage/people/{{ $child->partner->picture ?? 'user.png' }}" 
                                      alt="{{ $child->partner->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -648,7 +576,7 @@
                                 @if($child->partner->birthday)
                                 <p class="flex items-center justify-center">
                                     <span class="mr-2">🎂</span>
-                                    {{ $child->partner->birthday }}
+                                    {{ $child->partner->birthday->toDateString() }}
                                 </p>
                                 @endif
                             </div>
@@ -684,21 +612,15 @@
                                 }
                             @endphp
                             <a href="{{ route('admin.people.graph', $grandchild->id) }}" class="block w-48 {{ $grandchildCardBg }} rounded-xl shadow-lg p-3 border {{ $grandchildCardBorder }} hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                                {{-- Blood Type Badge --}}
-                                @if($grandchild->blood_type)
-                                <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                                    {{ $grandchild->blood_type }}
-                                </div>
-                                @endif
                                 
                                 {{-- Death Badge --}}
                                 @if($grandchild->deathday)
-                                <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                                <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                                 @endif
                                 
                                 <div class="text-center">
                                     <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 {{ $grandchildPhotoBorder }} shadow-md">
-                                        <img src="/assets/img/people/{{ $grandchild->picture ?? 'user.png' }}" 
+                                        <img src="/storage/people/{{ $grandchild->picture ?? 'user.png' }}" 
                                              alt="{{ $grandchild->fullName() }}"
                                              class="w-full h-full object-cover">
                                     </div>
@@ -712,7 +634,7 @@
                                         @if($grandchild->birthday)
                                         <p class="flex items-center justify-center">
                                             <span class="mr-2">🎂</span>
-                                            {{ $grandchild->birthday }}
+                                            {{ $grandchild->birthday->toDateString() }}
                                         </p>
                                         @endif
                                     </div>
@@ -739,21 +661,15 @@
                                 }
                             @endphp
                             <a href="{{ route('admin.people.graph', $grandchild->partner->id) }}" class="block w-48 {{ $grandchildSpouseBg }} rounded-xl shadow-lg p-3 border {{ $grandchildSpouseBorder }} hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
-                                {{-- Blood Type Badge --}}
-                                @if($grandchild->partner->blood_type)
-                                <div class="absolute -top-1 -left-1 w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shadow-md ring-2 ring-white dark:ring-gray-800 z-10">
-                                    {{ $grandchild->partner->blood_type }}
-                                </div>
-                                @endif
                                 
                                 {{-- Death Badge --}}
                                 @if($grandchild->partner->deathday)
-                                <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
+                                <div class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white dark:ring-gray-800 z-10">🕊️</div>
                                 @endif
                                 
                                 <div class="text-center">
                                     <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 {{ $grandchildSpousePhotoBorder }} shadow-md">
-                                        <img src="/assets/img/people/{{ $grandchild->partner->picture ?? 'user.png' }}" 
+                                        <img src="/storage/people/{{ $grandchild->partner->picture ?? 'user.png' }}" 
                                              alt="{{ $grandchild->partner->fullName() }}"
                                              class="w-full h-full object-cover">
                                     </div>
@@ -767,7 +683,7 @@
                                         @if($grandchild->partner->birthday)
                                         <p class="flex items-center justify-center">
                                             <span class="mr-2">🎂</span>
-                                            {{ $grandchild->partner->birthday }}
+                                            {{ $grandchild->partner->birthday->toDateString() }}
                                         </p>
                                         @endif
                                     </div>

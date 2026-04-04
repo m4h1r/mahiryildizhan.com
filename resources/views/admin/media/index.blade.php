@@ -3,15 +3,17 @@
 @section('content')
     <div class="space-y-6">
         <section class="card-admin p-4 md:p-6">
-            <form method="GET" class="grid gap-3 md:grid-cols-4">
-                <input class="form-input-admin md:col-span-2" name="q" placeholder="Search media..." value="{{ $filters['q'] ?? '' }}">
+            <form method="GET" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <input class="form-input-admin sm:col-span-2" name="q" placeholder="Search media..." value="{{ $filters['q'] ?? '' }}">
                 <select name="type" class="form-input-admin">
                     <option value="">All Types</option>
                     <option value="1" @selected((string) ($filters['type'] ?? '') === '1')>Images</option>
                     <option value="2" @selected((string) ($filters['type'] ?? '') === '2')>Documents</option>
                 </select>
-                <button type="submit" class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium dark:border-gray-700">Filter</button>
-                <a href="{{ route('admin.media.index') }}" class="rounded-md border border-gray-300 px-3 py-2 text-center text-sm font-medium dark:border-gray-700">Reset</a>
+                <div class="flex gap-2">
+                    <button type="submit" class="admin-btn admin-btn-primary flex-1">Filter</button>
+                    <a href="{{ route('admin.media.index') }}" class="admin-btn admin-btn-ghost flex-1 text-center">Reset</a>
+                </div>
             </form>
         </section>
 
@@ -22,7 +24,7 @@
                 <input type="file" name="file" required class="form-input-admin md:col-span-3">
                 <input type="text" name="alt" class="form-input-admin" placeholder="Alt text (optional)">
                 <input type="text" name="caption" class="form-input-admin" placeholder="Caption (optional)">
-                <button type="submit" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900">Upload</button>
+                <button type="submit" class="admin-btn admin-btn-primary">Upload</button>
             </form>
             @error('file')<p class="mt-2 text-xs text-red-600">{{ $message }}</p>@enderror
             @error('alt')<p class="mt-2 text-xs text-red-600">{{ $message }}</p>@enderror
@@ -54,7 +56,7 @@
                             <form method="POST" action="{{ route('admin.media.destroy', $item) }}" onsubmit="return confirm('Delete this media item?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="rounded-md border border-red-300 px-2 py-1 text-xs font-medium text-red-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-900 dark:text-red-300" @disabled(($item->cover_posts_count ?? 0) > 0)>Delete</button>
+                                <button type="submit" class="admin-btn-sm admin-btn-danger disabled:cursor-not-allowed disabled:opacity-50" @disabled(($item->cover_posts_count ?? 0) > 0)>Delete</button>
                             </form>
                         </div>
                     </article>

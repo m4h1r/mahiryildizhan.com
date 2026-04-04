@@ -12,18 +12,27 @@
 	--color-accent: #f97316;
 	--color-surface: #fbfbfd;
 	--color-surface-dark: #0f1115;
-	--color-admin-bg: #f3f4f7;
-	--color-admin-bg-dark: #0a0c11;
-	--color-muted: #6e6e73;
+	--color-admin-bg: #f5f5f7;
+	--color-admin-bg-dark: #000000;
+	--color-muted: #86868b;
 	--color-heading: #111214;
 	--color-heading-dark: #f4f5f7;
+
+	--color-admin-sidebar: #f5f5f7;
+	--color-admin-sidebar-dark: #1c1c1e;
+	--color-admin-card: #ffffff;
+	--color-admin-card-dark: #1c1c1e;
+	--color-admin-border: #d2d2d7;
+	--color-admin-border-dark: #38383a;
 
 	--font-body: "Avenir Next", "Segoe UI", sans-serif;
 	--font-editorial: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
 	--font-mono: "JetBrains Mono", ui-monospace, monospace;
 
 	--spacing-section: 4rem;
-	--spacing-card: 1.5rem;
+	--spacing-card: 1.25rem;
+	--spacing-card-lg: 1.5rem;
+	--admin-bottom-nav-height: 3.5rem;
 }
 
 @layer base {
@@ -52,59 +61,116 @@
 			scroll-behavior: auto !important;
 		}
 	}
+
+	/* Safe area for notched devices (mobile bottom nav) */
+	.admin-safe-bottom {
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+	}
+
+	/* Thin scrollbar for sidebar */
+	.admin-scrollbar::-webkit-scrollbar {
+		width: 3px;
+	}
+	.admin-scrollbar::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.admin-scrollbar::-webkit-scrollbar-thumb {
+		background-color: rgba(0, 0, 0, 0.12);
+		border-radius: 2px;
+	}
+	.dark .admin-scrollbar::-webkit-scrollbar-thumb {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
 }
 
 @layer components {
 	.card-admin {
-		@apply rounded-2xl border border-gray-200/90 bg-white/95 p-[var(--spacing-card)] shadow-[0_12px_34px_-30px_rgba(15,23,42,0.9)] dark:border-gray-800 dark:bg-[#11131a];
+		@apply rounded-2xl border bg-[var(--color-admin-card)] p-[var(--spacing-card)] shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] transition-shadow duration-200 dark:bg-[var(--color-admin-card-dark)];
+		border-color: var(--color-admin-border);
+	}
+	.dark .card-admin {
+		border-color: var(--color-admin-border-dark);
+	}
+
+	@media (min-width: 768px) {
+		.card-admin {
+			padding: var(--spacing-card-lg);
+		}
 	}
 
 	.form-input-admin {
-		@apply w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm transition focus:border-[var(--color-brand)] focus:ring-2 focus:ring-[var(--color-brand)]/25 focus:outline-none dark:border-gray-600 dark:bg-[#0f1117];
+		@apply h-11 w-full rounded-xl border border-gray-300 bg-white px-3 text-base transition focus:border-[var(--color-brand)] focus:ring-2 focus:ring-[var(--color-brand)]/15 focus:outline-none dark:border-[var(--color-admin-border-dark)] dark:bg-[#111113] dark:text-gray-100 sm:text-sm;
 	}
 
 	.admin-nav-link {
-		@apply flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-white hover:text-gray-950 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100;
+		@apply flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-all duration-150 hover:bg-white hover:text-gray-950 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-100;
 	}
 
 	.admin-nav-link-active {
-		@apply bg-white text-gray-950 shadow-sm ring-1 ring-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:ring-gray-700;
+		@apply bg-[var(--color-brand)]/10 font-semibold text-[var(--color-brand)] dark:bg-[var(--color-brand)]/15 dark:text-blue-400;
+	}
+	.admin-nav-link-active:hover {
+		background-color: rgba(0, 113, 227, 0.12) !important;
 	}
 
 	.admin-btn {
-		@apply inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold transition;
+		@apply inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition-all duration-150 active:scale-[0.97];
 	}
 
 	.admin-btn-primary {
-		@apply bg-gray-900 text-white hover:bg-black dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200;
+		@apply bg-[var(--color-brand)] text-white hover:bg-[var(--color-brand-dark)];
 	}
 
 	.admin-btn-ghost {
-		@apply border border-gray-300 text-gray-700 hover:border-gray-400 hover:text-gray-900 dark:border-gray-700 dark:text-gray-200 dark:hover:border-gray-500;
+		@apply border border-[var(--color-admin-border)] text-gray-700 hover:border-gray-400 hover:bg-gray-50 hover:text-gray-900 dark:border-[var(--color-admin-border-dark)] dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-white/5 dark:hover:text-gray-100;
+	}
+
+	.admin-btn-danger {
+		@apply border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30 dark:hover:border-red-700;
+	}
+
+	.admin-btn-sm {
+		@apply inline-flex h-8 items-center justify-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all duration-150 active:scale-[0.97];
 	}
 
 	.admin-table-shell {
-		@apply overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-[#11131a];
+		@apply -mx-4 overflow-hidden border-y border-[var(--color-admin-border)] bg-[var(--color-admin-card)] dark:border-[var(--color-admin-border-dark)] dark:bg-[var(--color-admin-card-dark)] sm:mx-0 sm:rounded-2xl sm:border;
 	}
 
 	.admin-table {
-		@apply min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-800;
+		@apply min-w-full divide-y divide-gray-200 text-sm dark:divide-[var(--color-admin-border-dark)];
 	}
 
 	.admin-table thead {
-		@apply bg-gray-50 dark:bg-gray-900/60;
+		@apply bg-gray-50/80 dark:bg-white/[0.03];
 	}
 
 	.admin-table th {
-		@apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.08em] text-gray-500 dark:text-gray-400;
+		@apply px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-[0.08em] text-gray-500 dark:text-gray-400 sm:px-4 sm:py-3;
 	}
 
 	.admin-table td {
-		@apply px-4 py-3 align-middle;
+		@apply px-3 py-2.5 align-middle sm:px-4 sm:py-3;
 	}
 
 	.admin-table tbody {
-		@apply divide-y divide-gray-200 dark:divide-gray-800;
+		@apply divide-y divide-gray-100 dark:divide-[var(--color-admin-border-dark)];
+	}
+
+	.admin-table tbody tr {
+		@apply transition-colors duration-100 hover:bg-gray-50/60 dark:hover:bg-white/[0.02];
+	}
+
+	/* Micro-interaction: card lift on hover (desktop only) */
+	@media (hover: hover) {
+		.card-admin {
+			@apply hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(0,0,0,0.10)];
+		}
+	}
+
+	/* Admin numeric values — tabular alignment for financial data */
+	.admin-tabular {
+		font-variant-numeric: tabular-nums;
 	}
 
 	.prose-blog {

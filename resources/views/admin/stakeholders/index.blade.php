@@ -2,9 +2,9 @@
 
 @section('content')
     <div class="space-y-6">
-        <section class="card-admin p-4 md:p-6">
-            <form method="GET" class="grid gap-3 md:grid-cols-4">
-                <input class="form-input-admin" name="q" placeholder="Search title, vkn, email..." value="{{ $filters['q'] ?? '' }}">
+        <section class="card-admin">
+            <form method="GET" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <input class="form-input-admin sm:col-span-2 lg:col-span-1" name="q" placeholder="Search title, vkn, email..." value="{{ $filters['q'] ?? '' }}">
 
                 <select name="status" class="form-input-admin">
                     <option value="">All Statuses</option>
@@ -21,51 +21,51 @@
                 </select>
 
                 <div class="flex gap-2">
-                    <button type="submit" class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium dark:border-gray-700">Filter</button>
-                    <a href="{{ route('admin.stakeholders.index') }}" class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium dark:border-gray-700">Reset</a>
+                    <button type="submit" class="admin-btn admin-btn-primary flex-1">Filter</button>
+                    <a href="{{ route('admin.stakeholders.index') }}" class="admin-btn admin-btn-ghost flex-1">Reset</a>
                 </div>
             </form>
         </section>
 
-        <section class="card-admin overflow-hidden">
-            <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-800">
+        <section class="admin-table-shell">
+            <div class="flex items-center justify-between border-b border-[var(--color-admin-border)] px-4 py-3 dark:border-[var(--color-admin-border-dark)]">
                 <h2 class="text-sm font-semibold">Stakeholder List</h2>
-                <a href="{{ route('admin.stakeholders.create') }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900">New Stakeholder</a>
+                <a href="{{ route('admin.stakeholders.create') }}" class="admin-btn admin-btn-primary">New Stakeholder</a>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-800">
-                    <thead class="bg-gray-50 dark:bg-gray-900/60">
+            <div class="overflow-x-auto overscroll-x-contain">
+                <table class="admin-table">
+                    <thead>
                         <tr>
-                            <th class="px-4 py-3 text-left font-medium">VKN/TCKN</th>
-                            <th class="px-4 py-3 text-left font-medium">Title</th>
-                            <th class="px-4 py-3 text-left font-medium">Type</th>
-                            <th class="px-4 py-3 text-left font-medium">Status</th>
-                            <th class="px-4 py-3 text-left font-medium">Contact</th>
-                            <th class="px-4 py-3 text-right font-medium">Actions</th>
+                            <th class="hidden sm:table-cell">VKN/TCKN</th>
+                            <th>Title</th>
+                            <th class="hidden md:table-cell">Type</th>
+                            <th class="hidden md:table-cell">Status</th>
+                            <th class="hidden lg:table-cell">Contact</th>
+                            <th class="text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                    <tbody>
                         @forelse ($stakeholders as $stakeholder)
                             <tr>
-                                <td class="px-4 py-3">{{ $stakeholder->vkn_tckn }}</td>
-                                <td class="px-4 py-3">{{ $stakeholder->title ?: trim(($stakeholder->name ?? '').' '.($stakeholder->surname ?? '')) }}</td>
-                                <td class="px-4 py-3">{{ $stakeholder->company_type }}</td>
-                                <td class="px-4 py-3">{{ $stakeholder->status }}</td>
-                                <td class="px-4 py-3">{{ $stakeholder->email ?: '-' }}</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex justify-end gap-2">
-                                        <a href="{{ route('admin.stakeholders.edit', $stakeholder) }}" class="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium dark:border-gray-700">Edit</a>
+                                <td class="hidden sm:table-cell">{{ $stakeholder->vkn_tckn }}</td>
+                                <td class="font-medium">{{ $stakeholder->title ?: trim(($stakeholder->name ?? '').' '.($stakeholder->surname ?? '')) }}</td>
+                                <td class="hidden md:table-cell">{{ $stakeholder->company_type }}</td>
+                                <td class="hidden md:table-cell">{{ $stakeholder->status }}</td>
+                                <td class="hidden lg:table-cell">{{ $stakeholder->email ?: '-' }}</td>
+                                <td>
+                                    <div class="flex justify-end gap-1.5">
+                                        <a href="{{ route('admin.stakeholders.edit', $stakeholder) }}" class="admin-btn-sm admin-btn-ghost">Edit</a>
 
                                         <form method="POST" action="{{ route('admin.stakeholders.duplicate', $stakeholder) }}">
                                             @csrf
-                                            <button type="submit" class="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium dark:border-gray-700">Duplicate</button>
+                                            <button type="submit" class="admin-btn-sm admin-btn-ghost">Duplicate</button>
                                         </form>
 
                                         <form method="POST" action="{{ route('admin.stakeholders.destroy', $stakeholder) }}" onsubmit="return confirm('Delete this stakeholder?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="rounded-md border border-red-300 px-2 py-1 text-xs font-medium text-red-700 dark:border-red-900 dark:text-red-300">Delete</button>
+                                            <button type="submit" class="admin-btn-sm admin-btn-danger">Delete</button>
                                         </form>
                                     </div>
                                 </td>
@@ -79,7 +79,7 @@
                 </table>
             </div>
 
-            <div class="border-t border-gray-200 px-4 py-3 dark:border-gray-800">
+            <div class="border-t border-[var(--color-admin-border)] px-4 py-3 dark:border-[var(--color-admin-border-dark)]">
                 {{ $stakeholders->links() }}
             </div>
         </section>

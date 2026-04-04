@@ -50,7 +50,7 @@
         <section class="grid gap-4 md:grid-cols-2">
             <article class="card-admin">
                 <h3 class="mb-4 text-sm font-semibold text-gray-700 dark:text-gray-200">Financial Summary</h3>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div class="border-l-4 border-emerald-500 pl-3">
                         <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Income</p>
                         <p class="mt-1 text-xl font-semibold text-emerald-700 dark:text-emerald-300">{{ number_format($annualIncome, 2) }} TRY</p>
@@ -81,7 +81,7 @@
                     <h3 class="text-sm font-semibold">Income vs Expense vs Net</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">Monthly performance timeline</p>
                 </div>
-                <div class="h-[22rem]">
+                <div class="h-[16rem] sm:h-[22rem]">
                     <canvas id="monthlyPerformanceChart"></canvas>
                 </div>
             </article>
@@ -91,7 +91,7 @@
                     <h3 class="text-sm font-semibold">Expense Distribution</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">By category</p>
                 </div>
-                <div class="h-[22rem]">
+                <div class="h-[16rem] sm:h-[22rem]">
                     <canvas id="expenseShareChart"></canvas>
                 </div>
             </article>
@@ -103,7 +103,7 @@
                     <h3 class="text-sm font-semibold">Daily Expense Pressure</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">Rolling daily totals</p>
                 </div>
-                <div class="h-[21rem]">
+                <div class="h-[16rem] sm:h-[21rem]">
                     <canvas id="dailyExpenseChart"></canvas>
                 </div>
             </article>
@@ -113,7 +113,7 @@
                     <h3 class="text-sm font-semibold">Cumulative Net Curve</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">Running result across months</p>
                 </div>
-                <div class="h-[21rem]">
+                <div class="h-[16rem] sm:h-[21rem]">
                     <canvas id="cumulativeNetChart"></canvas>
                 </div>
             </article>
@@ -124,7 +124,7 @@
                 <h3 class="text-sm font-semibold">Category Trend Signals</h3>
                 <p class="text-xs text-gray-500 dark:text-gray-400">Top categories over selected period</p>
             </div>
-            <div class="h-[24rem]">
+            <div class="h-[18rem] sm:h-[24rem]">
                 <canvas id="categoryTrendChart"></canvas>
             </div>
         </section>

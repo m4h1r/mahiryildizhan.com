@@ -50,25 +50,25 @@
                 @endforeach
 
                 <div class="md:col-span-2">
-                    <button type="submit" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900">
+                    <button type="submit" class="admin-btn admin-btn-primary">
                         Add Entry
                     </button>
                 </div>
             </form>
         </section>
 
-        <section class="card-admin overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-800">
-                    <thead class="bg-gray-50 dark:bg-gray-900/60">
+        <section class="admin-table-shell">
+            <div class="overflow-x-auto overscroll-x-contain">
+                <table class="admin-table">
+                    <thead>
                         <tr>
                             @foreach ($definition['fields'] as $meta)
-                                <th class="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-300">{{ $meta['label'] }}</th>
+                                <th>{{ $meta['label'] }}</th>
                             @endforeach
-                            <th class="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-300">Actions</th>
+                            <th class="text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                    <tbody>
                         @forelse ($records as $record)
                             <tr class="align-top">
                                 @foreach ($definition['fields'] as $field => $meta)
@@ -109,15 +109,15 @@
                                         @method('PUT')
                                     </form>
 
-                                    <div class="flex justify-end gap-2">
-                                        <button type="submit" form="dictionary-form-{{ $record->id }}" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700">
+                                    <div class="flex justify-end gap-1.5">
+                                        <button type="submit" form="dictionary-form-{{ $record->id }}" class="admin-btn-sm admin-btn-ghost">
                                             Save
                                         </button>
 
                                         <form method="POST" action="{{ route('admin.dictionaries.destroy', [$table, $record->id]) }}" onsubmit="return confirm('Delete this entry?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="rounded-md border border-red-300 px-3 py-2 text-xs font-medium text-red-700 dark:border-red-900 dark:text-red-300">
+                                            <button type="submit" class="admin-btn-sm admin-btn-danger">
                                                 Delete
                                             </button>
                                         </form>

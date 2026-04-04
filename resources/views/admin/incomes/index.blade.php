@@ -32,7 +32,7 @@
 
         {{-- Filters --}}
         <section class="card-admin p-4 md:p-6">
-            <form method="GET" class="grid gap-3 md:grid-cols-4">
+            <form method="GET" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <select name="year" class="form-input-admin">
                     <option value="">Tüm Yıllar</option>
                     @foreach ($availableYears as $y)
@@ -77,7 +77,7 @@
 
         {{-- Table --}}
         <section class="admin-table-shell">
-            <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-800">
+            <div class="flex items-center justify-between border-b border-[var(--color-admin-border)] px-4 py-3 dark:border-[var(--color-admin-border-dark)]">
                 <h2 class="text-sm font-semibold">Gelir Listesi</h2>
                 <a href="{{ route('admin.incomes.create') }}" class="admin-btn admin-btn-primary">Yeni Gelir</a>
             </div>
@@ -165,7 +165,7 @@
                 </table>
             </div>
 
-            <div class="border-t border-gray-200 px-4 py-3 dark:border-gray-800">
+            <div class="border-t border-[var(--color-admin-border)] px-4 py-3 dark:border-[var(--color-admin-border-dark)]">
                 {{ $incomes->links() }}
             </div>
         </section>

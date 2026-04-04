@@ -2,9 +2,9 @@
 
 @section('content')
     <div class="space-y-6">
-        <section class="card-admin p-4 md:p-6">
-            <form method="GET" class="grid gap-3 md:grid-cols-4">
-                <input class="form-input-admin" name="q" placeholder="Search notes or person..." value="{{ $filters['q'] ?? '' }}">
+        <section class="card-admin">
+            <form method="GET" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <input class="form-input-admin sm:col-span-2 lg:col-span-1" name="q" placeholder="Search notes or person..." value="{{ $filters['q'] ?? '' }}">
 
                 <select name="person_id" class="form-input-admin">
                     <option value="">All People</option>
@@ -23,51 +23,51 @@
                 </select>
 
                 <div class="flex gap-2">
-                    <button type="submit" class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium dark:border-gray-700">Filter</button>
-                    <a href="{{ route('admin.interactions.index') }}" class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium dark:border-gray-700">Reset</a>
+                    <button type="submit" class="admin-btn admin-btn-primary flex-1">Filter</button>
+                    <a href="{{ route('admin.interactions.index') }}" class="admin-btn admin-btn-ghost flex-1">Reset</a>
                 </div>
             </form>
         </section>
 
-        <section class="card-admin overflow-hidden">
-            <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-800">
+        <section class="admin-table-shell">
+            <div class="flex items-center justify-between border-b border-[var(--color-admin-border)] px-4 py-3 dark:border-[var(--color-admin-border-dark)]">
                 <h2 class="text-sm font-semibold">Interaction List</h2>
-                <a href="{{ route('admin.interactions.create') }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900">New Interaction</a>
+                <a href="{{ route('admin.interactions.create') }}" class="admin-btn admin-btn-primary">New Interaction</a>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-800">
-                    <thead class="bg-gray-50 dark:bg-gray-900/60">
+            <div class="overflow-x-auto overscroll-x-contain">
+                <table class="admin-table">
+                    <thead>
                         <tr>
-                            <th class="px-4 py-3 text-left font-medium">Date</th>
-                            <th class="px-4 py-3 text-left font-medium">Person</th>
-                            <th class="px-4 py-3 text-left font-medium">Type</th>
-                            <th class="px-4 py-3 text-left font-medium">Effect</th>
-                            <th class="px-4 py-3 text-left font-medium">Notes</th>
-                            <th class="px-4 py-3 text-right font-medium">Actions</th>
+                            <th>Date</th>
+                            <th>Person</th>
+                            <th class="hidden sm:table-cell">Type</th>
+                            <th class="hidden md:table-cell">Effect</th>
+                            <th class="hidden lg:table-cell">Notes</th>
+                            <th class="text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                    <tbody>
                         @forelse ($interactions as $interaction)
                             <tr>
-                                <td class="px-4 py-3">{{ optional($interaction->date)->toDateString() }}</td>
-                                <td class="px-4 py-3">{{ optional($interaction->person)->name }} {{ optional($interaction->person)->surname }}</td>
-                                <td class="px-4 py-3">{{ optional($interaction->type)->name ?: '-' }}</td>
-                                <td class="px-4 py-3">{{ $interaction->effect ?: '-' }}</td>
-                                <td class="px-4 py-3 max-w-sm text-xs">{{ \Illuminate\Support\Str::limit($interaction->notes, 100) ?: '-' }}</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex justify-end gap-2">
-                                        <a href="{{ route('admin.interactions.edit', $interaction) }}" class="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium dark:border-gray-700">Edit</a>
+                                <td>{{ optional($interaction->date)->toDateString() }}</td>
+                                <td>{{ optional($interaction->person)->name }} {{ optional($interaction->person)->surname }}</td>
+                                <td class="hidden sm:table-cell">{{ optional($interaction->type)->name ?: '-' }}</td>
+                                <td class="hidden md:table-cell">{{ $interaction->effect ?: '-' }}</td>
+                                <td class="hidden max-w-sm text-xs lg:table-cell">{{ \Illuminate\Support\Str::limit($interaction->notes, 100) ?: '-' }}</td>
+                                <td>
+                                    <div class="flex justify-end gap-1.5">
+                                        <a href="{{ route('admin.interactions.edit', $interaction) }}" class="admin-btn-sm admin-btn-ghost">Edit</a>
 
                                         <form method="POST" action="{{ route('admin.interactions.duplicate', $interaction) }}">
                                             @csrf
-                                            <button type="submit" class="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium dark:border-gray-700">Duplicate</button>
+                                            <button type="submit" class="admin-btn-sm admin-btn-ghost">Duplicate</button>
                                         </form>
 
                                         <form method="POST" action="{{ route('admin.interactions.destroy', $interaction) }}" onsubmit="return confirm('Delete this interaction?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="rounded-md border border-red-300 px-2 py-1 text-xs font-medium text-red-700 dark:border-red-900 dark:text-red-300">Delete</button>
+                                            <button type="submit" class="admin-btn-sm admin-btn-danger">Delete</button>
                                         </form>
                                     </div>
                                 </td>
@@ -81,7 +81,7 @@
                 </table>
             </div>
 
-            <div class="border-t border-gray-200 px-4 py-3 dark:border-gray-800">
+            <div class="border-t border-[var(--color-admin-border)] px-4 py-3 dark:border-[var(--color-admin-border-dark)]">
                 {{ $interactions->links() }}
             </div>
         </section>

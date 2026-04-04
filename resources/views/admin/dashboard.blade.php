@@ -59,7 +59,7 @@
 
         <section x-cloak x-show="!loading" class="card-admin border border-emerald-200/80 bg-gradient-to-r from-emerald-50 to-teal-50 dark:border-emerald-800 dark:from-emerald-950/40 dark:to-teal-950/40">
             <p class="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{{ now()->year }} {{ __('Financial Status') }}</p>
-            <div class="mt-3 flex flex-wrap items-center justify-center gap-2 text-center text-base font-extrabold leading-snug sm:text-lg md:text-2xl">
+            <div class="mt-3 flex flex-col items-center gap-2 text-center text-base font-extrabold leading-snug sm:flex-row sm:flex-wrap sm:justify-center sm:text-lg md:text-2xl">
                 <span class="rounded-lg bg-white/70 px-2 py-1 text-green-700 dark:bg-gray-900/40 dark:text-green-300">{{ number_format($annualIncome, 2) }} TRY</span>
                 <span class="text-gray-500 dark:text-gray-400">-</span>
                 <span class="rounded-lg bg-white/70 px-2 py-1 text-red-700 dark:bg-gray-900/40 dark:text-red-300">{{ number_format($annualExpense, 2) }} TRY</span>
@@ -68,7 +68,7 @@
             </div>
         </section>
 
-        <section x-cloak x-show="!loading" class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+        <section x-cloak x-show="!loading" class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             <article class="rounded-xl border border-green-200 bg-gradient-to-br from-green-50 to-green-100 p-3 dark:border-green-800 dark:from-green-950/40 dark:to-green-900/40">
                 <p class="text-xs text-gray-600 dark:text-gray-300">USD/TRY</p>
                 <p class="mt-1 text-lg font-bold text-green-700 dark:text-green-300">{{ $fxUsdTry ? number_format($fxUsdTry, 4) : '-' }}</p>
@@ -91,7 +91,7 @@
             </article>
         </section>
 
-        <section x-cloak x-show="!loading" class="grid gap-4 md:grid-cols-3">
+        <section x-cloak x-show="!loading" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <article class="card-admin border-l-4 border-blue-500">
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Published Posts') }}</p>
                 <p class="mt-2 text-3xl font-extrabold text-blue-700 dark:text-blue-300">{{ number_format($publishedPosts) }}</p>
@@ -106,7 +106,7 @@
             </article>
         </section>
 
-        <section x-cloak x-show="!loading" class="grid gap-4 xl:grid-cols-[1.2fr_1.2fr_1fr]">
+        <section x-cloak x-show="!loading" class="grid gap-4 md:grid-cols-2 xl:grid-cols-[1.2fr_1.2fr_1fr]">
             <article class="card-admin">
                 <div class="flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Birthdays This Week') }}</h3>
@@ -185,7 +185,7 @@
             </article>
         </section>
 
-        <section x-cloak x-show="!loading" class="grid gap-4 xl:grid-cols-[1.3fr_1fr]">
+        <section x-cloak x-show="!loading" class="grid gap-4 md:grid-cols-2 xl:grid-cols-[1.3fr_1fr]">
             <article class="card-admin">
                 <div class="flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Recent Comments') }}</h3>

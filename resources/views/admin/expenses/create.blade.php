@@ -1,4 +1,4 @@
-@extends('admin.layout', ['title' => 'New Expense', 'heading' => 'New Expense'])
+@extends('admin.layout', ['title' => 'Yeni Gider', 'heading' => 'Yeni Gider'])
 
 @section('content')
     <section class="card-admin p-6">

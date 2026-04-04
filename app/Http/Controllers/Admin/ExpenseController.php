@@ -51,11 +51,12 @@ class ExpenseController extends Controller
 
         if ($stakeholderQuery = trim((string) $request->string('stakeholder_query'))) {
             $query->whereHas('stakeholder', function ($builder) use ($stakeholderQuery): void {
-                $builder
-                    ->where('vkn_tckn', 'like', "%{$stakeholderQuery}%")
-                    ->orWhere('title', 'like', "%{$stakeholderQuery}%")
-                    ->orWhere('name', 'like', "%{$stakeholderQuery}%")
-                    ->orWhere('surname', 'like', "%{$stakeholderQuery}%");
+                $builder->where(function ($q) use ($stakeholderQuery): void {
+                    $q->where('vkn_tckn', 'like', "%{$stakeholderQuery}%")
+                        ->orWhere('title', 'like', "%{$stakeholderQuery}%")
+                        ->orWhere('name', 'like', "%{$stakeholderQuery}%")
+                        ->orWhere('surname', 'like', "%{$stakeholderQuery}%");
+                });
             });
         }
 
@@ -85,11 +86,13 @@ class ExpenseController extends Controller
     public function create(): View
     {
         return view('admin.expenses.create', [
-            'title' => 'New Expense',
-            'heading' => 'New Expense',
+            'title' => 'Yeni Gider',
+            'heading' => 'Yeni Gider',
             'expenseTypes' => ExpenseType::query()->orderBy('name')->get(),
             'currencies' => Currency::query()->orderBy('code')->get(),
             'stakeholders' => Stakeholder::query()->orderBy('title')->orderBy('name')->get(),
+            'defaultCurrencyId' => Currency::where('code', 'TRY')->value('id'),
+            'defaultExpenseTypeId' => ExpenseType::where('name', 'Market')->value('id'),
         ]);
     }
 
@@ -103,12 +106,14 @@ class ExpenseController extends Controller
     public function edit(Expense $expense): View
     {
         return view('admin.expenses.edit', [
-            'title' => 'Edit Expense',
-            'heading' => 'Edit Expense',
+            'title' => 'Gider Düzenle',
+            'heading' => 'Gider Düzenle',
             'expense' => $expense,
             'expenseTypes' => ExpenseType::query()->orderBy('name')->get(),
             'currencies' => Currency::query()->orderBy('code')->get(),
             'stakeholders' => Stakeholder::query()->orderBy('title')->orderBy('name')->get(),
+            'defaultCurrencyId' => null,
+            'defaultExpenseTypeId' => null,
         ]);
     }
 
