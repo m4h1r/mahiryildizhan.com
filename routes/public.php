@@ -49,7 +49,7 @@ Route::get('/ads.txt', function () {
         abort(404);
     }
 
-    $pubId = str_starts_with($clientId, 'ca-') ? $clientId : 'ca-' . $clientId;
+    $pubId = preg_replace('/^ca-/', '', $clientId);
 
     return response("google.com, {$pubId}, DIRECT, f08c47fec0942fa0\n", 200, [
         'Content-Type' => 'text/plain',
