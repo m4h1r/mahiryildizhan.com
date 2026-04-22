@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -16,19 +15,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            UserSeeder::class,
             DictionarySeeder::class,
-        ]);
-
-        User::query()->updateOrCreate(
-            ['email' => 'admin@mahiryildizhan.com'],
-            [
-                'name' => 'Mahir Yıldızhan',
-                'password' => bcrypt('Martoto.97026'),
-                'is_admin' => true,
-            ]
-        );
-
-        $this->call([
             CsvImportSeeder::class,
         ]);
 

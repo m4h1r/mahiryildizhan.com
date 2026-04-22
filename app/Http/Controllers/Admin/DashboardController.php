@@ -19,9 +19,9 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        $latitude = (float) (env('WEATHER_LATITUDE') ?: Setting::get('weather_latitude', '40.7654'));
-        $longitude = (float) (env('WEATHER_LONGITUDE') ?: Setting::get('weather_longitude', '29.9404'));
-        $weatherCityName = (string) (env('WEATHER_CITY_NAME') ?: Setting::get('weather_city_name', 'Kocaeli'));
+        $latitude = (float) (config('weather.latitude') ?: Setting::get('weather_latitude', '40.7654'));
+        $longitude = (float) (config('weather.longitude') ?: Setting::get('weather_longitude', '29.9404'));
+        $weatherCityName = (string) (config('weather.city_name') ?: Setting::get('weather_city_name', 'Kocaeli'));
 
         $weather = Cache::remember('weather_kocaeli', 900, function () use ($latitude, $longitude): ?array {
             $response = Http::timeout(8)->get('https://api.open-meteo.com/v1/forecast', [

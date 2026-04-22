@@ -17,6 +17,15 @@
     }">
         <section class="card-admin">
             <form method="GET" class="space-y-3">
+                {{-- Text search --}}
+                <input
+                    class="form-input-admin"
+                    type="search"
+                    name="search"
+                    placeholder="Açıklama, paydaş adı veya gider türü ara..."
+                    value="{{ $filters['search'] ?? '' }}"
+                >
+
                 {{-- Primary filters --}}
                 <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <input class="form-input-admin" type="date" name="date_from" x-ref="dateFrom" value="{{ $filters['date_from'] ?? '' }}" @change="onDateRange()">

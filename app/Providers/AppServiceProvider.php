@@ -31,8 +31,8 @@ class AppServiceProvider extends ServiceProvider
 
         try {
             if (Schema::hasTable('settings')) {
-                $recaptchaSiteKey = env('RECAPTCHA_SITE_KEY') ?: Setting::get('recaptcha_site_key');
-                $recaptchaSecret = env('RECAPTCHA_SECRET') ?: Setting::get('recaptcha_secret_key');
+                $recaptchaSiteKey = config('services.recaptcha.site_key') ?: Setting::get('recaptcha_site_key');
+                $recaptchaSecret = config('services.recaptcha.secret') ?: Setting::get('recaptcha_secret_key');
 
                 if ($recaptchaSiteKey) {
                     config(['services.recaptcha.site_key' => $recaptchaSiteKey]);

@@ -16,7 +16,7 @@ class EnsureAdmin
             abort(403);
         }
 
-        $adminEmail = env('ADMIN_EMAIL');
+        $adminEmail = config('admin.email');
         $isAdminAttribute = (bool) data_get($user, 'is_admin', false);
 
         if (

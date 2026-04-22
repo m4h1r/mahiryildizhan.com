@@ -37,5 +37,6 @@
                 {{ $slot }}
             </main>
         </div>
+        <x-footer-credit />
     </body>
 </html>

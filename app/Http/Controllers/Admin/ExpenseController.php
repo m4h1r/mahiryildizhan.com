@@ -49,6 +49,22 @@ class ExpenseController extends Controller
             $query->where('stakeholder_id', $stakeholderId);
         }
 
+        if ($search = trim((string) $request->string('search'))) {
+            $query->where(function ($q) use ($search): void {
+                $q->where('description', 'like', "%{$search}%")
+                    ->orWhereHas('stakeholder', function ($b) use ($search): void {
+                        $b->where(function ($q2) use ($search): void {
+                            $q2->where('title', 'like', "%{$search}%")
+                                ->orWhere('name', 'like', "%{$search}%")
+                                ->orWhere('surname', 'like', "%{$search}%");
+                        });
+                    })
+                    ->orWhereHas('expenseType', function ($b) use ($search): void {
+                        $b->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
         if ($stakeholderQuery = trim((string) $request->string('stakeholder_query'))) {
             $query->whereHas('stakeholder', function ($builder) use ($stakeholderQuery): void {
                 $builder->where(function ($q) use ($stakeholderQuery): void {
@@ -78,7 +94,7 @@ class ExpenseController extends Controller
             'currencies' => Currency::query()->orderBy('code')->get(),
             'stakeholders' => Stakeholder::query()->orderBy('title')->orderBy('name')->get(),
             'filters' => $request->only([
-                'date_from', 'date_to', 'year', 'month', 'expense_type_id', 'currency_id', 'stakeholder_id', 'stakeholder_query', 'company_expense', 'paid_by_others',
+                'search', 'date_from', 'date_to', 'year', 'month', 'expense_type_id', 'currency_id', 'stakeholder_id', 'stakeholder_query', 'company_expense', 'paid_by_others',
             ]),
         ]);
     }
@@ -146,7 +162,7 @@ class ExpenseController extends Controller
         $quantity = (float) $payload['quantity'];
         $tax = (float) ($payload['tax'] ?? 0);
 
-        $payload['total'] = ($price * $quantity) + $tax;
+        $payload['total'] = $price * $quantity;
 
         return $payload;
     }

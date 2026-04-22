@@ -40,6 +40,20 @@ Route::view('/about', 'public.about')->name('about');
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/files/{slug}', [LinkController::class, 'show'])->name('links.show');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap.xml');
+
+Route::get('/ads.txt', function () {
+    $clientId = \App\Models\Setting::get('adsense_client_id');
+
+    if (! $clientId) {
+        abort(404);
+    }
+
+    $pubId = str_starts_with($clientId, 'ca-') ? $clientId : 'ca-' . $clientId;
+
+    return response("google.com, {$pubId}, DIRECT, f08c47fec0942fa0\n", 200, [
+        'Content-Type' => 'text/plain',
+    ]);
+})->name('ads.txt');
 Route::post('/comments', [CommentController::class, 'store'])->name('public.comments.store');
 Route::post('/subscribe', [SubscriberController::class, 'store'])->name('public.subscribers.store');
 

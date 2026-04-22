@@ -64,17 +64,17 @@ class MailchimpService
 
     private function apiKey(): ?string
     {
-        return env('MAILCHIMP_API_KEY') ?: Setting::get('mailchimp_api_key');
+        return config('services.mailchimp.api_key') ?: Setting::get('mailchimp_api_key');
     }
 
     private function listId(): ?string
     {
-        return env('MAILCHIMP_LIST_ID') ?: Setting::get('mailchimp_list_id');
+        return config('services.mailchimp.list_id') ?: Setting::get('mailchimp_list_id');
     }
 
     private function dataCenter(?string $apiKey): ?string
     {
-        $configured = env('MAILCHIMP_DATACENTER') ?: Setting::get('mailchimp_datacenter');
+        $configured = config('services.mailchimp.datacenter') ?: Setting::get('mailchimp_datacenter');
 
         if ($configured) {
             return strtolower((string) $configured);

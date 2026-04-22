@@ -105,6 +105,7 @@
 
                 <form method="POST" action="{{ route('public.subscribers.store') }}" class="flex w-full flex-col gap-3 md:w-auto md:flex-row">
                     @csrf
+                    <x-honeypot />
                     <label class="sr-only" for="newsletter_email">{{ __('Email') }}</label>
                     <input id="newsletter_email" type="email" name="email" required class="form-input-admin min-w-[18rem] rounded-full" placeholder="ornek@eposta.com" value="{{ old('email') }}">
                     <button type="submit" class="public-pill-btn bg-[#1d1d1f] text-white hover:bg-black dark:bg-white dark:text-black">{{ __('Subscribe') }}</button>

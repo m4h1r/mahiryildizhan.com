@@ -9,7 +9,7 @@ class RecaptchaService
 {
     public function verify(?string $token, ?string $ip = null): array
     {
-        $secret = env('RECAPTCHA_SECRET') ?: Setting::get('recaptcha_secret_key') ?: config('services.recaptcha.secret');
+        $secret = config('services.recaptcha.secret') ?: Setting::get('recaptcha_secret_key');
 
         if (! $secret) {
             return [
