@@ -42,7 +42,8 @@ Route::get('/files/{slug}', [LinkController::class, 'show'])->name('links.show')
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap.xml');
 
 Route::get('/ads.txt', function () {
-    $clientId = \App\Models\Setting::get('adsense_client_id');
+    $clientId = config('services.adsense.client_id')
+        ?: \App\Models\Setting::get('adsense_client_id');
 
     if (! $clientId) {
         abort(404);
