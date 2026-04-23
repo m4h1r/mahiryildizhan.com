@@ -43,6 +43,14 @@ class SettingController extends Controller
             ['key' => 'weather_longitude', 'label' => 'Weather Longitude'],
             ['key' => 'weather_city_name', 'label' => 'Weather City Name'],
         ],
+        'social_links' => [
+            ['key' => 'social_tagline',   'label' => 'Biolink Tagline'],
+            ['key' => 'social_github',    'label' => 'GitHub URL'],
+            ['key' => 'social_youtube',   'label' => 'YouTube URL'],
+            ['key' => 'social_linkedin',  'label' => 'LinkedIn URL'],
+            ['key' => 'social_instagram', 'label' => 'Instagram URL'],
+            ['key' => 'social_twitter',   'label' => 'X (Twitter) URL'],
+        ],
     ];
 
     public function index(): View

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\CsvImportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class CsvImportController extends Controller
@@ -45,5 +46,22 @@ class CsvImportController extends Controller
             : $this->csvImportService->import($targetTable, $dryRun);
 
         return to_route('admin.import.index')->with('import_report', $report);
+    }
+
+    public function truncateAll(): RedirectResponse
+    {
+        $tables = array_reverse(CsvImportService::supportedTables());
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        foreach ($tables as $table) {
+            DB::table($table)->truncate();
+        }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        return to_route('admin.import.index')->with('import_report', [
+            'action'  => 'truncate_all',
+            'tables'  => $tables,
+            'message' => 'All tables truncated successfully.',
+        ]);
     }
 }

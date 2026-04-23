@@ -6,11 +6,40 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">CSV Import Pipeline</p>
             <h2 class="mt-1 text-xl font-semibold">Run Import</h2>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                Development files are read from <strong>database/csv</strong> first, then <strong>public/csv</strong>.
-                Production reads from <strong>storage/app/import</strong>.
+                Place CSV files in <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-gray-800">database/csv/{table}.csv</code> locally.
+                Production reads from <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-gray-800">storage/app/import/{table}.csv</code>.
             </p>
 
-            <form method="POST" action="{{ route('admin.import.run') }}" class="mt-6 space-y-4">
+            {{-- Import All button --}}
+            <form method="POST" action="{{ route('admin.import.run') }}" class="mt-5">
+                @csrf
+                <input type="hidden" name="import_all" value="1">
+                <button
+                    type="submit"
+                    class="w-full rounded-md bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white dark:bg-white dark:text-gray-900"
+                    onclick="return confirm('Import ALL tables in dependency order? This cannot be undone.')">
+                    ⬆ Import All Tables
+                </button>
+            </form>
+
+            {{-- Truncate All button --}}
+            <form method="POST" action="{{ route('admin.import.truncate') }}" class="mt-3">
+                @csrf
+                <button
+                    type="submit"
+                    class="w-full rounded-md bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700"
+                    onclick="return confirm('⚠️ This will DELETE all data from every table. Are you absolutely sure?')">
+                    🗑 Truncate All Tables
+                </button>
+            </form>
+
+            <div class="my-5 flex items-center gap-3 text-xs text-gray-400">
+                <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+                <span>or import a single table</span>
+                <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+            </div>
+
+            <form method="POST" action="{{ route('admin.import.run') }}" class="space-y-4">
                 @csrf
 
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -27,17 +56,12 @@
                 </label>
 
                 <label class="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
-                    <input type="checkbox" name="import_all" value="1" @checked(old('import_all'))>
-                    <span>Import all tables in roadmap order</span>
-                </label>
-
-                <label class="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
                     <input type="checkbox" name="dry_run" value="1" @checked(old('dry_run', true))>
                     <span>Dry run only</span>
                 </label>
 
-                <button type="submit" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900">
-                    Start Import
+                <button type="submit" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 dark:border-gray-600 dark:text-gray-200">
+                    Import Selected Table
                 </button>
             </form>
         </section>

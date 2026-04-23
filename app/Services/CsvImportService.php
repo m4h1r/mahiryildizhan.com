@@ -216,6 +216,11 @@ class CsvImportService
         }
 
         [$headers, $rows] = $this->readCsv($path);
+
+        if ($headers === []) {
+            return $this->reportWithError("CSV file is empty for table [{$table}], skipped.");
+        }
+
         $this->bootstrapImportDependencies($table, $rows);
         [$headers, $rows] = $this->applyColumnAliases($headers, $rows, $config);
         $columnListing = Schema::getColumnListing($table);
@@ -403,7 +408,8 @@ class CsvImportService
 
         if ($headers === false) {
             fclose($handle);
-            throw new RuntimeException('Header row is mandatory.');
+            // Empty file — return empty result instead of throwing
+            return [[], []];
         }
 
         $headers = array_map(fn (?string $header) => $this->stripBom(trim((string) $header)), $headers);

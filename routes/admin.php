@@ -29,6 +29,7 @@ Route::post('/settings', [SettingController::class, 'update'])->name('admin.sett
 
 Route::get('/import', [CsvImportController::class, 'index'])->name('admin.import.index');
 Route::post('/import', [CsvImportController::class, 'import'])->name('admin.import.run');
+Route::post('/import/truncate-all', [CsvImportController::class, 'truncateAll'])->name('admin.import.truncate');
 Route::post('/import/{table}', [CsvImportController::class, 'import'])
 	->whereIn('table', CsvImportService::supportedTables())
 	->name('admin.import.table');

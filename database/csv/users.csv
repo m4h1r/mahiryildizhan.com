@@ -1,0 +1,2 @@
+id,name,email,email_verified_at,password,is_admin,remember_token,created_at,updated_at
+1,"Mahir Yıldızhan",admin@mahiryildizhan.com,,$2y$12$64NTXV5J8njicB35RZ4avuYX57yeUbQe7Epy.I19WpqIguuwF6HSC,1,cM4QQf0ueJtbX63GNZUfPz1SojacZctNGCRkEUzLvw24F9oS8JkuIu0S4QAZ,"2026-04-02 01:39:32","2026-04-02 01:39:32"

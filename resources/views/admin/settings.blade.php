@@ -13,6 +13,7 @@
                 'mailchimp' => __('Mailchimp'),
                 'recaptcha' => __('reCAPTCHA'),
                 'weather' => __('Weather'),
+                'social_links' => __('Social Links'),
             ];
         @endphp
 

@@ -53,6 +53,7 @@
                 <div class="flex items-center gap-2 md:gap-3">
                     <a href="{{ route('home') }}" class="rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide {{ request()->routeIs('home') ? 'border-[#1d1d1f] bg-[#1d1d1f] text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900' : 'border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-300' }}">{{ __('Home') }}</a>
                     <a href="{{ route('blog.index') }}" class="rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide {{ request()->routeIs('blog.*') ? 'border-[#1d1d1f] bg-[#1d1d1f] text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900' : 'border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-300' }}">{{ __('Stories') }}</a>
+                    <a href="{{ route('about') }}" class="rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide {{ request()->routeIs('about') ? 'border-[#1d1d1f] bg-[#1d1d1f] text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900' : 'border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-300' }}">{{ __('About') }}</a>
                     <button
                         type="button"
                         data-theme-toggle

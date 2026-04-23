@@ -1,0 +1,2 @@
+id,post_id,user_id,parent_id,guest_name,guest_email,body,is_approved,spam_score,recaptcha_score,ip_hash,user_agent_hash,deleted_at,created_at,updated_at
+1,203,1,,"Mahir Yıldızhan",admin@mahiryildizhan.com,"Gerçekten çok üzücü bir durum...",0,0.9,0.9,d48b4e37b18ad5bb7d418b2c75286da3a93f88d70a60770390809ec0642f8af5,4cbc8039bc8d8badefe54056014551dfd22b5e4a800a9e6305203a5a073e6b48,"2026-04-22 12:08:37","2026-04-22 12:08:17","2026-04-22 12:08:37"
