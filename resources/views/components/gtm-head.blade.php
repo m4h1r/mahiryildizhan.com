@@ -1,10 +1,11 @@
-@php $gtmId = \App\Models\Setting::get('gtm_id'); @endphp
-@if($gtmId)
-<!-- Google Tag Manager -->
-<script nonce="{{ request()->attributes->get('csp_nonce', '') }}">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','{{ $gtmId }}');</script>
-<!-- End Google Tag Manager -->
+@php $gaId = \App\Models\Setting::get('ga_tracking_id'); @endphp
+@if($gaId)
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+<script nonce="{{ request()->attributes->get('csp_nonce', '') }}">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '{{ $gaId }}');
+</script>
 @endif
