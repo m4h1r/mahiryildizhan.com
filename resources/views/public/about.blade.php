@@ -12,7 +12,17 @@
             </h1>
         </header>
 
-        @if(app()->getLocale() === 'tr')
+        @php
+            $locale = app()->getLocale();
+            $key = $locale === 'tr' ? 'about_content_tr' : 'about_content_en';
+            $content = \App\Models\Setting::get($key);
+        @endphp
+
+        @if ($content)
+            <div class="prose prose-sm max-w-none text-gray-700 dark:prose-invert dark:text-gray-300">
+                {!! $content !!}
+            </div>
+        @elseif ($locale === 'tr')
             <x-about-tr />
         @else
             <x-about-en />

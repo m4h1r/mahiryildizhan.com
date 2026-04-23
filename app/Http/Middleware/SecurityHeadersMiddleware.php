@@ -22,12 +22,12 @@ class SecurityHeadersMiddleware
         $response->headers->set(
             'Content-Security-Policy',
             "default-src 'self'; " .
-            "script-src 'self' 'unsafe-eval' 'nonce-{$nonce}' https://www.google.com https://www.gstatic.com; " .
+            "script-src 'self' 'unsafe-eval' 'nonce-{$nonce}' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com; " .
             "img-src 'self' data: https:; " .
             "style-src 'self' 'unsafe-inline'; " .
             "font-src 'self' data:; " .
-            "connect-src 'self'; " .
-            "frame-src https://www.google.com"
+            "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com; " .
+            "frame-src https://www.google.com https://www.googletagmanager.com"
         );
 
         if ($request->isSecure()) {

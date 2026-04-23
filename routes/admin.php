@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\CsvImportController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\DictionaryController;
@@ -24,6 +25,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports');
+Route::get('/about', [AboutController::class, 'index'])->name('admin.about');
+Route::post('/about', [AboutController::class, 'update'])->name('admin.about.update');
 Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings');
 Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
 

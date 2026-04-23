@@ -16,7 +16,8 @@ class SettingController extends Controller
             ['key' => 'admin_locale', 'label' => 'Admin Language'],
         ],
         'analytics' => [
-            ['key' => 'ga_tracking_id', 'label' => 'GA Tracking ID'],
+            ['key' => 'gtm_id', 'label' => 'Google Tag Manager ID (GTM-XXXXXXX)'],
+            ['key' => 'ga_tracking_id', 'label' => 'GA4 Measurement ID (G-XXXXXXXXXX) — Direct, GTM kullanmıyorsan'],
             ['key' => 'search_console_verification', 'label' => 'Search Console Verification'],
             ['key' => 'crux_api_key', 'label' => 'CrUX API Key', 'is_secret' => true],
         ],
@@ -50,6 +51,10 @@ class SettingController extends Controller
             ['key' => 'social_linkedin',  'label' => 'LinkedIn URL'],
             ['key' => 'social_instagram', 'label' => 'Instagram URL'],
             ['key' => 'social_twitter',   'label' => 'X (Twitter) URL'],
+        ],
+        'about' => [
+            ['key' => 'about_content_en', 'label' => 'About Page (English)'],
+            ['key' => 'about_content_tr', 'label' => 'About Page (Turkish)'],
         ],
     ];
 

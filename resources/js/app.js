@@ -276,6 +276,22 @@ window.expenseStakeholderLookup = (config) => ({
 	},
 });
 
+window.tiptapSimpleEditor = (config) => ({
+	editor: null,
+	content: config.content ?? '',
+	init() {
+		this.editor = new Editor({
+			element: this.$refs.editor,
+			extensions: [StarterKit],
+			content: this.content,
+			onUpdate: ({ editor }) => {
+				this.content = editor.getHTML();
+			},
+		});
+		this.content = this.editor.getHTML();
+	},
+});
+
 window.tiptapPostEditor = (config) => ({
 	editor: null,
 	content: config.content ?? '',

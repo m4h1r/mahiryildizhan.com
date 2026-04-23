@@ -31,8 +31,10 @@
         </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <x-adsense-head />
+        <x-gtm-head />
     </head>
     <body class="min-h-screen bg-[var(--color-surface)] text-gray-900 antialiased dark:bg-[var(--color-surface-dark)] dark:text-gray-100">
+        <x-gtm-body />
         <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-3 focus:bg-white focus:text-black">
             Skip to content
         </a>
