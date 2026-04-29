@@ -1,4 +1,4 @@
-@php $gaId = \App\Models\Setting::get('ga_tracking_id'); @endphp
+@php $gaId = config('services.google_analytics.id') ?: \App\Models\Setting::get('ga_tracking_id'); @endphp
 @if($gaId)
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>

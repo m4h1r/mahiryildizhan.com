@@ -16,7 +16,7 @@ class BlogController extends Controller
         $query = Post::query()
             ->with(['category', 'language', 'author', 'coverMedia'])
             ->publiclyVisible()
-            ->latest('published_at')
+            ->orderByRaw('COALESCE(published_at, publish_date) DESC')
             ->latest('id');
 
         if ($search = trim((string) $request->string('q'))) {

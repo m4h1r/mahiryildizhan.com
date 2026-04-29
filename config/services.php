@@ -50,4 +50,8 @@ return [
         'client_id' => env('ADSENSE_CLIENT_ID'),
     ],
 
+    'google_analytics' => [
+        'id' => env('GOOGLE_ANALYTICS_ID'),
+    ],
+
 ];

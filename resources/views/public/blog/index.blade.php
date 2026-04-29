@@ -51,7 +51,7 @@
                         </p>
 
                         <div class="mt-5 flex items-center justify-between text-xs text-gray-500">
-                            <span>{{ optional($post->published_at)->format('d.m.Y') ?: optional($post->created_at)->format('d.m.Y') }}</span>
+                            <span>{{ optional($post->published_at)->format('d.m.Y') ?: optional($post->publish_date)->format('d.m.Y') }}</span>
                             <span>{{ __(':minutes min read', ['minutes' => max(1, (int) $post->reading_time)]) }}</span>
                         </div>
                     </div>
