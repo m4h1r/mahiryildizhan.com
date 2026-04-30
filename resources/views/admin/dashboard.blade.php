@@ -57,6 +57,16 @@
             @endif
         </section>
 
+        @php
+            $daysAlive = (int) \Illuminate\Support\Carbon::parse('1990-03-21')->diffInDays(now());
+        @endphp
+        <section x-cloak x-show="!loading" class="card-admin border border-rose-200/70 bg-gradient-to-r from-rose-50 to-pink-50 dark:border-rose-800/70 dark:from-rose-950/30 dark:to-pink-950/30">
+            <p class="text-sm font-medium text-rose-700 dark:text-rose-300 text-center">
+                <span class="text-2xl font-extrabold tabular-nums">{{ number_format($daysAlive) }}</span>
+                gündür hayattasın.
+            </p>
+        </section>
+
         <section x-cloak x-show="!loading" class="card-admin border border-emerald-200/80 bg-gradient-to-r from-emerald-50 to-teal-50 dark:border-emerald-800 dark:from-emerald-950/40 dark:to-teal-950/40">
             <p class="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{{ now()->year }} {{ __('Financial Status') }}</p>
             <div class="mt-3 flex flex-col items-center gap-2 text-center text-base font-extrabold leading-snug sm:flex-row sm:flex-wrap sm:justify-center sm:text-lg md:text-2xl">

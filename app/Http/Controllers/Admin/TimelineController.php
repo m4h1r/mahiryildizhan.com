@@ -6,11 +6,92 @@ use App\Http\Controllers\Controller;
 use App\Models\TimelineEvent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class TimelineController extends Controller
 {
+    public function visualize(): View
+    {
+        $events = TimelineEvent::query()
+            ->orderBy('start_date')
+            ->orderBy('id')
+            ->get();
+
+        $containerHeight = 600;
+        $yearMarkers = [];
+
+        if ($events->isNotEmpty()) {
+            $allDates = $events->flatMap(function ($event): array {
+                $dates = [$event->start_date];
+                if ($event->end_date) {
+                    $dates[] = $event->end_date;
+                }
+                return $dates;
+            })->sortBy(fn ($d) => $d->unix())->values();
+
+            $earliest  = $allDates->first()->copy()->subDays(45);
+            $latest    = $allDates->last()->copy()->addDays(45);
+            $totalDays = max(1, $earliest->diffInDays($latest));
+
+            $usable          = (int) min(4000, max(900, $totalDays * 4));
+            $containerHeight = $usable + 120;
+            $topPad          = 60;
+
+            $toPx = fn (Carbon $date): int => $topPad + (int) round(
+                $earliest->diffInDays($date) / $totalDays * $usable
+            );
+
+            $events = $events->map(function ($event) use ($toPx) {
+                $startPx  = $toPx($event->start_date);
+                $endPx    = $event->end_date ? $toPx($event->end_date) : null;
+                $heightPx = $endPx !== null ? max(24, $endPx - $startPx) : null;
+                $isProc   = $event->event_type === 'process' && $heightPx !== null;
+                $cardPx   = $isProc ? (int) ($startPx + $heightPx / 2) : $startPx;
+
+                $event->setAttribute('start_px', $startPx);
+                $event->setAttribute('end_px', $endPx);
+                $event->setAttribute('height_px', $heightPx);
+                $event->setAttribute('card_px', $cardPx);
+                return $event;
+            })->values();
+
+            // Prevent cards on the same side from overlapping
+            $minCardGap = 200;
+            foreach ([0, 1] as $side) {
+                $prev = null;
+                foreach ($events->filter(fn ($e, $k) => $k % 2 === $side)->values() as $event) {
+                    if ($prev !== null && ($event->card_px - $prev->card_px) < $minCardGap) {
+                        $event->setAttribute('card_px', $prev->card_px + $minCardGap);
+                    }
+                    $prev = $event;
+                }
+            }
+
+            // Grow container to fit pushed-down cards
+            $maxCardPx = $events->max(fn ($e) => $e->card_px);
+            if ($maxCardPx + 80 > $containerHeight) {
+                $containerHeight = $maxCardPx + 80;
+            }
+
+            for ($y = (int) $earliest->format('Y'); $y <= (int) $latest->format('Y'); $y++) {
+                $d = Carbon::create($y, 1, 1);
+                if ($d->between($earliest, $latest)) {
+                    $yearMarkers[] = ['year' => $y, 'px' => $toPx($d)];
+                }
+            }
+        }
+
+        return view('admin.timeline.visualize', [
+            'title'           => 'Timeline',
+            'heading'         => 'Timeline',
+            'events'          => $events,
+            'containerHeight' => $containerHeight,
+            'yearMarkers'     => $yearMarkers,
+        ]);
+    }
+
     public function index(Request $request): View
     {
         $query = TimelineEvent::query()->latest('start_date')->latest('id');

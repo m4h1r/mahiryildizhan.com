@@ -104,9 +104,7 @@ class ReportController extends Controller
             ? (($annualIncome - $annualExpense) / $annualIncome) * 100
             : 0.0;
 
-        $daysElapsed = $year === now()->year
-            ? max(1, now()->dayOfYear)
-            : Carbon::create($year, 12, 31)->dayOfYear;
+        $daysElapsed = max(1, now()->dayOfYear);
 
         $expenseTypeRows = ExpenseType::query()
             ->orderBy('name')
@@ -215,6 +213,83 @@ class ReportController extends Controller
             ];
         }
 
+        // Category monthly heatmap: top 10 categories × 12 months
+        $topCatIdsForHeatmap = Expense::query()
+            ->whereYear('date', $year)
+            ->where('paid_by_others', false)
+            ->whereNotNull('expense_type_id')
+            ->select('expense_type_id', DB::raw('SUM(total) as total_sum'))
+            ->when($tryCurrencyId, fn ($q) => $q->where('currency_id', $tryCurrencyId))
+            ->groupBy('expense_type_id')
+            ->orderByDesc('total_sum')
+            ->limit(10)
+            ->pluck('expense_type_id')
+            ->all();
+
+        $topCatNames = ExpenseType::query()
+            ->whereIn('id', $topCatIdsForHeatmap)
+            ->pluck('name', 'id');
+
+        $catMonthlyRows = Expense::query()
+            ->whereYear('date', $year)
+            ->where('paid_by_others', false)
+            ->whereIn('expense_type_id', $topCatIdsForHeatmap)
+            ->selectRaw('expense_type_id, MONTH(date) as month, SUM(total) as total')
+            ->when($tryCurrencyId, fn ($q) => $q->where('currency_id', $tryCurrencyId))
+            ->groupBy('expense_type_id', 'month')
+            ->get();
+
+        $catMonthMatrix = [];
+        foreach ($catMonthlyRows as $row) {
+            $catMonthMatrix[(int) $row->expense_type_id][(int) $row->month] = (float) $row->total;
+        }
+
+        $categoryHeatmap = [];
+        foreach ($topCatIdsForHeatmap as $catId) {
+            $months = [];
+            for ($m = 1; $m <= 12; $m++) {
+                $months[] = $catMonthMatrix[(int) $catId][$m] ?? 0.0;
+            }
+            $rowMax = max($months) ?: 0.0;
+            $levels = array_map(function (float $val) use ($rowMax): int {
+                if ($val <= 0 || $rowMax <= 0) {
+                    return 0;
+                }
+                $ratio = $val / $rowMax;
+                return $ratio > 0.75 ? 4 : ($ratio > 0.5 ? 3 : ($ratio > 0.25 ? 2 : 1));
+            }, $months);
+            $categoryHeatmap[] = [
+                'name'   => (string) ($topCatNames[$catId] ?? 'Other'),
+                'months' => $months,
+                'levels' => $levels,
+            ];
+        }
+
+        // Expense Heatmap: full-year daily totals (independent of dailyRange)
+        $heatmapExpenseQuery = Expense::query()
+            ->whereYear('date', $year)
+            ->where('paid_by_others', false);
+        if ($tryCurrencyId) {
+            $heatmapExpenseQuery->where('currency_id', $tryCurrencyId);
+        }
+        $heatmapRaw = $heatmapExpenseQuery
+            ->selectRaw('DATE(date) as day, SUM(total) as total')
+            ->groupBy('day')
+            ->pluck('total', 'day')
+            ->map(fn ($v) => (float) $v)
+            ->all();
+
+        $heatmapMax = $heatmapRaw ? (float) max($heatmapRaw) : 0.0;
+        $heatmapByDate = [];
+        foreach ($heatmapRaw as $dateStr => $val) {
+            $level = 0;
+            if ($val > 0 && $heatmapMax > 0) {
+                $ratio = $val / $heatmapMax;
+                $level = $ratio > 0.75 ? 4 : ($ratio > 0.5 ? 3 : ($ratio > 0.25 ? 2 : 1));
+            }
+            $heatmapByDate[$dateStr] = ['total' => $val, 'level' => $level];
+        }
+
         return view('admin.reports', [
             'year' => $year,
             'dailyRange' => $dailyRange,
@@ -233,6 +308,8 @@ class ReportController extends Controller
             'dailyExpenseLabels' => $dailyExpenseLabels,
             'dailyExpenseTotals' => $dailyExpenseTotals,
             'dailyCategoryData' => $dailyCategoryData,
+            'heatmapByDate' => $heatmapByDate,
+            'categoryHeatmap' => $categoryHeatmap,
             'insights' => [
                 'avg_monthly_income' => $avgMonthlyIncome,
                 'avg_monthly_expense' => $avgMonthlyExpense,

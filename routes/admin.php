@@ -78,6 +78,7 @@ Route::resource('/adages', AdageController::class)
 	->except(['show'])
 	->names('admin.adages');
 
+Route::get('/timeline/visualize', [TimelineController::class, 'visualize'])->name('admin.timeline.visualize');
 Route::resource('/timeline', TimelineController::class)
 	->except(['show'])
 	->names('admin.timeline');
