@@ -1,7 +1,7 @@
 @extends('admin.layout', ['title' => 'Timeline', 'heading' => 'Timeline'])
 
 @section('content')
-<div class="space-y-4">
+<div class="space-y-4" x-data="{ modalOpen: false, modalEvent: null }">
 
     <div class="flex items-center justify-between">
         <p class="text-sm text-gray-500 dark:text-gray-400">{{ $events->count() }} olay</p>
@@ -50,6 +50,20 @@
                                     ? $event->image
                                     : asset('storage/' . ltrim($event->image, '/')))
                                 : null;
+                            $modalData = [
+                                'title'       => $event->title,
+                                'icon'        => $event->icon,
+                                'color'       => $color,
+                                'event_type'  => $event->event_type,
+                                'category'    => $event->category,
+                                'location'    => $event->location,
+                                'description' => $event->description,
+                                'start_date'  => optional($event->start_date)->format('d M Y'),
+                                'end_date'    => optional($event->end_date)->format('d M Y'),
+                                'ongoing'     => $event->event_type === 'process' && !$event->end_date,
+                                'duration'    => $event->end_date ? $event->start_date->diffInDays($event->end_date) : null,
+                                'image'       => $imgUrl,
+                            ];
                         @endphp
 
                         {{-- Process bar --}}
@@ -73,7 +87,8 @@
                              style="top: {{ $midPx }}px; {{ $isLeft ? 'right: 50%' : 'left: 50%' }}; width: 28px; background-color: {{ $color }}"></div>
 
                         {{-- Card --}}
-                        <div class="absolute z-[4] w-72 -translate-y-1/2 transition-transform duration-[400ms] hover:scale-[1.15] {{ $isLeft ? 'origin-right' : 'origin-left' }}"
+                        <div class="absolute z-[4] w-72 -translate-y-1/2 cursor-pointer transition-transform duration-[400ms] hover:scale-[1.15] {{ $isLeft ? 'origin-right' : 'origin-left' }}"
+                             @click="modalEvent = {{ Illuminate\Support\Js::from($modalData) }}; modalOpen = true"
                              style="top: {{ $midPx }}px; {{ $isLeft ? 'right: calc(50% + 28px)' : 'left: calc(50% + 28px)' }}">
                             <div class="overflow-hidden rounded-xl border border-[var(--color-admin-border)] bg-[var(--color-admin-card)] shadow-sm transition-shadow hover:shadow-lg dark:border-[var(--color-admin-border-dark)] dark:bg-[var(--color-admin-card-dark)]"
                                  style="border-left: 3px solid {{ $color }}">
@@ -146,8 +161,23 @@
                                 ? $event->image
                                 : asset('storage/' . ltrim($event->image, '/')))
                             : null;
+                        $modalData = [
+                            'title'       => $event->title,
+                            'icon'        => $event->icon,
+                            'color'       => $color,
+                            'event_type'  => $event->event_type,
+                            'category'    => $event->category,
+                            'location'    => $event->location,
+                            'description' => $event->description,
+                            'start_date'  => optional($event->start_date)->format('d M Y'),
+                            'end_date'    => optional($event->end_date)->format('d M Y'),
+                            'ongoing'     => $event->event_type === 'process' && !$event->end_date,
+                            'duration'    => $event->end_date ? $event->start_date->diffInDays($event->end_date) : null,
+                            'image'       => $imgUrl,
+                        ];
                     @endphp
-                    <div class="relative">
+                    <div class="relative cursor-pointer"
+                         @click="modalEvent = {{ Illuminate\Support\Js::from($modalData) }}; modalOpen = true">
                         <div class="absolute left-[-14px] top-3.5 h-2.5 w-2.5 -translate-x-1/2 rounded-full border-2 border-[var(--color-admin-bg)] dark:border-[var(--color-admin-bg-dark)]"
                              style="background-color: {{ $color }}"></div>
                         <div class="overflow-hidden rounded-xl border border-[var(--color-admin-border)] bg-[var(--color-admin-card)] shadow-sm dark:border-[var(--color-admin-border-dark)] dark:bg-[var(--color-admin-card-dark)]"
@@ -179,5 +209,82 @@
         </div>
 
     @endif
+
+    {{-- Event Detail Modal --}}
+    <div x-show="modalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click.self="modalOpen = false"
+         @keydown.escape.window="modalOpen = false"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+         style="display: none">
+        <div x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-gray-900">
+            <template x-if="modalEvent">
+                <div>
+                    <template x-if="modalEvent.image">
+                        <img :src="modalEvent.image" :alt="modalEvent.title" class="w-full object-cover" style="height: 220px">
+                    </template>
+                    <div class="p-5">
+                        <div class="mb-3 flex items-start justify-between gap-3">
+                            <div class="flex items-start gap-2">
+                                <span x-show="modalEvent.icon" x-text="modalEvent.icon" class="shrink-0 text-xl leading-tight"></span>
+                                <h2 x-text="modalEvent.title" class="text-base font-bold text-gray-900 dark:text-gray-100"></h2>
+                            </div>
+                            <button @click="modalOpen = false"
+                                    class="shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="mb-3 text-sm text-gray-400 dark:text-gray-500">
+                            <span x-text="modalEvent.start_date"></span>
+                            <template x-if="modalEvent.end_date">
+                                <span>
+                                    <span class="mx-1 opacity-60">→</span>
+                                    <span x-text="modalEvent.end_date"></span>
+                                    <span x-show="modalEvent.duration" class="text-gray-300 dark:text-gray-600"> · <span x-text="modalEvent.duration + 'g'"></span></span>
+                                </span>
+                            </template>
+                            <template x-if="modalEvent.ongoing && !modalEvent.end_date">
+                                <span class="ml-1 text-emerald-500 dark:text-emerald-400"> · devam ediyor</span>
+                            </template>
+                        </p>
+                        <div class="mb-4 flex flex-wrap gap-1.5">
+                            <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold"
+                                  :style="{ backgroundColor: modalEvent.color + '1a', color: modalEvent.color }">
+                                <span x-text="modalEvent.event_type === 'process' ? 'Süreç' : 'Milestone'"></span>
+                            </span>
+                            <template x-if="modalEvent.category">
+                                <span class="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 dark:bg-gray-700/50 dark:text-gray-400"
+                                      x-text="modalEvent.category"></span>
+                            </template>
+                            <template x-if="modalEvent.location">
+                                <span class="inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+                                    <svg class="h-3 w-3 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span x-text="modalEvent.location"></span>
+                                </span>
+                            </template>
+                        </div>
+                        <template x-if="modalEvent.description">
+                            <p x-text="modalEvent.description" class="text-sm leading-relaxed text-gray-500 dark:text-gray-400"></p>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
 </div>
 @endsection
