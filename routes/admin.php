@@ -43,6 +43,8 @@ Route::resource('/stakeholders', StakeholderController::class)
 	->except(['show'])
 	->names('admin.stakeholders');
 
+Route::get('/expenses/export', [ExpenseController::class, 'export'])
+    ->name('admin.expenses.export');
 Route::post('/expenses/{expense}/duplicate', [ExpenseController::class, 'duplicate'])
     ->name('admin.expenses.duplicate');
 Route::resource('/expenses', ExpenseController::class)
@@ -60,6 +62,7 @@ Route::resource('/posts', PostController::class)
 	->names('admin.posts');
 Route::post('/posts/upload-image', [PostController::class, 'uploadImage'])->name('admin.posts.upload-image');
 Route::get('/media/library', [MediaController::class, 'library'])->name('admin.media.library');
+Route::post('/media/upload-json', [MediaController::class, 'uploadJson'])->name('admin.media.upload-json');
 Route::resource('/media', MediaController::class)
     ->only(['index', 'store', 'destroy'])
     ->names('admin.media');

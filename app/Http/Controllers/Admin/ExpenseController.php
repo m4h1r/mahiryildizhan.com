@@ -10,6 +10,7 @@ use App\Models\ExpenseType;
 use App\Models\Stakeholder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class ExpenseController extends Controller
@@ -156,12 +157,82 @@ class ExpenseController extends Controller
         return to_route('admin.expenses.edit', $copy)->with('success', 'Expense duplicated.');
     }
 
+    public function export(Request $request): Response
+    {
+        $query = Expense::query()
+            ->with(['stakeholder', 'expenseType', 'currency'])
+            ->orderBy('date')
+            ->orderBy('id');
+
+        if ($dateFrom = $request->date('date_from')) {
+            $query->whereDate('date', '>=', $dateFrom);
+        }
+
+        if ($dateTo = $request->date('date_to')) {
+            $query->whereDate('date', '<=', $dateTo);
+        }
+
+        if ($typeId = $request->integer('expense_type_id')) {
+            $query->where('expense_type_id', $typeId);
+        }
+
+        if ($currencyId = $request->integer('currency_id')) {
+            $query->where('currency_id', $currencyId);
+        }
+
+        if ($stakeholderId = $request->integer('stakeholder_id')) {
+            $query->where('stakeholder_id', $stakeholderId);
+        }
+
+        if ($request->filled('company_expense') && $request->input('company_expense') !== '') {
+            $query->where('company_expense', $request->boolean('company_expense'));
+        }
+
+        if ($request->filled('paid_by_others') && $request->input('paid_by_others') !== '') {
+            $query->where('paid_by_others', $request->boolean('paid_by_others'));
+        }
+
+        $expenses = $query->get();
+
+        $csvHeaders = ['ID', 'Tarih', 'Paydaş', 'Tür', 'Para Birimi', 'Fiyat', 'Adet', 'Vergi', 'Toplam', 'Şirket Gideri', 'Başkası Ödedi', 'Açıklama'];
+
+        $rows = $expenses->map(fn (Expense $e) => [
+            $e->id,
+            optional($e->date)->toDateString(),
+            optional($e->stakeholder)->title ?: trim((optional($e->stakeholder)->name ?? '').' '.(optional($e->stakeholder)->surname ?? '')),
+            optional($e->expenseType)->name,
+            optional($e->currency)->code,
+            number_format((float) $e->price, 2, '.', ''),
+            number_format((float) $e->quantity, 3, '.', ''),
+            number_format((float) $e->tax, 2, '.', ''),
+            number_format((float) $e->total, 2, '.', ''),
+            $e->company_expense ? '1' : '0',
+            $e->paid_by_others ? '1' : '0',
+            (string) ($e->description ?? ''),
+        ]);
+
+        $encodeRow = fn (array $row) => implode(',', array_map(
+            fn ($cell) => '"'.str_replace('"', '""', (string) $cell).'"',
+            $row
+        ));
+
+        $lines = array_merge([$encodeRow($csvHeaders)], $rows->map($encodeRow)->toArray());
+        $output = implode("\n", $lines);
+
+        $filename = 'giderler_'.now()->format('Y-m-d_His').'.csv';
+
+        return response("\xEF\xBB\xBF".$output, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
     private function buildPayload(array $payload): array
     {
         $price = (float) $payload['price'];
         $quantity = (float) $payload['quantity'];
-        $tax = (float) ($payload['tax'] ?? 0);
 
+        $payload['tax'] = (float) ($payload['tax'] ?? 0);
         $payload['total'] = $price * $quantity;
 
         return $payload;

@@ -85,10 +85,86 @@
             </form>
         </section>
 
-        <section class="admin-table-shell">
+        <section class="admin-table-shell" x-data="{
+            showExport: false,
+            exportDateFrom: '{{ now()->startOfYear()->toDateString() }}',
+            exportDateTo: '{{ now()->toDateString() }}',
+        }">
             <div class="flex items-center justify-between border-b border-[var(--color-admin-border)] px-4 py-3 dark:border-[var(--color-admin-border-dark)]">
                 <h2 class="text-sm font-semibold">Gider Listesi</h2>
-                <a href="{{ route('admin.expenses.create') }}" class="admin-btn admin-btn-primary">Yeni Gider</a>
+                <div class="flex gap-2">
+                    <button type="button" @click="showExport = true" class="admin-btn admin-btn-ghost">Export</button>
+                    <a href="{{ route('admin.expenses.create') }}" class="admin-btn admin-btn-primary">Yeni Gider</a>
+                </div>
+            </div>
+
+            {{-- Export Modal --}}
+            <div x-show="showExport" x-transition class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" @keydown.escape.window="showExport = false">
+                <form method="GET" action="{{ route('admin.expenses.export') }}" target="_blank"
+                    class="card-admin w-full max-w-sm space-y-4 shadow-xl"
+                    @click.stop>
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-semibold">Gider Export</h2>
+                        <button type="button" @click="showExport = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="Kapat">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <div>
+                            <label class="label-admin">Başlangıç Tarihi</label>
+                            <input type="date" name="date_from" class="form-input-admin" x-model="exportDateFrom">
+                        </div>
+                        <div>
+                            <label class="label-admin">Bitiş Tarihi</label>
+                            <input type="date" name="date_to" class="form-input-admin" x-model="exportDateTo">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="label-admin">Şirket Gideri</label>
+                        <select name="company_expense" class="form-input-admin">
+                            <option value="">Tümü</option>
+                            <option value="1" selected>Şirket</option>
+                            <option value="0">Kişisel</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="label-admin">Para Birimi</label>
+                        <select name="currency_id" class="form-input-admin">
+                            <option value="">Tümü</option>
+                            @foreach ($currencies as $currency)
+                                <option value="{{ $currency->id }}">{{ $currency->code }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="label-admin">Gider Türü</label>
+                        <select name="expense_type_id" class="form-input-admin">
+                            <option value="">Tümü</option>
+                            @foreach ($expenseTypes as $expenseType)
+                                <option value="{{ $expenseType->id }}">{{ $expenseType->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="label-admin">Paydaş</label>
+                        <select name="stakeholder_id" class="form-input-admin">
+                            <option value="">Tümü</option>
+                            @foreach ($stakeholders as $stakeholder)
+                                <option value="{{ $stakeholder->id }}">{{ $stakeholder->title ?: trim(($stakeholder->name ?? '').' '.($stakeholder->surname ?? '')) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-1">
+                        <button type="button" @click="showExport = false" class="admin-btn admin-btn-ghost">İptal</button>
+                        <button type="submit" class="admin-btn admin-btn-primary">CSV İndir</button>
+                    </div>
+                </form>
             </div>
 
             <div class="overflow-x-auto overscroll-x-contain">

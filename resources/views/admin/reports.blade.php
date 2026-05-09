@@ -263,6 +263,22 @@
                 @endif
             </article>
 
+            {{-- Income Category × month heatmap --}}
+            <article class="card-admin">
+                <div class="mb-4 flex items-center justify-between gap-2">
+                    <h3 class="text-sm font-semibold">{{ __('Income Category Heatmap') }}</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Monthly income by top categories') }}</p>
+                </div>
+
+                @if(empty($incomeCategoryHeatmap))
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('No TRY income data for this year.') }}</p>
+                @else
+                    <div class="overflow-x-auto">
+                        <canvas id="incomeCategoryHeatmapCanvas"></canvas>
+                    </div>
+                @endif
+            </article>
+
         </section>
 
         {{-- ── Type analysis table ── --}}
@@ -308,8 +324,9 @@
             const dailyLabels          = @json($dailyExpenseLabels);
             const dailyTotals          = @json($dailyExpenseTotals);
             const categorySeries       = @json($dailyCategoryData);
-            const categoryHeatmapData  = @json($categoryHeatmap);
-            const catMonthLabels       = @json($catHmMonths);
+            const categoryHeatmapData       = @json($categoryHeatmap);
+            const incomeCategoryHeatmapData = @json($incomeCategoryHeatmap);
+            const catMonthLabels            = @json($catHmMonths);
             const isDark               = document.documentElement.classList.contains('dark');
             const axisColor            = isDark ? '#94a3b8' : '#64748b';
             const gridColor            = isDark ? 'rgba(148,163,184,0.15)' : 'rgba(100,116,139,0.16)';
@@ -588,6 +605,137 @@
                 ctx.textAlign = 'left';
                 legendRanges.forEach(function (item) {
                     const c = valColors(item[1]);
+                    ctx.fillStyle = c[0];
+                    rr(lx, LGY, BOX, BOX, 2);
+                    ctx.fill();
+                    ctx.fillStyle = labelCol;
+                    ctx.fillText(item[0], lx + BOX + 4, LGY + 10);
+                    lx += BOX + 4 + Math.ceil(ctx.measureText(item[0]).width) + 10;
+                });
+            }());
+
+            // ── Income Category × month heatmap canvas ──
+            (function () {
+                const canvas = document.getElementById('incomeCategoryHeatmapCanvas');
+                if (!canvas || !incomeCategoryHeatmapData.length) { return; }
+
+                const dpr     = window.devicePixelRatio || 1;
+                const numCats = incomeCategoryHeatmapData.length;
+                const PAD_L   = 112;
+                const PAD_T   = 28;
+                const PAD_R   = 8;
+                const PAD_B   = 50;
+                const ROW_H   = 38;
+                const ROW_GAP = 3;
+                const COL_GAP = 3;
+                const RADIUS  = 4;
+
+                const containerW = (canvas.parentElement && canvas.parentElement.clientWidth > 0)
+                    ? canvas.parentElement.clientWidth : 560;
+                const cellW  = Math.max(32, Math.floor((containerW - PAD_L - PAD_R - 11 * COL_GAP) / 12));
+                const totalW = PAD_L + 12 * cellW + 11 * COL_GAP + PAD_R;
+                const totalH = PAD_T + numCats * (ROW_H + ROW_GAP) - ROW_GAP + PAD_B;
+
+                canvas.width        = Math.round(totalW * dpr);
+                canvas.height       = Math.round(totalH * dpr);
+                canvas.style.width  = totalW + 'px';
+                canvas.style.height = totalH + 'px';
+
+                const ctx = canvas.getContext('2d');
+                ctx.scale(dpr, dpr);
+
+                function rr(x, y, w, h, r) {
+                    r = Math.min(r, w / 2, h / 2);
+                    ctx.beginPath();
+                    ctx.moveTo(x + r, y);
+                    ctx.lineTo(x + w - r, y);
+                    ctx.arcTo(x + w, y, x + w, y + r, r);
+                    ctx.lineTo(x + w, y + h - r);
+                    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+                    ctx.lineTo(x + r, y + h);
+                    ctx.arcTo(x, y + h, x, y + h - r, r);
+                    ctx.lineTo(x, y + r);
+                    ctx.arcTo(x, y, x + r, y, r);
+                    ctx.closePath();
+                }
+
+                function incomeValColors(v) {
+                    if (v <= 0)     return isDark ? ['#052e16', '#4ade80'] : ['#f0fdf4', '#bbf7d0'];
+                    if (v <= 500)   return isDark ? ['#14532d', '#86efac'] : ['#dcfce7', '#166534'];
+                    if (v <= 1000)  return isDark ? ['#166534', '#bbf7d0'] : ['#bbf7d0', '#166534'];
+                    if (v <= 2000)  return isDark ? ['#15803d', '#dcfce7'] : ['#86efac', '#166534'];
+                    if (v <= 5000)  return isDark ? ['#16a34a', '#f0fdf4'] : ['#4ade80', '#14532d'];
+                    if (v <= 10000) return isDark ? ['#22c55e', '#ffffff'] : ['#16a34a', '#ffffff'];
+                    return                 isDark ? ['#4ade80', '#ffffff'] : ['#15803d', '#ffffff'];
+                }
+
+                function fmtK(v) {
+                    if (v <= 0)       return '';
+                    if (v >= 1000000) return (v / 1000000).toFixed(1).replace('.0', '') + 'M';
+                    if (v >= 1000)    return (v / 1000).toFixed(1).replace('.0', '') + 'K';
+                    return String(Math.round(v));
+                }
+
+                const labelCol  = isDark ? '#94a3b8' : '#64748b';
+                const catLblCol = isDark ? '#d1d5db' : '#374151';
+
+                // Month headers
+                ctx.font      = '10px system-ui,-apple-system,sans-serif';
+                ctx.fillStyle = labelCol;
+                ctx.textAlign = 'center';
+                catMonthLabels.forEach(function (mon, mi) {
+                    ctx.fillText(mon, PAD_L + mi * (cellW + COL_GAP) + cellW / 2, 18);
+                });
+
+                // Category rows
+                incomeCategoryHeatmapData.forEach(function (row, ri) {
+                    const cy = PAD_T + ri * (ROW_H + ROW_GAP);
+
+                    ctx.font      = '11px system-ui,-apple-system,sans-serif';
+                    ctx.fillStyle = catLblCol;
+                    ctx.textAlign = 'right';
+                    let lbl = row.name;
+                    const maxW = PAD_L - 12;
+                    while (lbl.length > 1 && ctx.measureText(lbl + '…').width > maxW) {
+                        lbl = lbl.slice(0, -1);
+                    }
+                    if (lbl !== row.name) { lbl += '…'; }
+                    ctx.fillText(lbl, PAD_L - 8, cy + ROW_H / 2 + 4);
+
+                    row.months.forEach(function (val, mi) {
+                        const cx     = PAD_L + mi * (cellW + COL_GAP);
+                        const colors = incomeValColors(val);
+
+                        ctx.fillStyle = colors[0];
+                        rr(cx, cy, cellW, ROW_H, RADIUS);
+                        ctx.fill();
+
+                        if (val > 0) {
+                            ctx.font      = 'bold 10px system-ui,-apple-system,sans-serif';
+                            ctx.fillStyle = colors[1];
+                            ctx.textAlign = 'center';
+                            ctx.fillText(fmtK(val), cx + cellW / 2, cy + ROW_H / 2 + 4);
+                        }
+                    });
+                });
+
+                // Legend
+                const legendRanges = [
+                    ['0–500₺',   250],
+                    ['501–1K₺',  750],
+                    ['1K–2K₺',   1500],
+                    ['2K–5K₺',   3500],
+                    ['5K–10K₺',  7500],
+                    ['10K+₺',    15000],
+                ];
+                const LGY = PAD_T + numCats * (ROW_H + ROW_GAP) - ROW_GAP + 16;
+                const BOX = 12;
+                let lx    = PAD_L;
+
+                ctx.font      = '10px system-ui,-apple-system,sans-serif';
+                ctx.textAlign = 'left';
+                legendRanges.forEach(function (item) {
+                    const c = incomeValColors(item[1]);
                     ctx.fillStyle = c[0];
                     rr(lx, LGY, BOX, BOX, 2);
                     ctx.fill();

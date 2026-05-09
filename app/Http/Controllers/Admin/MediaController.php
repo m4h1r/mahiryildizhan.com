@@ -55,6 +55,23 @@ class MediaController extends Controller
         return to_route('admin.media.index')->with('success', 'Media uploaded.');
     }
 
+    public function uploadJson(Request $request, MediaService $mediaService): JsonResponse
+    {
+        $validated = $request->validate([
+            'file' => ['required', 'image', 'max:6144', 'mimes:jpg,jpeg,png,webp,gif'],
+        ]);
+
+        $media = $mediaService->upload($validated['file'], 'media/uploads');
+
+        return response()->json([
+            'url' => $media->url('webp'),
+            'thumbnail_url' => $media->url('thumbnail'),
+            'path' => $media->webp_path ?: $media->path,
+            'filename' => $media->filename,
+            'media_id' => $media->id,
+        ]);
+    }
+
     public function destroy(Media $media, MediaService $mediaService): RedirectResponse
     {
         if ($media->coverPosts()->exists()) {

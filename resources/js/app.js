@@ -146,84 +146,37 @@ window.formState = () => ({
 });
 
 window.expenseStakeholderLookup = (config) => ({
-	lookupUrl: config.lookupUrl,
 	quickCreateUrl: config.quickCreateUrl,
 	stakeholders: config.stakeholders ?? [],
 	selectedId: config.initialSelectedId ? String(config.initialSelectedId) : '',
-	vkn: config.initialVkn ?? '',
-	matchedTitle: '',
-	loadingLookup: false,
+	vkn: '',
 	showQuickCreateModal: false,
+	quickVkn: '',
 	quickTitle: '',
 	quickName: '',
 	quickSurname: '',
 	quickError: '',
-	lookupTimer: null,
 	init() {
 		this.syncFromSelected();
 	},
 	findStakeholder(id) {
-		return this.stakeholders.find((stakeholder) => String(stakeholder.id) === String(id)) ?? null;
+		return this.stakeholders.find((s) => String(s.id) === String(id)) ?? null;
 	},
 	syncFromSelected() {
-		const stakeholder = this.findStakeholder(this.selectedId);
-
-		if (! stakeholder) {
-			if (! this.loadingLookup) {
-				this.matchedTitle = '';
-			}
-			return;
-		}
-
-		this.vkn = stakeholder.vkn_tckn ?? this.vkn;
-		this.matchedTitle = stakeholder.title ?? '';
+		const s = this.findStakeholder(this.selectedId);
+		this.vkn = s ? (s.vkn_tckn ?? '') : '';
 	},
-	onVknInput() {
+	openQuickCreateModal() {
+		this.quickVkn = '';
+		this.quickTitle = '';
+		this.quickName = '';
+		this.quickSurname = '';
 		this.quickError = '';
-
-		if (this.lookupTimer) {
-			window.clearTimeout(this.lookupTimer);
-		}
-
-		const normalizedVkn = this.vkn.trim();
-
-		if (normalizedVkn.length < 3) {
-			this.loadingLookup = false;
-			return;
-		}
-
-		this.loadingLookup = true;
-		this.lookupTimer = window.setTimeout(() => this.lookupStakeholder(), 400);
+		this.showQuickCreateModal = true;
 	},
-	async lookupStakeholder() {
-		const normalizedVkn = this.vkn.trim();
-
-		if (normalizedVkn.length < 3) {
-			this.loadingLookup = false;
-			return;
-		}
-
-		try {
-			const response = await window.axios.get(this.lookupUrl, {
-				params: { vkn: normalizedVkn },
-			});
-			const payload = response.data;
-
-			if (payload.found && payload.data) {
-				this.applyStakeholder(payload.data);
-				this.showQuickCreateModal = false;
-				return;
-			}
-
-			this.selectedId = '';
-			this.matchedTitle = '';
-			this.quickTitle = this.quickTitle || normalizedVkn;
-			this.showQuickCreateModal = true;
-		} catch (error) {
-			this.quickError = error?.response?.data?.message ?? 'Stakeholder lookup failed.';
-		} finally {
-			this.loadingLookup = false;
-		}
+	closeQuickCreateModal() {
+		this.showQuickCreateModal = false;
+		this.quickError = '';
 	},
 	applyStakeholder(stakeholder) {
 		const option = {
@@ -232,32 +185,33 @@ window.expenseStakeholderLookup = (config) => ({
 			vkn_tckn: stakeholder.vkn_tckn,
 		};
 		const existingIndex = this.stakeholders.findIndex((item) => String(item.id) === String(option.id));
-
 		if (existingIndex >= 0) {
 			this.stakeholders.splice(existingIndex, 1, option);
 		} else {
 			this.stakeholders.push(option);
 		}
-
+		// Dynamically add a new <option> to the native select for the newly created stakeholder
+		const select = this.$refs.stakeholderSelect;
+		if (select && !select.querySelector(`option[value="${String(option.id)}"]`)) {
+			select.add(new Option(option.title, String(option.id)));
+		}
 		this.selectedId = String(option.id);
-		this.vkn = option.vkn_tckn;
-		this.matchedTitle = option.title;
-		this.quickTitle = option.title;
+		this.vkn = option.vkn_tckn ?? '';
 		this.quickError = '';
 	},
 	async createQuickStakeholder() {
 		this.quickError = '';
-
 		try {
 			const response = await window.axios.post(this.quickCreateUrl, {
-				vkn_tckn: this.vkn.trim(),
+				vkn_tckn: this.quickVkn.trim() || null,
 				title: this.quickTitle.trim() || null,
 				name: this.quickName.trim() || null,
 				surname: this.quickSurname.trim() || null,
 			});
-
 			this.applyStakeholder(response.data.data);
 			this.showQuickCreateModal = false;
+			this.quickVkn = '';
+			this.quickTitle = '';
 			this.quickName = '';
 			this.quickSurname = '';
 		} catch (error) {
@@ -266,13 +220,8 @@ window.expenseStakeholderLookup = (config) => ({
 				this.quickError = Object.values(errors).flat().join(' ');
 				return;
 			}
-
 			this.quickError = error?.response?.data?.message ?? 'Quick create failed.';
 		}
-	},
-	closeQuickCreateModal() {
-		this.showQuickCreateModal = false;
-		this.quickError = '';
 	},
 });
 

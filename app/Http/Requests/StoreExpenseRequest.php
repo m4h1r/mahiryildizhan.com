@@ -32,7 +32,7 @@ class StoreExpenseRequest extends FormRequest
         $this->merge([
             'company_expense' => $this->boolean('company_expense'),
             'paid_by_others' => $this->boolean('paid_by_others'),
-            'tax' => $this->input('tax', 0),
+            'tax' => $this->filled('tax') ? $this->input('tax') : 0,
             'quantity' => $this->input('quantity', 1),
         ]);
     }

@@ -9,11 +9,9 @@
 
 <div
     x-data="expenseStakeholderLookup({
-        lookupUrl: '{{ route('api.stakeholders.lookup') }}',
         quickCreateUrl: '{{ route('api.stakeholders.quick') }}',
         stakeholders: {{ Js::from($stakeholderOptions) }},
         initialSelectedId: '{{ $initialStakeholderId }}',
-        initialVkn: '{{ old('stakeholder_vkn_lookup', $selectedStakeholder?->vkn_tckn ?? '') }}'
     })"
     x-init="init()"
     class="space-y-4"
@@ -25,32 +23,18 @@
         @error('date')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
     </label>
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">VKN / TCKN Ara</span>
-        <div class="relative">
-            <input
-                type="text"
-                name="stakeholder_vkn_lookup"
-                x-model="vkn"
-                @input="onVknInput()"
-                class="form-input-admin pr-10"
-                placeholder="Paydaş bulmak için vergi kimliği girin"
-                autocomplete="off"
-            >
-            <span x-show="loadingLookup" x-cloak class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-gray-500">Kontrol ediliyor...</span>
-        </div>
-        <span class="mt-1 block text-xs text-gray-500" x-show="matchedTitle" x-text="matchedTitle"></span>
-    </label>
-
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
+    <div class="text-sm font-medium text-gray-700 dark:text-gray-200">
         <span class="mb-1 block">Paydaş</span>
-        <select name="stakeholder_id" x-model="selectedId" @change="syncFromSelected()" class="form-input-admin">
+        <select x-ref="stakeholderSelect" name="stakeholder_id" x-model="selectedId" @change="syncFromSelected()" class="form-input-admin">
             <option value="">Yok</option>
-            <template x-for="stakeholder in stakeholders" :key="stakeholder.id">
-                <option :value="String(stakeholder.id)" x-text="stakeholder.title"></option>
-            </template>
+            @foreach ($stakeholders as $s)
+                @php($sTitle = $s->title ?: trim(($s->name ?? '').' '.($s->surname ?? '')))
+                <option value="{{ $s->id }}" @selected((string) $s->id === $initialStakeholderId)>{{ $sTitle }}</option>
+            @endforeach
         </select>
-    </label>
+        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500" x-show="vkn" x-cloak x-text="'VKN/TCKN: ' + vkn"></p>
+        <button type="button" @click="openQuickCreateModal()" class="mt-1 text-xs text-blue-600 hover:underline dark:text-blue-400">+ Yeni paydaş ekle</button>
+    </div>
 
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
         <span class="mb-1 block">Gider Türü</span>
@@ -72,13 +56,13 @@
     </label>
 
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">Fiyat</span>
-        <input type="number" step="0.01" min="0" name="price" class="form-input-admin" value="{{ old('price', $expense->price ?? 0) }}" required>
+        <span class="mb-1 block">Adet</span>
+        <input type="number" step="0.001" min="0" name="quantity" class="form-input-admin" value="{{ old('quantity', $expense->quantity ?? 1) }}" required>
     </label>
 
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">Adet</span>
-        <input type="number" step="0.001" min="0" name="quantity" class="form-input-admin" value="{{ old('quantity', $expense->quantity ?? 1) }}" required>
+        <span class="mb-1 block">Fiyat</span>
+        <input type="number" step="0.01" min="0" name="price" class="form-input-admin" value="{{ old('price', $expense->price ?? 0) }}" required>
     </label>
 
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -114,15 +98,15 @@
         <div class="flex items-start justify-between gap-4">
             <div>
                 <h2 id="quick-stakeholder-title" class="text-lg font-semibold">Paydaş oluştur</h2>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Bu VKN/TCKN için paydaş bulunamadı. Yeni bir paydaş oluşturun ve gidere bağlayın.</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Yeni bir paydaş oluşturun ve bu gidere bağlayın.</p>
             </div>
             <button type="button" @click="closeQuickCreateModal()" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700" aria-label="Close quick create modal">Kapat</button>
         </div>
 
         <div class="mt-4 grid gap-4 md:grid-cols-2">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-200 md:col-span-2">
-                <span class="mb-1 block">VKN / TCKN</span>
-                <input type="text" x-model="vkn" class="form-input-admin" readonly tabindex="-1">
+                <span class="mb-1 block">VKN / TCKN (isteğe bağlı)</span>
+                <input type="text" x-model="quickVkn" class="form-input-admin" placeholder="Varsa vergi kimliği">
             </label>
 
             <label class="text-sm font-medium text-gray-700 dark:text-gray-200 md:col-span-2">

@@ -40,10 +40,121 @@
         <input name="location" class="form-input-admin" value="{{ old('location', $event->location ?? '') }}">
     </label>
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">Image Path</span>
-        <input name="image" class="form-input-admin" value="{{ old('image', $event->image ?? '') }}">
-    </label>
+    <div
+        class="md:col-span-2 text-sm font-medium text-gray-700 dark:text-gray-200"
+        x-data="{
+            imageUrl: {{ Js::from(old('image', $event->image ?? '')) }},
+            showLibrary: false,
+            uploading: false,
+            loadingLibrary: false,
+            libraryQuery: '',
+            libraryPage: 1,
+            libraryLastPage: 1,
+            mediaItems: [],
+            uploadJsonUrl: '{{ route('admin.media.upload-json') }}',
+            libraryUrl: '{{ route('admin.media.library') }}',
+            csrfToken: '{{ csrf_token() }}',
+
+            async uploadFile(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                this.uploading = true;
+                const form = new FormData();
+                form.append('file', file);
+                form.append('_token', this.csrfToken);
+                try {
+                    const res = await fetch(this.uploadJsonUrl, { method: 'POST', body: form });
+                    const data = await res.json();
+                    if (data.url) { this.imageUrl = data.url; }
+                } catch (e) { alert('Upload failed.'); }
+                this.uploading = false;
+                event.target.value = '';
+            },
+
+            async fetchLibrary(page) {
+                this.loadingLibrary = true;
+                this.libraryPage = page || 1;
+                const url = new URL(this.libraryUrl);
+                url.searchParams.set('page', this.libraryPage);
+                url.searchParams.set('type', 1);
+                if (this.libraryQuery) url.searchParams.set('q', this.libraryQuery);
+                const res = await fetch(url.toString());
+                const data = await res.json();
+                this.mediaItems = data.data || [];
+                this.libraryLastPage = data.meta?.last_page || 1;
+                this.loadingLibrary = false;
+            },
+
+            selectMedia(item) {
+                this.imageUrl = item.url;
+                this.showLibrary = false;
+            },
+
+            clearImage() {
+                this.imageUrl = '';
+            }
+        }"
+    >
+        <span class="mb-1 block">Image</span>
+
+        {{-- Hidden input carrying the value to form submission --}}
+        <input type="hidden" name="image" :value="imageUrl">
+
+        {{-- Preview --}}
+        <div x-show="imageUrl" class="mb-3 flex items-start gap-3">
+            <img :src="imageUrl" class="h-24 w-40 rounded-lg border border-gray-200 object-cover dark:border-gray-700" alt="Selected image">
+            <button type="button" @click="clearImage()" class="mt-1 text-xs text-red-500 hover:underline">Remove</button>
+        </div>
+
+        {{-- Action buttons --}}
+        <div class="flex flex-wrap items-center gap-2">
+            <label class="cursor-pointer rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                <span x-show="!uploading">Upload new image</span>
+                <span x-show="uploading" x-cloak>Uploading…</span>
+                <input type="file" accept="image/*" class="hidden" @change="uploadFile($event)" :disabled="uploading">
+            </label>
+            <button
+                type="button"
+                @click="showLibrary = !showLibrary; if(showLibrary && mediaItems.length === 0) fetchLibrary(1)"
+                class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+                <span x-text="showLibrary ? 'Close library' : 'Select from library'"></span>
+            </button>
+        </div>
+
+        {{-- Library panel --}}
+        <div x-show="showLibrary" x-cloak class="mt-3 rounded-lg border border-gray-300 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+            <div class="mb-3 flex gap-2">
+                <input
+                    type="text"
+                    x-model="libraryQuery"
+                    @input.debounce.400ms="fetchLibrary(1)"
+                    class="form-input-admin flex-1"
+                    placeholder="Search media…"
+                >
+                <button type="button" @click="fetchLibrary(1)" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700">Refresh</button>
+            </div>
+            <p x-show="loadingLibrary" class="text-xs text-gray-500">Loading…</p>
+            <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                <template x-for="item in mediaItems" :key="item.id">
+                    <button
+                        type="button"
+                        @click="selectMedia(item)"
+                        class="rounded-md border border-gray-200 p-2 text-left hover:border-blue-500 dark:border-gray-700"
+                        :class="imageUrl === item.url ? 'ring-2 ring-blue-500' : ''"
+                    >
+                        <img :src="item.thumbnail_url" :alt="item.alt || item.filename" class="aspect-video w-full rounded object-cover">
+                        <span class="mt-1 block truncate text-[10px] text-gray-500" x-text="item.filename"></span>
+                    </button>
+                </template>
+            </div>
+            <div class="mt-3 flex items-center justify-between text-xs text-gray-500" x-show="libraryLastPage > 1">
+                <button type="button" @click="fetchLibrary(libraryPage - 1)" :disabled="libraryPage <= 1" class="rounded-md border border-gray-300 px-2 py-1 disabled:opacity-50 dark:border-gray-700">Prev</button>
+                <span x-text="`Page ${libraryPage} / ${libraryLastPage}`"></span>
+                <button type="button" @click="fetchLibrary(libraryPage + 1)" :disabled="libraryPage >= libraryLastPage" class="rounded-md border border-gray-300 px-2 py-1 disabled:opacity-50 dark:border-gray-700">Next</button>
+            </div>
+        </div>
+    </div>
 
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
         <span class="mb-1 block">Icon</span>

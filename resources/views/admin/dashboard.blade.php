@@ -126,12 +126,22 @@
                 <div class="mt-3 space-y-2">
                     @forelse ($upcomingBirthdays as $person)
                         @php($daysFromToday = (int) $person->days_from_today)
-                        <a href="{{ route('admin.people.show', $person->id) }}" class="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-900/60">
-                            <div>
-                                <p class="text-sm font-medium text-gray-800 dark:text-gray-100">{{ trim(($person->name ?? '') . ' ' . ($person->surname ?? '')) }}</p>
+                        <a href="{{ route('admin.people.show', $person->id) }}" class="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-900/60">
+                            <img
+                                src="/storage/people/{{ $person->picture ?? 'user.png' }}"
+                                alt="{{ trim(($person->name ?? '') . ' ' . ($person->surname ?? '')) }}"
+                                class="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-gray-200 dark:ring-gray-700"
+                            >
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium text-gray-800 dark:text-gray-100">
+                                    @if ($person->deathday)
+                                        <svg aria-label="{{ __('Deceased') }}" class="mr-0.5 mb-0.5 inline-block h-3 w-2 shrink-0 fill-gray-900 dark:fill-gray-300" viewBox="0 0 8 12"><path d="M4 6 L8 0 L0 0 Z M4 6 L8 12 L0 12 Z"/></svg>
+                                    @endif
+                                    {{ trim(($person->name ?? '') . ' ' . ($person->surname ?? '')) }}
+                                </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ optional($person->closest_birthday)->translatedFormat('d M') }}</p>
                             </div>
-                            <span class="text-xs font-semibold {{ $daysFromToday === 0 ? 'text-rose-600 dark:text-rose-300' : 'text-gray-500 dark:text-gray-300' }}">
+                            <span class="shrink-0 text-xs font-semibold {{ $daysFromToday === 0 ? 'text-rose-600 dark:text-rose-300' : 'text-gray-500 dark:text-gray-300' }}">
                                 @if ($daysFromToday === 0)
                                     {{ __('Today') }}
                                 @elseif ($daysFromToday < 0)

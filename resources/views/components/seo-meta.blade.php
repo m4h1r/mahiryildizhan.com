@@ -32,7 +32,15 @@
         return asset('storage/'.$normalized);
     };
 
-    $pageTitle = $title ?: ($post?->seo_title ?: $post?->title ?: $siteName);
+    $isHomeRoute = request()->routeIs('home');
+    $isBlogPostRoute = request()->routeIs('blog.show') && $post;
+    $postTitle = $post?->seo_title ?: $post?->title;
+
+    $pageTitle = match (true) {
+        $isHomeRoute => 'Mahir Yıldızhan',
+        $isBlogPostRoute => ($postTitle ? $postTitle.' | MY' : 'MY'),
+        default => $title ?: ($postTitle ?: $siteName),
+    };
     $metaDescription = $description ?: ($post?->seo_description ?: $post?->excerpt ?: $defaultDescription);
     $canonicalUrl = $canonical ?: ($post?->canonical_url ?: url()->current());
     $ogImageUrl = $resolveUrl($post?->og_image ?: $post?->cover_url ?: $post?->cover ?: $defaultOgImage);

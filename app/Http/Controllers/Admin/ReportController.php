@@ -7,6 +7,7 @@ use App\Models\Currency;
 use App\Models\Expense;
 use App\Models\ExpenseType;
 use App\Models\Income;
+use App\Models\IncomeType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -265,6 +266,54 @@ class ReportController extends Controller
             ];
         }
 
+        // Income Category monthly heatmap: top 10 income types × 12 months
+        $topIncTypesForHeatmap = Income::query()
+            ->whereYear('date', $year)
+            ->whereNotNull('income_type_id')
+            ->select('income_type_id', DB::raw('SUM(amount) as total_sum'))
+            ->when($tryCurrencyId, fn ($q) => $q->where('currency_id', $tryCurrencyId))
+            ->groupBy('income_type_id')
+            ->orderByDesc('total_sum')
+            ->limit(10)
+            ->pluck('income_type_id')
+            ->all();
+
+        $topIncTypeNames = IncomeType::query()
+            ->whereIn('id', $topIncTypesForHeatmap)
+            ->pluck('name', 'id');
+
+        $incTypeMonthlyRows = Income::query()
+            ->whereYear('date', $year)
+            ->whereIn('income_type_id', $topIncTypesForHeatmap)
+            ->selectRaw('income_type_id, MONTH(date) as month, SUM(amount) as total')
+            ->when($tryCurrencyId, fn ($q) => $q->where('currency_id', $tryCurrencyId))
+            ->groupBy('income_type_id', 'month')
+            ->get();
+
+        $incTypeMonthMatrix = [];
+        foreach ($incTypeMonthlyRows as $row) {
+            $incTypeMonthMatrix[(int) $row->income_type_id][(int) $row->month] = (float) $row->total;
+        }
+
+        $incomeCategoryHeatmap = [];
+        foreach ($topIncTypesForHeatmap as $typeId) {
+            $months = [];
+            for ($m = 1; $m <= 12; $m++) {
+                $months[] = $incTypeMonthMatrix[(int) $typeId][$m] ?? 0.0;
+            }
+            $rowMax = max($months) ?: 0.0;
+            $levels = array_map(function (float $val) use ($rowMax): int {
+                if ($val <= 0 || $rowMax <= 0) { return 0; }
+                $ratio = $val / $rowMax;
+                return $ratio > 0.75 ? 4 : ($ratio > 0.5 ? 3 : ($ratio > 0.25 ? 2 : 1));
+            }, $months);
+            $incomeCategoryHeatmap[] = [
+                'name'   => (string) ($topIncTypeNames[$typeId] ?? 'Other'),
+                'months' => $months,
+                'levels' => $levels,
+            ];
+        }
+
         // Expense Heatmap: full-year daily totals (independent of dailyRange)
         $heatmapExpenseQuery = Expense::query()
             ->whereYear('date', $year)
@@ -310,6 +359,7 @@ class ReportController extends Controller
             'dailyCategoryData' => $dailyCategoryData,
             'heatmapByDate' => $heatmapByDate,
             'categoryHeatmap' => $categoryHeatmap,
+            'incomeCategoryHeatmap' => $incomeCategoryHeatmap,
             'insights' => [
                 'avg_monthly_income' => $avgMonthlyIncome,
                 'avg_monthly_expense' => $avgMonthlyExpense,

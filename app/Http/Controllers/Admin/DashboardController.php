@@ -96,7 +96,7 @@ class DashboardController extends Controller
         $today = now()->startOfDay();
         $windowDays = 7;
         $upcomingBirthdays = Person::query()
-            ->select(['id', 'name', 'surname', 'birthday'])
+            ->select(['id', 'name', 'surname', 'birthday', 'picture', 'deathday'])
             ->whereNotNull('birthday')
             ->get()
             ->map(function (Person $person) use ($today): Person {
