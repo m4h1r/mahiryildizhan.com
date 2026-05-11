@@ -27,7 +27,7 @@
         <select name="income_type_id" class="form-input-admin">
             <option value="">None</option>
             @foreach ($types as $type)
-                <option value="{{ $type->id }}" @selected((string) old('income_type_id', $income->income_type_id ?? '') === (string) $type->id)>{{ $type->name }}</option>
+                <option value="{{ $type->id }}" @selected((string) old('income_type_id', $income->income_type_id ?? ($isEdit ? '' : '24')) === (string) $type->id)>{{ $type->name }}</option>
             @endforeach
         </select>
     </label>
@@ -36,20 +36,12 @@
         <span class="mb-1 block">Currency</span>
         <select name="currency_id" class="form-input-admin" required>
             @foreach ($currencies as $currency)
-                <option value="{{ $currency->id }}" @selected((string) old('currency_id', $income->currency_id ?? '') === (string) $currency->id)>{{ $currency->code }} - {{ $currency->name }}</option>
+                <option value="{{ $currency->id }}" @selected((string) old('currency_id', $income->currency_id ?? ($isEdit ? '' : '1')) === (string) $currency->id)>{{ $currency->code }} - {{ $currency->name }}</option>
             @endforeach
         </select>
     </label>
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">User</span>
-        <select name="user_id" class="form-input-admin">
-            <option value="">Current user</option>
-            @foreach ($users as $user)
-                <option value="{{ $user->id }}" @selected((string) old('user_id', $income->user_id ?? '') === (string) $user->id)>{{ $user->name }} ({{ $user->email }})</option>
-            @endforeach
-        </select>
-    </label>
+    <input type="hidden" name="user_id" value="{{ old('user_id', $income->user_id ?? auth()->id()) }}">
 
     <label class="md:col-span-2 text-sm font-medium text-gray-700 dark:text-gray-200">
         <span class="mb-1 block">Description</span>
