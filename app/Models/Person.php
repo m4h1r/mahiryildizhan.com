@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -39,6 +40,20 @@ class Person extends Model
             'birthday' => 'date',
             'deathday' => 'date',
         ];
+    }
+
+    protected function pictureUrl(): Attribute
+    {
+        return Attribute::get(function () {
+            if (! $this->picture) {
+                return '/storage/people/user.png';
+            }
+            if (str_starts_with($this->picture, 'http') || str_starts_with($this->picture, '/')) {
+                return $this->picture;
+            }
+
+            return '/storage/people/'.$this->picture;
+        });
     }
 
     public function father()

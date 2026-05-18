@@ -61,7 +61,7 @@
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 border-blue-200 dark:border-blue-500 shadow-md">
-                                <img src="/storage/people/{{ $person->father->father->picture ?? 'user.png' }}" 
+                                <img src="{{ $person->father->father->picture_url }}" 
                                      alt="{{ $person->father->father->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -96,7 +96,7 @@
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 border-pink-200 dark:border-pink-500 shadow-md">
-                                <img src="/storage/people/{{ $person->father->mother->picture ?? 'user.png' }}" 
+                                <img src="{{ $person->father->mother->picture_url }}" 
                                      alt="{{ $person->father->mother->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -131,7 +131,7 @@
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 border-blue-200 dark:border-blue-500 shadow-md">
-                                <img src="/storage/people/{{ $person->mother->father->picture ?? 'user.png' }}" 
+                                <img src="{{ $person->mother->father->picture_url }}" 
                                      alt="{{ $person->mother->father->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -166,7 +166,7 @@
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 border-pink-200 dark:border-pink-500 shadow-md">
-                                <img src="/storage/people/{{ $person->mother->mother->picture ?? 'user.png' }}" 
+                                <img src="{{ $person->mother->mother->picture_url }}" 
                                      alt="{{ $person->mother->mother->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -208,7 +208,7 @@
                     
                     <div class="text-center">
                         <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-4 border-blue-300 dark:border-blue-600 shadow-lg">
-                            <img src="/storage/people/{{ $person->father->picture ?? 'user.png' }}" 
+                            <img src="{{ $person->father->picture_url }}" 
                                  alt="{{ $person->father->fullName() }}"
                                  class="w-full h-full object-cover">
                         </div>
@@ -246,7 +246,7 @@
                     
                     <div class="text-center">
                         <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-4 border-pink-300 dark:border-pink-600 shadow-lg">
-                            <img src="/storage/people/{{ $person->mother->picture ?? 'user.png' }}" 
+                            <img src="{{ $person->mother->picture_url }}" 
                                  alt="{{ $person->mother->fullName() }}"
                                  class="w-full h-full object-cover">
                         </div>
@@ -302,7 +302,7 @@
                         
                         <div class="text-center">
                             <div class="w-14 h-14 mx-auto mb-2 rounded-full overflow-hidden border-2 border-indigo-200 dark:border-indigo-500 shadow-md">
-                                <img src="/storage/people/{{ $sibling->picture ?? 'user.png' }}" 
+                                <img src="{{ $sibling->picture_url }}" 
                                      alt="{{ $sibling->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -350,7 +350,7 @@
                         
                         <div class="relative text-center">
                             <div class="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden border-4 border-yellow-400 dark:border-yellow-600 shadow-2xl ring-4 {{ $centerPhotoRing }}">
-                                <img src="/storage/people/{{ $person->picture ?? 'user.png' }}" 
+                                <img src="{{ $person->picture_url }}" 
                                      alt="{{ $person->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -416,7 +416,7 @@
                             
                             <div class="relative text-center">
                                 <div class="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden border-4 {{ $spousePhotoBorder }} shadow-2xl ring-4 {{ $spousePhotoRing }}">
-                                    <img src="/storage/people/{{ $person->partner->picture ?? 'user.png' }}" 
+                                    <img src="{{ $person->partner->picture_url }}" 
                                          alt="{{ $person->partner->fullName() }}"
                                          class="w-full h-full object-cover">
                                 </div>
@@ -454,7 +454,7 @@
                         
                         <div class="text-center">
                             <div class="w-14 h-14 mx-auto mb-2 rounded-full overflow-hidden border-2 border-indigo-200 dark:border-indigo-500 shadow-md">
-                                <img src="/storage/people/{{ $sibling->picture ?? 'user.png' }}" 
+                                <img src="{{ $sibling->picture_url }}" 
                                      alt="{{ $sibling->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -513,7 +513,7 @@
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 {{ $childPhotoBorder }} shadow-md">
-                                <img src="/storage/people/{{ $child->picture ?? 'user.png' }}" 
+                                <img src="{{ $child->picture_url }}" 
                                      alt="{{ $child->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -562,7 +562,7 @@
                         
                         <div class="text-center">
                             <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 {{ $childSpousePhotoBorder }} shadow-md">
-                                <img src="/storage/people/{{ $child->partner->picture ?? 'user.png' }}" 
+                                <img src="{{ $child->partner->picture_url }}" 
                                      alt="{{ $child->partner->fullName() }}"
                                      class="w-full h-full object-cover">
                             </div>
@@ -620,7 +620,7 @@
                                 
                                 <div class="text-center">
                                     <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 {{ $grandchildPhotoBorder }} shadow-md">
-                                        <img src="/storage/people/{{ $grandchild->picture ?? 'user.png' }}" 
+                                        <img src="{{ $grandchild->picture_url }}" 
                                              alt="{{ $grandchild->fullName() }}"
                                              class="w-full h-full object-cover">
                                     </div>
@@ -669,7 +669,7 @@
                                 
                                 <div class="text-center">
                                     <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-2 {{ $grandchildSpousePhotoBorder }} shadow-md">
-                                        <img src="/storage/people/{{ $grandchild->partner->picture ?? 'user.png' }}" 
+                                        <img src="{{ $grandchild->partner->picture_url }}" 
                                              alt="{{ $grandchild->partner->fullName() }}"
                                              class="w-full h-full object-cover">
                                     </div>

@@ -119,6 +119,7 @@ class MediaController extends Controller
                 'height' => $media->height,
                 'thumbnail_url' => $media->url('thumbnail'),
                 'url' => $media->url('webp'),
+                'original_url' => $media->url('original'),
             ])->values(),
             'meta' => [
                 'page' => $paginator->currentPage(),
