@@ -57,6 +57,7 @@ Route::get('/ads.txt', function () {
 })->name('ads.txt');
 Route::post('/comments', [CommentController::class, 'store'])->name('public.comments.store');
 Route::post('/subscribe', [SubscriberController::class, 'store'])->name('public.subscribers.store');
+Route::get('/subscribe/confirm/{subscriber}', [SubscriberController::class, 'confirm'])->name('public.subscribers.confirm');
 
 Route::get('/locale/{locale}', function (Request $request, string $locale) {
     if (! in_array($locale, ['tr', 'en'], true)) {

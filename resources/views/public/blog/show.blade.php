@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        <div id="article-body" class="prose-blog">
+        <div id="article-body" class="prose-blog break-all">
             {!! $post->body !!}
         </div>
 

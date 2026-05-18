@@ -48,7 +48,7 @@
             <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-6">
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
                     <x-application-logo class="h-9 w-9 rounded-lg object-contain" />
-                    <span class="public-editorial-heading text-xl font-semibold tracking-tight text-[#1d1d1f] dark:text-gray-100">{{ config('app.name') }}</span>
+                    <span class="public-editorial-heading hidden text-xl font-semibold tracking-tight text-[#1d1d1f] md:inline dark:text-gray-100">{{ config('app.name') }}</span>
                 </a>
 
                 <div class="flex items-center gap-2 md:gap-3">

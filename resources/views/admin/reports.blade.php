@@ -128,12 +128,12 @@
 
         {{-- ── Monthly chart + donut ── --}}
         <section class="grid gap-6 xl:grid-cols-3">
-            <article class="card-admin xl:col-span-2">
+            <article class="card-admin xl:col-span-2 min-w-0">
                 <div class="mb-4 flex items-center justify-between gap-2">
                     <h3 class="text-sm font-semibold">{{ __('Income vs Expense vs Net') }}</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Monthly performance timeline') }}</p>
                 </div>
-                <div class="h-[16rem] sm:h-[22rem]">
+                <div class="h-[16rem] sm:h-[22rem] overflow-hidden">
                     <canvas id="monthlyPerformanceChart"></canvas>
                 </div>
             </article>
@@ -143,7 +143,7 @@
                     <h3 class="text-sm font-semibold">{{ __('Expense Distribution') }}</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('By category') }}</p>
                 </div>
-                <div class="h-[16rem] sm:h-[22rem]">
+                <div class="h-[16rem] sm:h-[22rem] overflow-hidden">
                     <canvas id="expenseShareChart"></canvas>
                 </div>
             </article>
@@ -151,22 +151,22 @@
 
         {{-- ── Daily pressure + cumulative ── --}}
         <section class="grid gap-6 xl:grid-cols-5">
-            <article class="card-admin xl:col-span-3">
+            <article class="card-admin xl:col-span-3 min-w-0">
                 <div class="mb-4 flex items-center justify-between gap-2">
                     <h3 class="text-sm font-semibold">{{ __('Daily Expense Pressure') }}</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Rolling daily totals') }}</p>
                 </div>
-                <div class="h-[16rem] sm:h-[21rem]">
+                <div class="h-[16rem] sm:h-[21rem] overflow-hidden">
                     <canvas id="dailyExpenseChart"></canvas>
                 </div>
             </article>
 
-            <article class="card-admin xl:col-span-2">
+            <article class="card-admin xl:col-span-2 min-w-0">
                 <div class="mb-4 flex items-center justify-between gap-2">
                     <h3 class="text-sm font-semibold">{{ __('Cumulative Net Curve') }}</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Running result across months') }}</p>
                 </div>
-                <div class="h-[16rem] sm:h-[21rem]">
+                <div class="h-[16rem] sm:h-[21rem] overflow-hidden">
                     <canvas id="cumulativeNetChart"></canvas>
                 </div>
             </article>
@@ -178,7 +178,7 @@
                 <h3 class="text-sm font-semibold">{{ __('Category Trend Signals') }}</h3>
                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Top categories over selected period') }}</p>
             </div>
-            <div class="h-[18rem] sm:h-[24rem]">
+            <div class="h-[18rem] sm:h-[24rem] overflow-hidden">
                 <canvas id="categoryTrendChart"></canvas>
             </div>
         </section>

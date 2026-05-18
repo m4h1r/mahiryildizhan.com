@@ -7,6 +7,7 @@
                 <input class="form-input-admin sm:col-span-2 lg:col-span-1" name="q" placeholder="Search subscribers..." value="{{ $filters['q'] ?? '' }}">
                 <select name="status" class="form-input-admin">
                     <option value="">All Statuses</option>
+                    <option value="pending" @selected(($filters['status'] ?? '') === 'pending')>Pending</option>
                     <option value="active" @selected(($filters['status'] ?? '') === 'active')>Active</option>
                     <option value="unsubscribed" @selected(($filters['status'] ?? '') === 'unsubscribed')>Unsubscribed</option>
                 </select>
@@ -38,7 +39,15 @@
                         @forelse ($subscribers as $subscriber)
                             <tr>
                                 <td>{{ $subscriber->email }}</td>
-                                <td>{{ $subscriber->status }}</td>
+                                <td>
+                                    @if ($subscriber->status === 'active')
+                                        <span class="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Active</span>
+                                    @elseif ($subscriber->status === 'pending')
+                                        <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Pending</span>
+                                    @else
+                                        <span class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-400">Unsubscribed</span>
+                                    @endif
+                                </td>
                                 <td class="hidden md:table-cell">{{ optional($subscriber->subscribed_at)->toDateTimeString() }}</td>
                                 <td class="hidden lg:table-cell">{{ $subscriber->mailchimp_id ?: '-' }}</td>
                                 <td>
