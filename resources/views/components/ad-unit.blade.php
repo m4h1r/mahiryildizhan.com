@@ -9,5 +9,5 @@
      data-ad-slot="{{ $slotId }}"
      data-ad-format="auto"
      data-full-width-responsive="true"></ins>
-<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+<script nonce="{{ request()->attributes->get('csp_nonce', '') }}">(adsbygoogle = window.adsbygoogle || []).push({});</script>
 @endif

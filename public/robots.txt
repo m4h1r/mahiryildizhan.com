@@ -1,48 +1,25 @@
-# Google
-User-agent: Googlebot
+# AdSense crawlers
+User-agent: Mediapartners-Google
 Allow: /
 
-# Google Ads / AdsBot
 User-agent: AdsBot-Google
 Allow: /
 
 User-agent: AdsBot-Google-Mobile
 Allow: /
 
-# Google Image
-User-agent: Googlebot-Image
-Allow: /
-
-# Google News
-User-agent: Googlebot-News
-Allow: /
-
-# Bing
-User-agent: Bingbot
-Allow: /
-
-User-agent: adidxbot
-Allow: /
-
-User-agent: BingPreview
-Allow: /
-
-# Yandex
-User-agent: YandexBot
-Allow: /
-
-User-agent: YandexImages
-Allow: /
-
-User-agent: YandexMobileBot
-Allow: /
-
-# Apple
-User-agent: Applebot
-Allow: /
-
-# Block all other bots
+# General indexing
 User-agent: *
-Disallow: /
+Allow: /
+
+# Private/system routes
+Disallow: /admin
+Disallow: /login
+Disallow: /register
+Disallow: /password/
+Disallow: /profile
+Disallow: /theme/
+Disallow: /locale/
+Disallow: /up
 
 Sitemap: https://mahiryildizhan.com/sitemap.xml
