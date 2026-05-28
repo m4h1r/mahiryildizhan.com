@@ -1,5 +1,8 @@
 @php
-    $clientId = \App\Models\Setting::get('adsense_client_id');
+    $rawClientId = trim((string) \App\Models\Setting::get('adsense_client_id'));
+    $clientId = $rawClientId === ''
+        ? null
+        : (str_starts_with($rawClientId, 'ca-pub-') ? $rawClientId : (str_starts_with($rawClientId, 'pub-') ? 'ca-'.$rawClientId : $rawClientId));
     $slotId   = \App\Models\Setting::get('adsense_slot_id');
 @endphp
 @if($clientId && $slotId)

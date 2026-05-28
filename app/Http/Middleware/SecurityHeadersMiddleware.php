@@ -26,7 +26,7 @@ class SecurityHeadersMiddleware
             "img-src 'self' data: https:; " .
             "style-src 'self' 'unsafe-inline'; " .
             "font-src 'self' data:; " .
-            "connect-src 'self' https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net; " .
+            "connect-src 'self' https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.adtrafficquality.google; " .
             "frame-src https://www.google.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com"
         );
 

@@ -82,6 +82,12 @@
         <main id="main-content" class="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
             <x-flash />
             @yield('content')
+
+            @if (request()->routeIs('blog.*'))
+                <div class="mt-12">
+                    <x-ad-unit />
+                </div>
+            @endif
         </main>
 
         <footer class="public-glass border-t">
