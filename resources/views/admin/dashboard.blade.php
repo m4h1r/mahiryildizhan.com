@@ -15,6 +15,19 @@
                 @if ($treasuryUsd !== null)
                     <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">≈ ${{ number_format($treasuryUsd, 0) }}</p>
                 @endif
+                @if ($treasuryUsd !== null)
+                    @php
+                        $tierDivisor = $currentTierIndex >= 0
+                            ? $wealthThresholds[$currentTierIndex]
+                            : $wealthThresholds[0];
+                        $monthsOfIncome = $tierDivisor > 0 ? round($treasuryUsd / $tierDivisor, 1) : null;
+                    @endphp
+                    @if ($monthsOfIncome !== null)
+                        <p class="mt-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                            {{ $monthsOfIncome }} aylık gelire sahipsin
+                        </p>
+                    @endif
+                @endif
                 <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
                     <a href="{{ route('admin.settings') }}" class="hover:underline">Güncelle →</a>
                 </p>
@@ -39,18 +52,18 @@
         @php
             $romanNumerals = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
         @endphp
-        <section class="card-admin border border-amber-200/80 bg-gradient-to-br from-amber-50 to-yellow-50 dark:border-amber-800/60 dark:from-amber-950/30 dark:to-yellow-950/30">
+        <section class="card-admin border border-blue-200/80 bg-gradient-to-br from-blue-50 to-indigo-50 dark:border-blue-800/60 dark:from-blue-950/30 dark:to-indigo-950/30">
             <div class="mb-4 flex items-start justify-between gap-3">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Zenginlik Seviyesi</p>
                     @if ($currentTierIndex === 9)
-                        <p class="mt-1 text-xl font-extrabold text-amber-700 dark:text-amber-300">X. Kademe — Zirve 🏆</p>
+                        <p class="mt-1 text-xl font-extrabold text-blue-700 dark:text-blue-300">X. Kademe — Zirve 🏆</p>
                         <p class="text-sm text-gray-400 dark:text-gray-500">$50.000/ay hedefine ulaştın</p>
                     @elseif ($currentTierIndex >= 0)
-                        <p class="mt-1 text-xl font-extrabold text-amber-700 dark:text-amber-300">{{ $romanNumerals[$currentTierIndex] }}. Kademe</p>
+                        <p class="mt-1 text-xl font-extrabold text-blue-700 dark:text-blue-300">{{ $romanNumerals[$currentTierIndex] }}. Kademe</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
                             ${{ number_format($wealthThresholds[$currentTierIndex]) }}/ay →
-                            <span class="font-medium text-amber-700 dark:text-amber-400">{{ $romanNumerals[$currentTierIndex + 1] }}. Kademe</span>
+                            <span class="font-medium text-blue-700 dark:text-blue-400">{{ $romanNumerals[$currentTierIndex + 1] }}. Kademe</span>
                             (${{ number_format($wealthThresholds[$currentTierIndex + 1]) }}/ay)
                         </p>
                     @else
@@ -58,7 +71,7 @@
                         <p class="text-sm text-gray-400 dark:text-gray-500">Hedef: I. Kademe — $250/ay pasif gelir</p>
                     @endif
                 </div>
-                <span class="shrink-0 rounded-lg bg-amber-100 px-3 py-1.5 text-base font-extrabold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                <span class="shrink-0 rounded-lg bg-blue-100 px-3 py-1.5 text-base font-extrabold text-blue-800 dark:bg-blue-900/40 dark:text-blue-200">
                     %{{ $wealthProgress }}
                 </span>
             </div>
@@ -69,25 +82,22 @@
                     @for ($i = 0; $i < 10; $i++)
                         @php
                             if ($currentTierIndex === 9) {
-                                $segClass = 'bg-amber-400 dark:bg-amber-500';
+                                $segClass = 'bg-blue-400 dark:bg-blue-500';
                                 $segWidth = 'flex-1';
                             } elseif ($i < $currentTierIndex) {
-                                // Geçilmiş kademeler — tam dolu
-                                $segClass = 'bg-amber-400 dark:bg-amber-500';
+                                $segClass = 'bg-blue-400 dark:bg-blue-500';
                                 $segWidth = 'flex-1';
                             } elseif ($i === $currentTierIndex || ($i === 0 && $currentTierIndex === -1)) {
-                                // Aktif kademe — kısmi dolu, gradient overlay ile
-                                $segClass = 'relative overflow-hidden bg-amber-100 dark:bg-amber-900/40 flex-1';
+                                $segClass = 'relative overflow-hidden bg-blue-100 dark:bg-blue-900/40 flex-1';
                                 $segWidth = 'flex-1';
                             } else {
-                                // Henüz ulaşılmamış kademeler — boş
-                                $segClass = 'bg-amber-100/70 dark:bg-amber-900/20';
+                                $segClass = 'bg-blue-100/70 dark:bg-blue-900/20';
                                 $segWidth = 'flex-1';
                             }
                         @endphp
                         <div class="h-5 min-w-0 {{ $segWidth }} {{ $segClass }} first:rounded-l-full last:rounded-r-full">
                             @if (($i === $currentTierIndex && $currentTierIndex >= 0) || ($i === 0 && $currentTierIndex === -1))
-                                <div class="h-full bg-gradient-to-r from-amber-400 to-yellow-400 dark:from-amber-500 dark:to-yellow-400" style="width: {{ $wealthProgress }}%"></div>
+                                <div class="h-full bg-gradient-to-r from-blue-400 to-indigo-400 dark:from-blue-500 dark:to-indigo-400" style="width: {{ $wealthProgress }}%"></div>
                             @endif
                         </div>
                     @endfor
@@ -97,7 +107,7 @@
                 <div class="flex">
                     @for ($i = 0; $i < 10; $i++)
                         <div class="flex-1 text-center">
-                            <span class="text-[10px] font-medium {{ $i <= $currentTierIndex ? 'text-amber-600 dark:text-amber-400' : 'text-gray-400 dark:text-gray-600' }}">
+                            <span class="text-[10px] font-medium {{ $i <= $currentTierIndex ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-600' }}">
                                 {{ $romanNumerals[$i] }}
                             </span>
                         </div>
