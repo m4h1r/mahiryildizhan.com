@@ -20,10 +20,28 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\TimelineController;
 use App\Http\Controllers\Admin\MediaController;
+use App\Http\Controllers\Admin\PurchaseItemController;
+use App\Http\Controllers\Admin\TodoItemController;
+use App\Http\Controllers\Admin\BucketlistController;
 use App\Services\CsvImportService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+// Purchase Items
+Route::patch('/purchase-items/{purchaseItem}/toggle-complete', [PurchaseItemController::class, 'toggleComplete'])
+    ->name('admin.purchase-items.toggle-complete');
+Route::resource('/purchase-items', PurchaseItemController::class)
+    ->except(['show'])->names('admin.purchase-items');
+
+// Todo Items
+Route::patch('/todo-items/{todoItem}/toggle-complete', [TodoItemController::class, 'toggleComplete'])
+    ->name('admin.todo-items.toggle-complete');
+Route::resource('/todo-items', TodoItemController::class)
+    ->except(['show'])->names('admin.todo-items');
+
+// Bucketlist
+Route::get('/bucketlist', [BucketlistController::class, 'index'])->name('admin.bucketlist');
 Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports');
 Route::get('/about', [AboutController::class, 'index'])->name('admin.about');
 Route::post('/about', [AboutController::class, 'update'])->name('admin.about.update');

@@ -12,6 +12,10 @@ use Illuminate\View\View;
 class SettingController extends Controller
 {
     private const DEFINITIONS = [
+        'financial' => [
+            ['key' => 'treasury_try', 'label' => 'Kasa (₺)'],
+            ['key' => 'daily_passive_income_try', 'label' => 'Günlük Pasif Gelir (₺)'],
+        ],
         'general' => [
             ['key' => 'admin_locale', 'label' => 'Admin Language'],
         ],

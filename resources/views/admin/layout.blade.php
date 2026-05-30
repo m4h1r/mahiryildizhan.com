@@ -119,6 +119,25 @@
                         </div>
                     </div>
 
+                    {{-- Personal --}}
+                    <div class="mb-4">
+                        <p class="mb-1 px-3 text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">{{ __('Personal') }}</p>
+                        <div class="space-y-0.5">
+                            <a href="{{ route('admin.todo-items.index') }}" class="admin-nav-link {{ request()->routeIs('admin.todo-items.*') ? 'admin-nav-link-active' : '' }}">
+                                <svg class="h-[18px] w-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                                {{ __('Yapılacaklar') }}
+                            </a>
+                            <a href="{{ route('admin.purchase-items.index') }}" class="admin-nav-link {{ request()->routeIs('admin.purchase-items.*') ? 'admin-nav-link-active' : '' }}">
+                                <svg class="h-[18px] w-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13 5.4 5M7 13l-2 9m5-9v9m4-9v9m5-9-2 9"/></svg>
+                                {{ __('Satın Alınacaklar') }}
+                            </a>
+                            <a href="{{ route('admin.bucketlist') }}" class="admin-nav-link {{ request()->routeIs('admin.bucketlist') ? 'admin-nav-link-active' : '' }}">
+                                <svg class="h-[18px] w-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 0 0 .95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 0 0-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 0 0-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 0 0-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 0 0 .951-.69l1.519-4.674Z"/></svg>
+                                {{ __('Bucket List') }}
+                            </a>
+                        </div>
+                    </div>
+
                     {{-- Finance --}}
                     <div class="mb-4">
                         <p class="mb-1 px-3 text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">{{ __('Finance') }}</p>

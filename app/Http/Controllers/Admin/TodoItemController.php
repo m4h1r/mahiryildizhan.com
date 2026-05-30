@@ -1,0 +1,119 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\TodoItem;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class TodoItemController extends Controller
+{
+    public function index(Request $request): View
+    {
+        $filter = $request->input('filter', 'all');
+
+        $query = TodoItem::query()->orderBy('due_date')->orderBy('id');
+
+        $query = match ($filter) {
+            'due'        => $query->where('is_completed', false)
+                                  ->whereNotNull('due_date')
+                                  ->where('due_date', '<=', now()->toDateString()),
+            'bucketlist' => $query->where('is_bucketlist', true),
+            'completed'  => $query->where('is_completed', true),
+            'pending'    => $query->where('is_completed', false),
+            default      => $query,
+        };
+
+        $items = $query->paginate(20)->withQueryString();
+
+        return view('admin.todo-items.index', compact('items', 'filter'));
+    }
+
+    public function create(): View
+    {
+        return view('admin.todo-items.create');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'title'           => 'required|string|max:255',
+            'description'     => 'nullable|string|max:500',
+            'cost_try'        => 'nullable|numeric|min:0',
+            'time_cost_hours' => 'nullable|numeric|min:0',
+            'due_date'        => 'nullable|date',
+            'is_bucketlist'   => 'boolean',
+            'is_completed'    => 'boolean',
+        ]);
+
+        $data['is_bucketlist'] = $request->boolean('is_bucketlist');
+        $data['is_completed']  = $request->boolean('is_completed');
+
+        if ($data['is_completed']) {
+            $data['completed_at'] = now();
+        }
+
+        TodoItem::create($data);
+
+        return to_route('admin.todo-items.index')->with('success', __('Todo created.'));
+    }
+
+    public function edit(TodoItem $todoItem): View
+    {
+        return view('admin.todo-items.edit', ['item' => $todoItem]);
+    }
+
+    public function update(Request $request, TodoItem $todoItem): RedirectResponse
+    {
+        $data = $request->validate([
+            'title'           => 'required|string|max:255',
+            'description'     => 'nullable|string|max:500',
+            'cost_try'        => 'nullable|numeric|min:0',
+            'time_cost_hours' => 'nullable|numeric|min:0',
+            'due_date'        => 'nullable|date',
+            'is_bucketlist'   => 'boolean',
+            'is_completed'    => 'boolean',
+        ]);
+
+        $data['is_bucketlist'] = $request->boolean('is_bucketlist');
+        $wasCompleted = $todoItem->is_completed;
+        $data['is_completed'] = $request->boolean('is_completed');
+
+        if ($data['is_completed'] && ! $wasCompleted) {
+            $data['completed_at'] = now();
+        } elseif (! $data['is_completed']) {
+            $data['completed_at'] = null;
+        }
+
+        $todoItem->update($data);
+
+        return to_route('admin.todo-items.index')->with('success', __('Todo updated.'));
+    }
+
+    public function destroy(TodoItem $todoItem): RedirectResponse
+    {
+        $todoItem->delete();
+
+        return to_route('admin.todo-items.index')->with('success', __('Todo deleted.'));
+    }
+
+    public function toggleComplete(TodoItem $todoItem): JsonResponse|RedirectResponse
+    {
+        $todoItem->is_completed = ! $todoItem->is_completed;
+        $todoItem->completed_at = $todoItem->is_completed ? now() : null;
+        $todoItem->save();
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'completed'    => $todoItem->is_completed,
+                'completed_at' => $todoItem->completed_at?->toDateTimeString(),
+            ]);
+        }
+
+        return back()->with('success', $todoItem->is_completed ? 'Görev tamamlandı.' : 'Görev geri alındı.');
+    }
+}

@@ -22,12 +22,12 @@ class SecurityHeadersMiddleware
         $response->headers->set(
             'Content-Security-Policy',
             "default-src 'self'; " .
-            "script-src 'self' 'unsafe-eval' 'nonce-{$nonce}' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://partner.googleadservices.com; " .
+            "script-src 'self' 'unsafe-eval' 'nonce-{$nonce}' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://partner.googleadservices.com https://*.googlesyndication.com https://*.doubleclick.net https://*.googleadservices.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google; " .
             "img-src 'self' data: https:; " .
             "style-src 'self' 'unsafe-inline'; " .
             "font-src 'self' data:; " .
-            "connect-src 'self' https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.adtrafficquality.google; " .
-            "frame-src https://www.google.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com"
+            "connect-src 'self' https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net https://*.googleadservices.com https://adservice.google.com; " .
+            "frame-src https://www.google.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net"
         );
 
         if ($request->isSecure()) {

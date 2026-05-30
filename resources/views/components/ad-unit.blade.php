@@ -3,7 +3,9 @@
     $clientId = $rawClientId === ''
         ? null
         : (str_starts_with($rawClientId, 'ca-pub-') ? $rawClientId : (str_starts_with($rawClientId, 'pub-') ? 'ca-'.$rawClientId : $rawClientId));
-    $slotId   = \App\Models\Setting::get('adsense_slot_id');
+    $rawSlotId = trim((string) \App\Models\Setting::get('adsense_slot_id'));
+    $slotId = preg_replace('/\D+/', '', $rawSlotId);
+    $slotId = $slotId !== '' ? $slotId : null;
 @endphp
 @if($clientId && $slotId)
 <ins class="adsbygoogle"

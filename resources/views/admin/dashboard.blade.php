@@ -1,6 +1,214 @@
 @extends('admin.layout', ['title' => 'Dashboard', 'heading' => 'Dashboard'])
 
 @section('content')
+    {{-- =====================================================
+         KİŞİSEL DASHBOARD — mevcuta dokunma, bu div bağımsız
+    ===================================================== --}}
+    <div id="personal-dashboard" class="mb-6 space-y-4">
+
+        {{-- SATIR 1: Kasa + Pasif Gelir --}}
+        <section class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {{-- Kasa ₺ (+ USD karşılığı kur ile) --}}
+            <article class="card-admin border border-emerald-200/70 bg-gradient-to-br from-emerald-50 to-teal-50 dark:border-emerald-800/60 dark:from-emerald-950/30 dark:to-teal-950/30">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Kasa</p>
+                <p class="mt-2 text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">₺{{ number_format($treasuryTry, 2) }}</p>
+                @if ($treasuryUsd !== null)
+                    <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">≈ ${{ number_format($treasuryUsd, 0) }}</p>
+                @endif
+                <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                    <a href="{{ route('admin.settings') }}" class="hover:underline">Güncelle →</a>
+                </p>
+            </article>
+
+            {{-- Günlük Pasif Gelir ₺ (+ USD karşılığı) --}}
+            <article class="card-admin border border-sky-200/70 bg-gradient-to-br from-sky-50 to-blue-50 dark:border-sky-800/60 dark:from-sky-950/30 dark:to-blue-950/30">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Günlük Pasif Gelir</p>
+                <p class="mt-2 text-2xl font-extrabold text-sky-700 dark:text-sky-300">
+                    ₺{{ number_format($dailyPassiveIncomeTry, 2) }}<span class="text-sm font-normal text-gray-500 dark:text-gray-400">/gün</span>
+                </p>
+                <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+                    ₺{{ number_format($monthlyPassiveIncomeTry, 0) }}/ay
+                    @if ($monthlyPassiveIncomeUsd > 0)
+                        · ≈ ${{ number_format($monthlyPassiveIncomeUsd, 0) }}/ay
+                    @endif
+                </p>
+            </article>
+        </section>
+
+        {{-- SATIR 2: Zenginlik Seviyesi — Segmentli Progress Bar --}}
+        @php
+            $romanNumerals = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+        @endphp
+        <section class="card-admin border border-amber-200/80 bg-gradient-to-br from-amber-50 to-yellow-50 dark:border-amber-800/60 dark:from-amber-950/30 dark:to-yellow-950/30">
+            <div class="mb-4 flex items-start justify-between gap-3">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Zenginlik Seviyesi</p>
+                    @if ($currentTierIndex === 9)
+                        <p class="mt-1 text-xl font-extrabold text-amber-700 dark:text-amber-300">X. Kademe — Zirve 🏆</p>
+                        <p class="text-sm text-gray-400 dark:text-gray-500">$50.000/ay hedefine ulaştın</p>
+                    @elseif ($currentTierIndex >= 0)
+                        <p class="mt-1 text-xl font-extrabold text-amber-700 dark:text-amber-300">{{ $romanNumerals[$currentTierIndex] }}. Kademe</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            ${{ number_format($wealthThresholds[$currentTierIndex]) }}/ay →
+                            <span class="font-medium text-amber-700 dark:text-amber-400">{{ $romanNumerals[$currentTierIndex + 1] }}. Kademe</span>
+                            (${{ number_format($wealthThresholds[$currentTierIndex + 1]) }}/ay)
+                        </p>
+                    @else
+                        <p class="mt-1 text-base font-bold text-gray-500 dark:text-gray-400">I. Kademe öncesi</p>
+                        <p class="text-sm text-gray-400 dark:text-gray-500">Hedef: I. Kademe — $250/ay pasif gelir</p>
+                    @endif
+                </div>
+                <span class="shrink-0 rounded-lg bg-amber-100 px-3 py-1.5 text-base font-extrabold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                    %{{ $wealthProgress }}
+                </span>
+            </div>
+
+            {{-- Segmentli 10-kademe progress bar --}}
+            <div class="space-y-2">
+                <div class="flex gap-0.5 overflow-hidden rounded-full">
+                    @for ($i = 0; $i < 10; $i++)
+                        @php
+                            if ($currentTierIndex === 9) {
+                                $segClass = 'bg-amber-400 dark:bg-amber-500';
+                                $segWidth = 'flex-1';
+                            } elseif ($i < $currentTierIndex) {
+                                // Geçilmiş kademeler — tam dolu
+                                $segClass = 'bg-amber-400 dark:bg-amber-500';
+                                $segWidth = 'flex-1';
+                            } elseif ($i === $currentTierIndex || ($i === 0 && $currentTierIndex === -1)) {
+                                // Aktif kademe — kısmi dolu, gradient overlay ile
+                                $segClass = 'relative overflow-hidden bg-amber-100 dark:bg-amber-900/40 flex-1';
+                                $segWidth = 'flex-1';
+                            } else {
+                                // Henüz ulaşılmamış kademeler — boş
+                                $segClass = 'bg-amber-100/70 dark:bg-amber-900/20';
+                                $segWidth = 'flex-1';
+                            }
+                        @endphp
+                        <div class="h-5 min-w-0 {{ $segWidth }} {{ $segClass }} first:rounded-l-full last:rounded-r-full">
+                            @if (($i === $currentTierIndex && $currentTierIndex >= 0) || ($i === 0 && $currentTierIndex === -1))
+                                <div class="h-full bg-gradient-to-r from-amber-400 to-yellow-400 dark:from-amber-500 dark:to-yellow-400" style="width: {{ $wealthProgress }}%"></div>
+                            @endif
+                        </div>
+                    @endfor
+                </div>
+
+                {{-- Kademe etiketleri --}}
+                <div class="flex">
+                    @for ($i = 0; $i < 10; $i++)
+                        <div class="flex-1 text-center">
+                            <span class="text-[10px] font-medium {{ $i <= $currentTierIndex ? 'text-amber-600 dark:text-amber-400' : 'text-gray-400 dark:text-gray-600' }}">
+                                {{ $romanNumerals[$i] }}
+                            </span>
+                        </div>
+                    @endfor
+                </div>
+            </div>
+        </section>
+
+        {{-- SATIR 3: Yapılacaklar (AJAX) + Bucketlist --}}
+        <section class="grid gap-4 md:grid-cols-2">
+
+            <article
+                class="card-admin"
+                x-data="{
+                    todos: {{ Js::from($dueTodos->map(fn($t) => [
+                        'id'       => $t->id,
+                        'title'    => $t->title,
+                        'due_date' => $t->due_date?->format('d M'),
+                        'completed'=> false,
+                    ])) }},
+                    async toggle(todo) {
+                        const res = await fetch(`{{ url('/admin/todo-items') }}/${todo.id}/toggle-complete`, {
+                            method: 'PATCH',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                'Accept': 'application/json',
+                            },
+                        });
+                        const data = await res.json();
+                        todo.completed = data.completed;
+                    }
+                }"
+            >
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Bugün / Gecikmiş</h3>
+                    <a href="{{ route('admin.todo-items.index', ['filter' => 'due']) }}" class="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
+                        @if ($dueTodosTotal > 10)Tümü ({{ $dueTodosTotal }})@else Yönet @endif
+                    </a>
+                </div>
+
+                <div class="mt-3 space-y-2">
+                    <template x-for="todo in todos" :key="todo.id">
+                        <div
+                            class="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2 transition dark:border-gray-700"
+                            :class="todo.completed ? 'opacity-50' : ''"
+                        >
+                            <button
+                                type="button"
+                                @click="toggle(todo)"
+                                class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition"
+                                :class="todo.completed
+                                    ? 'border-emerald-500 bg-emerald-500 text-white'
+                                    : 'border-gray-300 hover:border-emerald-400 dark:border-gray-600'"
+                            >
+                                <svg x-show="todo.completed" class="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2 6l3 3 5-5"/>
+                                </svg>
+                            </button>
+                            <span
+                                class="flex-1 text-sm text-gray-800 dark:text-gray-100"
+                                :class="todo.completed ? 'line-through text-gray-400' : ''"
+                                x-text="todo.title"
+                            ></span>
+                            <span class="shrink-0 text-xs text-gray-400" x-text="todo.due_date"></span>
+                        </div>
+                    </template>
+
+                    @if ($dueTodos->isEmpty())
+                        <p class="rounded-lg border border-dashed border-gray-300 p-4 text-center text-sm text-gray-400 dark:border-gray-700">
+                            Bekleyen görev yok 🎉
+                        </p>
+                    @endif
+                </div>
+            </article>
+
+            @php
+                $bucketlistPct = $bucketlistTotal > 0
+                    ? min(100, (int) (($bucketlistCompleted / $bucketlistTotal) * 100))
+                    : 0;
+            @endphp
+            <article class="card-admin border border-purple-200/70 bg-gradient-to-br from-purple-50 to-fuchsia-50 dark:border-purple-800/60 dark:from-purple-950/30 dark:to-fuchsia-950/30">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Bucket List</h3>
+                    <a href="{{ route('admin.bucketlist') }}" class="text-xs font-medium text-purple-600 hover:underline dark:text-purple-400">Görüntüle</a>
+                </div>
+                <div class="mt-4 flex items-end justify-between">
+                    <div>
+                        <p class="text-3xl font-extrabold text-purple-700 dark:text-purple-300">{{ $bucketlistCompleted }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">/ {{ $bucketlistTotal }} tamamlandı</p>
+                    </div>
+                    <span class="text-2xl font-bold text-purple-600 dark:text-purple-300">%{{ $bucketlistPct }}</span>
+                </div>
+                <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-purple-100 dark:bg-purple-900/40">
+                    <div
+                        class="h-full rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-500 transition-all"
+                        style="width: {{ $bucketlistPct }}%"
+                    ></div>
+                </div>
+                @if ($bucketlistTotal === 0)
+                    <p class="mt-3 text-xs text-gray-400 dark:text-gray-500">
+                        Henüz bucket list'e eklenen öğe yok.
+                        <a href="{{ route('admin.todo-items.create') }}" class="text-purple-600 hover:underline dark:text-purple-400">Ekle →</a>
+                    </p>
+                @endif
+            </article>
+
+        </section>
+
+    </div>
+    {{-- / KİŞİSEL DASHBOARD --}}
+
     @php
         $dailyTimes = $weather['daily']['time'] ?? [];
         $dailyMin = $weather['daily']['temperature_2m_min'] ?? [];

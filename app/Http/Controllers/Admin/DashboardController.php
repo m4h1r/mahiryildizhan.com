@@ -9,7 +9,9 @@ use App\Models\Expense;
 use App\Models\Income;
 use App\Models\Person;
 use App\Models\Post;
+use App\Models\PurchaseItem;
 use App\Models\Setting;
+use App\Models\TodoItem;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -123,6 +125,59 @@ class DashboardController extends Controller
             ->take(12)
             ->values();
 
+        // Finansal settings — sadece ₺, USD dönüşümü kur üzerinden
+        $fxUsdTry = data_get($rates, 'fx.rates.USD')
+            ? 1 / (float) data_get($rates, 'fx.rates.USD')
+            : null;
+
+        $treasuryTry = (float) Setting::get('treasury_try', 0);
+        $treasuryUsd = ($fxUsdTry && $fxUsdTry > 0) ? round($treasuryTry / $fxUsdTry, 2) : null;
+
+        $dailyPassiveIncomeTry = (float) Setting::get('daily_passive_income_try', 0);
+        $monthlyPassiveIncomeTry = $dailyPassiveIncomeTry * 30;
+        $monthlyPassiveIncomeUsd = ($fxUsdTry && $fxUsdTry > 0)
+            ? $monthlyPassiveIncomeTry / $fxUsdTry
+            : 0;
+
+        // Zenginlik seviyesi (USD eşik değerleri)
+        $wealthThresholds = [250, 500, 750, 1500, 2500, 4000, 7500, 15000, 25000, 50000];
+        $currentTierIndex = -1;
+        foreach ($wealthThresholds as $i => $threshold) {
+            if ($monthlyPassiveIncomeUsd >= $threshold) {
+                $currentTierIndex = $i;
+            }
+        }
+        if ($currentTierIndex === 9) {
+            $wealthProgress = 100;
+        } elseif ($currentTierIndex === -1) {
+            $wealthProgress = $wealthThresholds[0] > 0
+                ? min(100, (int) (($monthlyPassiveIncomeUsd / $wealthThresholds[0]) * 100))
+                : 0;
+        } else {
+            $diff = $wealthThresholds[$currentTierIndex + 1] - $wealthThresholds[$currentTierIndex];
+            $above = $monthlyPassiveIncomeUsd - $wealthThresholds[$currentTierIndex];
+            $wealthProgress = $diff > 0 ? min(100, (int) (($above / $diff) * 100)) : 100;
+        }
+
+        // Bugünkü/gecikmiş yapılacaklar
+        $dueTodos = TodoItem::query()
+            ->where('is_completed', false)
+            ->whereNotNull('due_date')
+            ->where('due_date', '<=', now()->toDateString())
+            ->orderBy('due_date')
+            ->limit(10)
+            ->get();
+        $dueTodosTotal = TodoItem::where('is_completed', false)
+            ->whereNotNull('due_date')
+            ->where('due_date', '<=', now()->toDateString())
+            ->count();
+
+        // Bucketlist istatistikleri
+        $bucketlistTotal = PurchaseItem::where('is_bucketlist', true)->count()
+            + TodoItem::where('is_bucketlist', true)->count();
+        $bucketlistCompleted = PurchaseItem::where('is_bucketlist', true)->where('is_completed', true)->count()
+            + TodoItem::where('is_bucketlist', true)->where('is_completed', true)->count();
+
         return view('admin.dashboard', [
             'publishedPosts' => $publishedPosts,
             'pendingComments' => $pendingComments,
@@ -139,6 +194,18 @@ class DashboardController extends Controller
             'weather' => $weather,
             'weatherCityName' => $weatherCityName,
             'rates' => $rates,
+            'treasuryTry' => $treasuryTry,
+            'treasuryUsd' => $treasuryUsd,
+            'dailyPassiveIncomeTry' => $dailyPassiveIncomeTry,
+            'monthlyPassiveIncomeTry' => $monthlyPassiveIncomeTry,
+            'monthlyPassiveIncomeUsd' => $monthlyPassiveIncomeUsd,
+            'currentTierIndex' => $currentTierIndex,
+            'wealthThresholds' => $wealthThresholds,
+            'wealthProgress' => $wealthProgress,
+            'dueTodos' => $dueTodos,
+            'dueTodosTotal' => $dueTodosTotal,
+            'bucketlistTotal' => $bucketlistTotal,
+            'bucketlistCompleted' => $bucketlistCompleted,
         ]);
     }
 }
