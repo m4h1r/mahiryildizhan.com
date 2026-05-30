@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Milestone;
 use App\Models\PurchaseItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PurchaseItemController extends Controller
@@ -43,6 +45,7 @@ class PurchaseItemController extends Controller
             'time_cost_hours' => 'nullable|numeric|min:0',
             'is_bucketlist'   => 'boolean',
             'is_completed'    => 'boolean',
+            'image'           => 'nullable|image|max:4096',
         ]);
 
         $data['is_bucketlist'] = $request->boolean('is_bucketlist');
@@ -52,7 +55,21 @@ class PurchaseItemController extends Controller
             $data['completed_at'] = now();
         }
 
-        PurchaseItem::create($data);
+        if ($request->hasFile('image')) {
+            $data['image_path'] = $request->file('image')->store('bucketlist', 'public');
+        }
+        unset($data['image']);
+
+        $item = PurchaseItem::create($data);
+
+        if ($item->is_bucketlist && $item->is_completed) {
+            $item->milestone()->create([
+                'title'       => $item->title,
+                'description' => $item->description,
+                'image_path'  => $item->image_path,
+                'achieved_at' => $item->completed_at,
+            ]);
+        }
 
         return to_route('admin.purchase-items.index')->with('success', __('Item created.'));
     }
@@ -71,6 +88,7 @@ class PurchaseItemController extends Controller
             'time_cost_hours' => 'nullable|numeric|min:0',
             'is_bucketlist'   => 'boolean',
             'is_completed'    => 'boolean',
+            'image'           => 'nullable|image|max:4096',
         ]);
 
         $data['is_bucketlist'] = $request->boolean('is_bucketlist');
@@ -83,7 +101,32 @@ class PurchaseItemController extends Controller
             $data['completed_at'] = null;
         }
 
+        if ($request->hasFile('image')) {
+            if ($purchaseItem->image_path) {
+                Storage::disk('public')->delete($purchaseItem->image_path);
+            }
+            $data['image_path'] = $request->file('image')->store('bucketlist', 'public');
+        }
+
+        if ($request->boolean('remove_image') && $purchaseItem->image_path) {
+            Storage::disk('public')->delete($purchaseItem->image_path);
+            $data['image_path'] = null;
+        }
+
+        unset($data['image']);
         $purchaseItem->update($data);
+
+        // Milestone sync
+        if ($purchaseItem->is_bucketlist && $purchaseItem->is_completed && ! $wasCompleted) {
+            $purchaseItem->milestone()->firstOrCreate([], [
+                'title'       => $purchaseItem->title,
+                'description' => $purchaseItem->description,
+                'image_path'  => $purchaseItem->image_path,
+                'achieved_at' => $purchaseItem->completed_at,
+            ]);
+        } elseif (! $purchaseItem->is_completed) {
+            $purchaseItem->milestone()->delete();
+        }
 
         return to_route('admin.purchase-items.index')->with('success', __('Item updated.'));
     }
@@ -97,9 +140,21 @@ class PurchaseItemController extends Controller
 
     public function toggleComplete(PurchaseItem $purchaseItem): JsonResponse|RedirectResponse
     {
-        $purchaseItem->is_completed = ! $purchaseItem->is_completed;
+        $wasCompleted = $purchaseItem->is_completed;
+        $purchaseItem->is_completed = ! $wasCompleted;
         $purchaseItem->completed_at = $purchaseItem->is_completed ? now() : null;
         $purchaseItem->save();
+
+        if ($purchaseItem->is_bucketlist && $purchaseItem->is_completed && ! $wasCompleted) {
+            $purchaseItem->milestone()->firstOrCreate([], [
+                'title'       => $purchaseItem->title,
+                'description' => $purchaseItem->description,
+                'image_path'  => $purchaseItem->image_path,
+                'achieved_at' => $purchaseItem->completed_at,
+            ]);
+        } elseif (! $purchaseItem->is_completed) {
+            $purchaseItem->milestone()->delete();
+        }
 
         if (request()->expectsJson()) {
             return response()->json([

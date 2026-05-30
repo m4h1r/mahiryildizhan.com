@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="max-w-2xl">
-        <form method="POST" action="{{ route('admin.todo-items.update', $item->id) }}" class="space-y-6">
+        <form method="POST" action="{{ route('admin.todo-items.update', $item->id) }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
             <div class="card-admin">

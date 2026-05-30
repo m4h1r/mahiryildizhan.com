@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\PurchaseItemController;
 use App\Http\Controllers\Admin\TodoItemController;
 use App\Http\Controllers\Admin\BucketlistController;
+use App\Http\Controllers\Admin\MilestoneController;
 use App\Services\CsvImportService;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,11 @@ Route::resource('/todo-items', TodoItemController::class)
 
 // Bucketlist
 Route::get('/bucketlist', [BucketlistController::class, 'index'])->name('admin.bucketlist');
+
+// Milestones
+Route::resource('/milestones', MilestoneController::class)
+    ->only(['index', 'edit', 'update', 'destroy'])
+    ->names('admin.milestones');
 Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports');
 Route::get('/about', [AboutController::class, 'index'])->name('admin.about');
 Route::post('/about', [AboutController::class, 'update'])->name('admin.about.update');

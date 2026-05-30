@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\TodoItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class TodoItemController extends Controller
@@ -48,6 +48,7 @@ class TodoItemController extends Controller
             'due_date'        => 'nullable|date',
             'is_bucketlist'   => 'boolean',
             'is_completed'    => 'boolean',
+            'image'           => 'nullable|image|max:4096',
         ]);
 
         $data['is_bucketlist'] = $request->boolean('is_bucketlist');
@@ -57,7 +58,21 @@ class TodoItemController extends Controller
             $data['completed_at'] = now();
         }
 
-        TodoItem::create($data);
+        if ($request->hasFile('image')) {
+            $data['image_path'] = $request->file('image')->store('bucketlist', 'public');
+        }
+        unset($data['image']);
+
+        $item = TodoItem::create($data);
+
+        if ($item->is_bucketlist && $item->is_completed) {
+            $item->milestone()->create([
+                'title'       => $item->title,
+                'description' => $item->description,
+                'image_path'  => $item->image_path,
+                'achieved_at' => $item->completed_at,
+            ]);
+        }
 
         return to_route('admin.todo-items.index')->with('success', __('Todo created.'));
     }
@@ -77,6 +92,7 @@ class TodoItemController extends Controller
             'due_date'        => 'nullable|date',
             'is_bucketlist'   => 'boolean',
             'is_completed'    => 'boolean',
+            'image'           => 'nullable|image|max:4096',
         ]);
 
         $data['is_bucketlist'] = $request->boolean('is_bucketlist');
@@ -89,7 +105,32 @@ class TodoItemController extends Controller
             $data['completed_at'] = null;
         }
 
+        if ($request->hasFile('image')) {
+            if ($todoItem->image_path) {
+                Storage::disk('public')->delete($todoItem->image_path);
+            }
+            $data['image_path'] = $request->file('image')->store('bucketlist', 'public');
+        }
+
+        if ($request->boolean('remove_image') && $todoItem->image_path) {
+            Storage::disk('public')->delete($todoItem->image_path);
+            $data['image_path'] = null;
+        }
+
+        unset($data['image']);
         $todoItem->update($data);
+
+        // Milestone sync
+        if ($todoItem->is_bucketlist && $todoItem->is_completed && ! $wasCompleted) {
+            $todoItem->milestone()->firstOrCreate([], [
+                'title'       => $todoItem->title,
+                'description' => $todoItem->description,
+                'image_path'  => $todoItem->image_path,
+                'achieved_at' => $todoItem->completed_at,
+            ]);
+        } elseif (! $todoItem->is_completed) {
+            $todoItem->milestone()->delete();
+        }
 
         return to_route('admin.todo-items.index')->with('success', __('Todo updated.'));
     }
@@ -103,9 +144,21 @@ class TodoItemController extends Controller
 
     public function toggleComplete(TodoItem $todoItem): JsonResponse|RedirectResponse
     {
-        $todoItem->is_completed = ! $todoItem->is_completed;
+        $wasCompleted = $todoItem->is_completed;
+        $todoItem->is_completed = ! $wasCompleted;
         $todoItem->completed_at = $todoItem->is_completed ? now() : null;
         $todoItem->save();
+
+        if ($todoItem->is_bucketlist && $todoItem->is_completed && ! $wasCompleted) {
+            $todoItem->milestone()->firstOrCreate([], [
+                'title'       => $todoItem->title,
+                'description' => $todoItem->description,
+                'image_path'  => $todoItem->image_path,
+                'achieved_at' => $todoItem->completed_at,
+            ]);
+        } elseif (! $todoItem->is_completed) {
+            $todoItem->milestone()->delete();
+        }
 
         if (request()->expectsJson()) {
             return response()->json([

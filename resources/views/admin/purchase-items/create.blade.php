@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="max-w-2xl">
-        <form method="POST" action="{{ route('admin.purchase-items.store') }}" class="space-y-6">
+        <form method="POST" action="{{ route('admin.purchase-items.store') }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
             <div class="card-admin">
                 @include('admin.purchase-items._form')

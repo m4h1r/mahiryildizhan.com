@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PurchaseItem extends Model
@@ -13,6 +14,7 @@ class PurchaseItem extends Model
     protected $fillable = [
         'title',
         'description',
+        'image_path',
         'cost_try',
         'time_cost_hours',
         'is_bucketlist',
@@ -20,6 +22,11 @@ class PurchaseItem extends Model
         'completed_at',
         'user_id',
     ];
+
+    public function milestone(): MorphOne
+    {
+        return $this->morphOne(Milestone::class, 'milestoneable');
+    }
 
     protected function casts(): array
     {
