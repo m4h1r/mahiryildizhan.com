@@ -5,7 +5,7 @@
 
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-800">
-                @foreach (['all' => 'Tümü', 'pending' => 'Bekleyen', 'due' => 'Bugün / Gecikmiş', 'completed' => 'Tamamlandı', 'bucketlist' => 'Bucket List'] as $key => $label)
+                @foreach (['all' => 'Tümü', 'pending' => 'Bekleyen', 'due' => 'Bugün / Gecikmiş', 'completed' => 'Tamamlandı', 'archived' => 'Arşiv', 'bucketlist' => 'Bucket List'] as $key => $label)
                     <a
                         href="{{ route('admin.todo-items.index', ['filter' => $key]) }}"
                         class="rounded-lg px-3 py-1.5 text-sm font-medium transition {{ $filter === $key ? 'bg-white shadow text-gray-900 dark:bg-gray-700 dark:text-gray-100' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}"

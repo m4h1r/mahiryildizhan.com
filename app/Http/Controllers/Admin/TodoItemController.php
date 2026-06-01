@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\TimelineEvent;
 use App\Models\TodoItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -25,6 +26,8 @@ class TodoItemController extends Controller
             'bucketlist' => $query->where('is_bucketlist', true),
             'completed'  => $query->where('is_completed', true),
             'pending'    => $query->where('is_completed', false),
+            'archived'   => $query->where('is_completed', true)
+                                  ->where(fn ($q) => $q->whereNotNull('cost_try')->orWhereNotNull('time_cost_hours')),
             default      => $query,
         };
 
@@ -65,12 +68,15 @@ class TodoItemController extends Controller
 
         $item = TodoItem::create($data);
 
-        if ($item->is_bucketlist && $item->is_completed) {
-            $item->milestone()->create([
+        if ($item->is_bucketlist && $item->is_completed && $item->image_path) {
+            TimelineEvent::create([
                 'title'       => $item->title,
                 'description' => $item->description,
-                'image_path'  => $item->image_path,
-                'achieved_at' => $item->completed_at,
+                'event_type'  => 'milestone',
+                'start_date'  => $item->completed_at?->toDateString() ?? now()->toDateString(),
+                'image'       => $item->image_path,
+                'category'    => 'bucketlist',
+                'is_public'   => true,
             ]);
         }
 
@@ -120,16 +126,16 @@ class TodoItemController extends Controller
         unset($data['image']);
         $todoItem->update($data);
 
-        // Milestone sync
-        if ($todoItem->is_bucketlist && $todoItem->is_completed && ! $wasCompleted) {
-            $todoItem->milestone()->firstOrCreate([], [
+        if ($todoItem->is_bucketlist && $todoItem->is_completed && ! $wasCompleted && $todoItem->image_path) {
+            TimelineEvent::create([
                 'title'       => $todoItem->title,
                 'description' => $todoItem->description,
-                'image_path'  => $todoItem->image_path,
-                'achieved_at' => $todoItem->completed_at,
+                'event_type'  => 'milestone',
+                'start_date'  => $todoItem->completed_at?->toDateString() ?? now()->toDateString(),
+                'image'       => $todoItem->image_path,
+                'category'    => 'bucketlist',
+                'is_public'   => true,
             ]);
-        } elseif (! $todoItem->is_completed) {
-            $todoItem->milestone()->delete();
         }
 
         return to_route('admin.todo-items.index')->with('success', __('Todo updated.'));
@@ -149,15 +155,16 @@ class TodoItemController extends Controller
         $todoItem->completed_at = $todoItem->is_completed ? now() : null;
         $todoItem->save();
 
-        if ($todoItem->is_bucketlist && $todoItem->is_completed && ! $wasCompleted) {
-            $todoItem->milestone()->firstOrCreate([], [
+        if ($todoItem->is_bucketlist && $todoItem->is_completed && ! $wasCompleted && $todoItem->image_path) {
+            TimelineEvent::create([
                 'title'       => $todoItem->title,
                 'description' => $todoItem->description,
-                'image_path'  => $todoItem->image_path,
-                'achieved_at' => $todoItem->completed_at,
+                'event_type'  => 'milestone',
+                'start_date'  => $todoItem->completed_at?->toDateString() ?? now()->toDateString(),
+                'image'       => $todoItem->image_path,
+                'category'    => 'bucketlist',
+                'is_public'   => true,
             ]);
-        } elseif (! $todoItem->is_completed) {
-            $todoItem->milestone()->delete();
         }
 
         if (request()->expectsJson()) {

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Milestone;
 use App\Models\PurchaseItem;
+use App\Models\TimelineEvent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -62,12 +62,15 @@ class PurchaseItemController extends Controller
 
         $item = PurchaseItem::create($data);
 
-        if ($item->is_bucketlist && $item->is_completed) {
-            $item->milestone()->create([
+        if ($item->is_bucketlist && $item->is_completed && $item->image_path) {
+            TimelineEvent::create([
                 'title'       => $item->title,
                 'description' => $item->description,
-                'image_path'  => $item->image_path,
-                'achieved_at' => $item->completed_at,
+                'event_type'  => 'milestone',
+                'start_date'  => $item->completed_at?->toDateString() ?? now()->toDateString(),
+                'image'       => $item->image_path,
+                'category'    => 'bucketlist',
+                'is_public'   => true,
             ]);
         }
 
@@ -116,16 +119,16 @@ class PurchaseItemController extends Controller
         unset($data['image']);
         $purchaseItem->update($data);
 
-        // Milestone sync
-        if ($purchaseItem->is_bucketlist && $purchaseItem->is_completed && ! $wasCompleted) {
-            $purchaseItem->milestone()->firstOrCreate([], [
+        if ($purchaseItem->is_bucketlist && $purchaseItem->is_completed && ! $wasCompleted && $purchaseItem->image_path) {
+            TimelineEvent::create([
                 'title'       => $purchaseItem->title,
                 'description' => $purchaseItem->description,
-                'image_path'  => $purchaseItem->image_path,
-                'achieved_at' => $purchaseItem->completed_at,
+                'event_type'  => 'milestone',
+                'start_date'  => $purchaseItem->completed_at?->toDateString() ?? now()->toDateString(),
+                'image'       => $purchaseItem->image_path,
+                'category'    => 'bucketlist',
+                'is_public'   => true,
             ]);
-        } elseif (! $purchaseItem->is_completed) {
-            $purchaseItem->milestone()->delete();
         }
 
         return to_route('admin.purchase-items.index')->with('success', __('Item updated.'));
@@ -145,15 +148,16 @@ class PurchaseItemController extends Controller
         $purchaseItem->completed_at = $purchaseItem->is_completed ? now() : null;
         $purchaseItem->save();
 
-        if ($purchaseItem->is_bucketlist && $purchaseItem->is_completed && ! $wasCompleted) {
-            $purchaseItem->milestone()->firstOrCreate([], [
+        if ($purchaseItem->is_bucketlist && $purchaseItem->is_completed && ! $wasCompleted && $purchaseItem->image_path) {
+            TimelineEvent::create([
                 'title'       => $purchaseItem->title,
                 'description' => $purchaseItem->description,
-                'image_path'  => $purchaseItem->image_path,
-                'achieved_at' => $purchaseItem->completed_at,
+                'event_type'  => 'milestone',
+                'start_date'  => $purchaseItem->completed_at?->toDateString() ?? now()->toDateString(),
+                'image'       => $purchaseItem->image_path,
+                'category'    => 'bucketlist',
+                'is_public'   => true,
             ]);
-        } elseif (! $purchaseItem->is_completed) {
-            $purchaseItem->milestone()->delete();
         }
 
         if (request()->expectsJson()) {

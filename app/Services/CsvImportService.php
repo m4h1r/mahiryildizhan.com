@@ -689,7 +689,7 @@ class CsvImportService
         }
 
         $providedTotal = $this->toDecimal($attributes['total'] ?? ($row['total'] ?? null), 'total');
-        $attributes['total'] = $providedTotal ?? (($price * $quantity) + $tax);
+        $attributes['total'] = $providedTotal ?? ($price * $quantity);
 
         return $attributes;
     }
