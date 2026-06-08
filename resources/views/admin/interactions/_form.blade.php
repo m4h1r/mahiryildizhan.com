@@ -6,8 +6,8 @@
         <select name="person_id" class="form-input-admin" required>
             <option value="">Select person</option>
             @foreach ($people as $person)
-                <option value="{{ $person->id }}" @selected((string) old('person_id', $interaction->person_id ?? '') === (string) $person->id)>
-                    {{ $person->surname }}, {{ $person->name }}
+                <option value="{{ $person->id }}" @selected((string) old('person_id', $defaultPersonId ?? ($interaction->person_id ?? '')) === (string) $person->id)>
+                    {{ $person->name }} {{ $person->surname }}
                 </option>
             @endforeach
         </select>

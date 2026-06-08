@@ -51,11 +51,12 @@ class InteractionController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         return view('admin.interactions.create', [
             'title' => 'New Interaction',
             'heading' => 'New Interaction',
+            'defaultPersonId' => $request->integer('person_id') ?: null,
             ...$this->formData(),
         ]);
     }

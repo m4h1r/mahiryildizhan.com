@@ -1,7 +1,7 @@
-@extends('admin.layout', ['title' => 'Satın Alınacaklar — Düzenle', 'heading' => 'Alım D��zenle'])
+@extends('admin.layout', ['title' => 'Satın Alınacaklar — Düzenle', 'heading' => 'Alım Düzenle'])
 
 @section('content')
-    <div class="max-w-2xl">
+    <div class="max-w-2xl space-y-4">
         <form method="POST" action="{{ route('admin.purchase-items.update', $item->id) }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
@@ -15,15 +15,16 @@
                 <a href="{{ route('admin.purchase-items.index') }}" class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                     {{ __('Cancel') }}
                 </a>
-                <form method="POST" action="{{ route('admin.purchase-items.destroy', $item->id) }}" class="ml-auto"
-                      onsubmit="return confirm('Bu kaydı silmek istediğine emin misin?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="text-sm text-red-600 hover:text-red-800 dark:text-red-400">
-                        {{ __('Delete') }}
-                    </button>
-                </form>
             </div>
+        </form>
+
+        <form method="POST" action="{{ route('admin.purchase-items.destroy', $item->id) }}"
+              onsubmit="return confirm('Bu kaydı silmek istediğine emin misin?')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="text-sm text-red-600 hover:text-red-800 dark:text-red-400">
+                {{ __('Delete') }}
+            </button>
         </form>
     </div>
 @endsection

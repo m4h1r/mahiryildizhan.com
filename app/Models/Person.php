@@ -32,6 +32,7 @@ class Person extends Model
         'mobile',
         'email',
         'notes',
+        'address',
     ];
 
     protected function casts(): array

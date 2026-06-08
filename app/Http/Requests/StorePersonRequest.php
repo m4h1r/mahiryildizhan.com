@@ -32,6 +32,7 @@ class StorePersonRequest extends FormRequest
             'mobile' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'notes' => ['nullable', 'string'],
+            'address' => ['nullable', 'string'],
         ];
     }
 }

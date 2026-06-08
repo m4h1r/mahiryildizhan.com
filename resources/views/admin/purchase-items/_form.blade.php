@@ -76,6 +76,17 @@
         <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
             <input
                 type="checkbox"
+                name="is_grocery"
+                value="1"
+                class="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                {{ old('is_grocery', $item->is_grocery ?? false) ? 'checked' : '' }}
+            >
+            <span>Market alışverişi</span>
+        </label>
+
+        <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+            <input
+                type="checkbox"
                 name="is_completed"
                 value="1"
                 class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"

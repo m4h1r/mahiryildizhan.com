@@ -21,6 +21,7 @@ class PurchaseItemController extends Controller
 
         $query = match ($filter) {
             'bucketlist' => $query->where('is_bucketlist', true),
+            'grocery'    => $query->where('is_grocery', true),
             'completed'  => $query->where('is_completed', true),
             'pending'    => $query->where('is_completed', false),
             default      => $query,
@@ -44,11 +45,13 @@ class PurchaseItemController extends Controller
             'cost_try'        => 'nullable|numeric|min:0',
             'time_cost_hours' => 'nullable|numeric|min:0',
             'is_bucketlist'   => 'boolean',
+            'is_grocery'      => 'boolean',
             'is_completed'    => 'boolean',
             'image'           => 'nullable|image|max:4096',
         ]);
 
         $data['is_bucketlist'] = $request->boolean('is_bucketlist');
+        $data['is_grocery']    = $request->boolean('is_grocery');
         $data['is_completed']  = $request->boolean('is_completed');
 
         if ($data['is_completed']) {
@@ -90,11 +93,13 @@ class PurchaseItemController extends Controller
             'cost_try'        => 'nullable|numeric|min:0',
             'time_cost_hours' => 'nullable|numeric|min:0',
             'is_bucketlist'   => 'boolean',
+            'is_grocery'      => 'boolean',
             'is_completed'    => 'boolean',
             'image'           => 'nullable|image|max:4096',
         ]);
 
         $data['is_bucketlist'] = $request->boolean('is_bucketlist');
+        $data['is_grocery']    = $request->boolean('is_grocery');
         $wasCompleted = $purchaseItem->is_completed;
         $data['is_completed'] = $request->boolean('is_completed');
 

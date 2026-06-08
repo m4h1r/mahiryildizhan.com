@@ -3,8 +3,16 @@
 @section('content')
     <div class="space-y-6">
         <section class="card-admin">
-            <form method="GET" class="flex gap-3">
+            <form method="GET" class="flex flex-wrap gap-3">
                 <input class="form-input-admin" name="q" placeholder="Search adages..." value="{{ $filters['q'] ?? '' }}">
+                <select name="language_id" class="form-input-admin">
+                    <option value="">All languages</option>
+                    @foreach ($languages as $lang)
+                        <option value="{{ $lang->id }}" @selected((string) ($filters['language_id'] ?? '') === (string) $lang->id)>
+                            {{ $lang->name }}
+                        </option>
+                    @endforeach
+                </select>
                 <button type="submit" class="admin-btn admin-btn-primary shrink-0">Filter</button>
                 <a href="{{ route('admin.adages.index') }}" class="admin-btn admin-btn-ghost shrink-0">Reset</a>
             </form>
@@ -31,7 +39,7 @@
                             <tr>
                                 <td class="hidden sm:table-cell">{{ $adage->owner }}</td>
                                 <td>{{ \Illuminate\Support\Str::limit($adage->adage, 110) }}</td>
-                                <td class="hidden md:table-cell">{{ $adage->language ?: '-' }}</td>
+                                <td class="hidden md:table-cell">{{ optional($adage->language)->name ?: '-' }}</td>
                                 <td>
                                     <div class="flex justify-end gap-1.5">
                                         <a href="{{ route('admin.adages.edit', $adage) }}" class="admin-btn-sm admin-btn-ghost">Edit</a>

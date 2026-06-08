@@ -8,7 +8,14 @@
 
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
         <span class="mb-1 block">Language</span>
-        <input name="language" class="form-input-admin" value="{{ old('language', $adage->language ?? '') }}">
+        <select name="language_id" class="form-input-admin">
+            <option value="">— Select language —</option>
+            @foreach ($languages as $lang)
+                <option value="{{ $lang->id }}" @selected((string) old('language_id', $adage->language_id ?? '') === (string) $lang->id)>
+                    {{ $lang->name }} ({{ $lang->code }})
+                </option>
+            @endforeach
+        </select>
     </label>
 
     <label class="md:col-span-2 text-sm font-medium text-gray-700 dark:text-gray-200">

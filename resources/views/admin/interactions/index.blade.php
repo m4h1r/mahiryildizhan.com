@@ -10,7 +10,7 @@
                     <option value="">All People</option>
                     @foreach ($people as $person)
                         <option value="{{ $person->id }}" @selected((string) ($filters['person_id'] ?? '') === (string) $person->id)>
-                            {{ $person->surname }}, {{ $person->name }}
+                            {{ $person->name }} {{ $person->surname }}
                         </option>
                     @endforeach
                 </select>

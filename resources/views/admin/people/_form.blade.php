@@ -240,6 +240,11 @@
     </div>
 
     <label class="md:col-span-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+        <span class="mb-1 block">{{ __('Address') }}</span>
+        <textarea name="address" class="form-input-admin min-h-20" rows="3">{{ old('address', $person->address ?? '') }}</textarea>
+    </label>
+
+    <label class="md:col-span-2 text-sm font-medium text-gray-700 dark:text-gray-200">
         <span class="mb-1 block">{{ __('Notes') }}</span>
         <textarea name="notes" class="form-input-admin min-h-28">{{ old('notes', $person->notes ?? '') }}</textarea>
     </label>

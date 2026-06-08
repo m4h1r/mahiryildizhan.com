@@ -4,9 +4,16 @@
     <div class="space-y-6">
         <section class="card-admin p-4 md:p-6">
             <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
-                <div>
-                    <h2 class="text-xl font-semibold">{{ $person->name }} {{ $person->surname }}</h2>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $person->email ?: '-' }}</p>
+                <div class="flex items-center gap-4">
+                    <img
+                        src="{{ $person->pictureUrl }}"
+                        alt="{{ $person->name }} {{ $person->surname }}"
+                        class="h-16 w-16 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700 shrink-0"
+                    >
+                    <div>
+                        <h2 class="text-xl font-semibold">{{ $person->name }} {{ $person->surname }}</h2>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $person->email ?: '-' }}</p>
+                    </div>
                 </div>
 
                 <div class="flex flex-wrap gap-2">
@@ -49,6 +56,12 @@
                     <dt class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('Mobile') }}</dt>
                     <dd class="mt-1">{{ $person->mobile ?: '-' }}</dd>
                 </div>
+                @if ($person->address)
+                <div class="md:col-span-2 lg:col-span-4">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('Address') }}</dt>
+                    <dd class="mt-1 whitespace-pre-line">{{ $person->address }}</dd>
+                </div>
+                @endif
             </dl>
         </section>
 

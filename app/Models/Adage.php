@@ -9,5 +9,10 @@ class Adage extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['owner', 'adage', 'keywords', 'language'];
+    protected $fillable = ['owner', 'adage', 'keywords', 'language_id'];
+
+    public function language()
+    {
+        return $this->belongsTo(PostLanguage::class, 'language_id');
+    }
 }

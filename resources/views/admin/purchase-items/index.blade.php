@@ -6,7 +6,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
             {{-- Filtreler --}}
             <div class="flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-800">
-                @foreach (['all' => 'Tümü', 'pending' => 'Bekleyen', 'completed' => 'Satın Alındı', 'bucketlist' => 'Bucket List'] as $key => $label)
+                @foreach (['all' => 'Tümü', 'pending' => 'Bekleyen', 'completed' => 'Satın Alındı', 'grocery' => 'Market', 'bucketlist' => 'Bucket List'] as $key => $label)
                     <a
                         href="{{ route('admin.purchase-items.index', ['filter' => $key]) }}"
                         class="rounded-lg px-3 py-1.5 text-sm font-medium transition {{ $filter === $key ? 'bg-white shadow text-gray-900 dark:bg-gray-700 dark:text-gray-100' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}"
@@ -43,6 +43,9 @@
                                         <div class="flex items-center gap-2">
                                             @if ($item->is_bucketlist)
                                                 <span class="shrink-0 rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">★ BL</span>
+                                            @endif
+                                            @if ($item->is_grocery)
+                                                <span class="shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:bg-green-900/40 dark:text-green-300">🛒 MKT</span>
                                             @endif
                                             <span class="font-medium text-gray-800 dark:text-gray-100 {{ $item->is_completed ? 'line-through opacity-60' : '' }}">
                                                 {{ $item->title }}

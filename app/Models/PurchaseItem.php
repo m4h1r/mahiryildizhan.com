@@ -18,6 +18,7 @@ class PurchaseItem extends Model
         'cost_try',
         'time_cost_hours',
         'is_bucketlist',
+        'is_grocery',
         'is_completed',
         'completed_at',
         'user_id',
@@ -32,6 +33,7 @@ class PurchaseItem extends Model
     {
         return [
             'is_bucketlist' => 'boolean',
+            'is_grocery' => 'boolean',
             'is_completed' => 'boolean',
             'completed_at' => 'datetime',
             'cost_try' => 'decimal:2',
