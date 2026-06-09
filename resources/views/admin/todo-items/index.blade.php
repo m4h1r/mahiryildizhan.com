@@ -5,7 +5,7 @@
 
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-800">
-                @foreach (['all' => 'Tümü', 'pending' => 'Bekleyen', 'due' => 'Bugün / Gecikmiş', 'completed' => 'Tamamlandı', 'archived' => 'Arşiv', 'bucketlist' => 'Bucket List'] as $key => $label)
+                @foreach (['pending' => 'Bekleyen', 'due' => 'Bugün / Gecikmiş', 'completed' => 'Tamamlandı', 'archived' => 'Arşiv', 'bucketlist' => 'Bucket List', 'all' => 'Tümü'] as $key => $label)
                     <a
                         href="{{ route('admin.todo-items.index', ['filter' => $key]) }}"
                         class="rounded-lg px-3 py-1.5 text-sm font-medium transition {{ $filter === $key ? 'bg-white shadow text-gray-900 dark:bg-gray-700 dark:text-gray-100' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}"
@@ -41,10 +41,12 @@
                                 @php
                                     $isOverdue = $item->due_date && !$item->is_completed && $item->due_date->isPast();
                                     $isToday   = $item->due_date && $item->due_date->isToday();
+                                    $ageDays   = (int) $item->created_at->diffInDays(now());
                                 @endphp
-                                <tr class="transition hover:bg-gray-50/60 dark:hover:bg-gray-900/30">
+                                <tr class="transition {{ !$item->is_completed && $ageDays >= 100 ? 'bg-red-50/70 dark:bg-red-900/10 hover:bg-red-50 dark:hover:bg-red-900/20' : (!$item->is_completed && $ageDays >= 50 ? 'bg-yellow-50/70 dark:bg-yellow-900/10 hover:bg-yellow-50 dark:hover:bg-yellow-900/20' : 'hover:bg-gray-50/60 dark:hover:bg-gray-900/30') }}">
                                     <td class="px-4 py-3">
                                         <div class="flex items-center gap-2">
+                                            <span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums {{ $ageDays >= 100 ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' : ($ageDays >= 50 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400') }}">{{ $ageDays }}g</span>
                                             @if ($item->is_bucketlist)
                                                 <span class="shrink-0 rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">★ BL</span>
                                             @endif

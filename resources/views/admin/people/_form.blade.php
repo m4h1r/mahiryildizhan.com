@@ -127,7 +127,7 @@
     <div
         class="md:col-span-2"
         x-data="{
-            picture: {{ Js::from(old('picture', $person->picture ?? '')) }},
+            picture: {{ Js::from(old('picture', isset($person) && $person->picture ? $person->pictureUrl : '')) }},
             showPicker: false,
             mediaItems: [],
             libraryMeta: { page: 1, last_page: 1 },

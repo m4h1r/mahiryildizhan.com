@@ -15,7 +15,7 @@ class TodoItemController extends Controller
 {
     public function index(Request $request): View
     {
-        $filter = $request->input('filter', 'all');
+        $filter = $request->input('filter', 'pending');
 
         $query = TodoItem::query()->orderBy('due_date')->orderBy('id');
 

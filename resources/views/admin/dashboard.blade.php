@@ -346,7 +346,7 @@
                         @php($daysFromToday = (int) $person->days_from_today)
                         <a href="{{ route('admin.people.show', $person->id) }}" class="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-900/60">
                             <img
-                                src="/storage/people/{{ $person->picture ?? 'user.png' }}"
+                                src="{{ $person->pictureUrl }}"
                                 alt="{{ trim(($person->name ?? '') . ' ' . ($person->surname ?? '')) }}"
                                 class="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-gray-200 dark:ring-gray-700"
                             >
