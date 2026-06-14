@@ -110,3 +110,4 @@ Artisan::command('media:migrate-covers {--dry-run}', function () {
 
 Schedule::job(new GenerateSitemapJob())->daily();
 Schedule::command('model:prune', ['--model' => [Post::class, Comment::class, Person::class]])->weekly();
+Schedule::command('alice:prune-audit-log')->weekly();

@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Middleware\AliceAudit;
+use App\Http\Middleware\AliceAuthenticate;
+use App\Http\Middleware\AliceDryRun;
+use App\Http\Middleware\AliceIdempotency;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\SecurityHeadersMiddleware;
 use App\Http\Middleware\SetLocale;
@@ -22,6 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin' => EnsureAdmin::class,
+            'alice.auth' => AliceAuthenticate::class,
+            'alice.audit' => AliceAudit::class,
+            'alice.idempotency' => AliceIdempotency::class,
+            'alice.dryrun' => AliceDryRun::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

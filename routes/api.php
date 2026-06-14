@@ -5,6 +5,8 @@ use App\Http\Controllers\PublicSite\BlogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', fn () => response()->json(['ok' => true]));
+
+require __DIR__.'/alice.php';
 Route::post('/posts/{slug}/view', [BlogController::class, 'trackView'])->name('api.posts.view');
 
 Route::middleware(['web', 'auth', 'admin'])->group(function (): void {
