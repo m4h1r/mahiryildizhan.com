@@ -2,7 +2,7 @@
 
 @section('content')
     <section class="card-admin p-6">
-        <form method="POST" action="{{ route('admin.people.store') }}">
+        <form method="POST" action="{{ route('admin.people.store') }}" enctype="multipart/form-data">
             @csrf
             @include('admin.people._form')
         </form>

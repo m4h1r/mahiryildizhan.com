@@ -8,7 +8,6 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\IncomeController;
 use App\Http\Controllers\Admin\InteractionController;
-use App\Http\Controllers\Admin\LinkController;
 use App\Http\Controllers\Admin\NodeConnectionController;
 use App\Http\Controllers\Admin\NodeController;
 use App\Http\Controllers\Admin\PersonController;
@@ -23,7 +22,6 @@ use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\PurchaseItemController;
 use App\Http\Controllers\Admin\TodoItemController;
 use App\Http\Controllers\Admin\BucketlistController;
-use App\Http\Controllers\Admin\MilestoneController;
 use App\Services\CsvImportService;
 use Illuminate\Support\Facades\Route;
 
@@ -44,10 +42,6 @@ Route::resource('/todo-items', TodoItemController::class)
 // Bucketlist
 Route::get('/bucketlist', [BucketlistController::class, 'index'])->name('admin.bucketlist');
 
-// Milestones
-Route::resource('/milestones', MilestoneController::class)
-    ->only(['index', 'edit', 'update', 'destroy'])
-    ->names('admin.milestones');
 Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports');
 Route::get('/about', [AboutController::class, 'index'])->name('admin.about');
 Route::post('/about', [AboutController::class, 'update'])->name('admin.about.update');
@@ -109,10 +103,6 @@ Route::get('/timeline/visualize', [TimelineController::class, 'visualize'])->nam
 Route::resource('/timeline', TimelineController::class)
 	->except(['show'])
 	->names('admin.timeline');
-
-Route::resource('/links', LinkController::class)
-	->except(['show'])
-	->names('admin.links');
 
 Route::get('/subscribers', [SubscriberController::class, 'index'])->name('admin.subscribers.index');
 Route::get('/subscribers/export', [SubscriberController::class, 'export'])->name('admin.subscribers.export');

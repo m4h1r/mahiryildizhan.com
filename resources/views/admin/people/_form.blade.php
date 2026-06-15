@@ -128,6 +128,7 @@
         class="md:col-span-2"
         x-data="{
             picture: {{ Js::from(old('picture', isset($person) && $person->picture ? $person->pictureUrl : '')) }},
+            tab: 'library',
             showPicker: false,
             mediaItems: [],
             libraryMeta: { page: 1, last_page: 1 },
@@ -135,6 +136,7 @@
             libraryQuery: '',
             libraryType: '1',
             searchDebounceTimer: null,
+            localPreview: null,
             mediaLibraryUrl: '{{ route('admin.media.library') }}',
             async openPicker() {
                 this.showPicker = true;
@@ -162,7 +164,24 @@
             },
             selectMedia(item) {
                 this.picture = item.original_url || item.url || '';
+                this.localPreview = null;
+                this.$refs.fileInput.value = '';
                 this.showPicker = false;
+            },
+            handleFileSelect(event) {
+                const file = event.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => { this.localPreview = e.target.result; this.picture = ''; };
+                reader.readAsDataURL(file);
+            },
+            clearImage() {
+                this.picture = '';
+                this.localPreview = null;
+                this.$refs.fileInput.value = '';
+            },
+            get previewSrc() {
+                return this.localPreview || this.picture || null;
             }
         }"
     >
@@ -171,29 +190,51 @@
         {{-- Hidden input submitted with the form --}}
         <input type="hidden" name="picture" :value="picture">
 
+        {{-- File input (always in DOM for form submission) --}}
+        <input
+            type="file"
+            name="picture_file"
+            accept="image/*"
+            x-ref="fileInput"
+            @change="handleFileSelect($event)"
+            class="sr-only"
+        >
+
         {{-- Current preview + clear --}}
         <div class="mb-2 flex items-center gap-3">
-            <template x-if="picture">
+            <template x-if="previewSrc">
                 <div class="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-                    <img :src="picture" class="h-full w-full object-cover">
+                    <img :src="previewSrc" class="h-full w-full object-cover">
                     <button
                         type="button"
-                        @click="picture = ''"
+                        @click="clearImage()"
                         class="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded bg-black/60 text-white hover:bg-black/80"
                         title="Remove"
                     >&times;</button>
                 </div>
             </template>
-            <template x-if="!picture">
+            <template x-if="!previewSrc">
                 <div class="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg border border-dashed border-gray-300 text-gray-400 dark:border-gray-600">
                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 </div>
             </template>
-            <button
-                type="button"
-                @click="openPicker()"
-                class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700"
-            >{{ __('Choose from Media Library') }}</button>
+            <div class="flex flex-col gap-1.5">
+                <div class="flex gap-1">
+                    <button
+                        type="button"
+                        @click="tab = 'library'; openPicker()"
+                        :class="tab === 'library' ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'border border-gray-300 dark:border-gray-700'"
+                        class="rounded-md px-3 py-1.5 text-xs font-medium"
+                    >{{ __('Media Library') }}</button>
+                    <button
+                        type="button"
+                        @click="tab = 'upload'; $refs.fileInput.click()"
+                        :class="tab === 'upload' ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'border border-gray-300 dark:border-gray-700'"
+                        class="rounded-md px-3 py-1.5 text-xs font-medium"
+                    >{{ __('Upload from Computer') }}</button>
+                </div>
+                <p x-show="localPreview" class="text-[11px] text-emerald-600 dark:text-emerald-400">{{ __('File selected — will upload on save.') }}</p>
+            </div>
         </div>
 
         {{-- Media library panel --}}

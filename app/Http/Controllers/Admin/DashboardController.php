@@ -148,15 +148,15 @@ class DashboardController extends Controller
             }
         }
         if ($currentTierIndex === 9) {
-            $wealthProgress = 100;
+            $wealthProgress = 100.0;
         } elseif ($currentTierIndex === -1) {
             $wealthProgress = $wealthThresholds[0] > 0
-                ? min(100, (int) (($monthlyPassiveIncomeUsd / $wealthThresholds[0]) * 100))
+                ? min(100, round(($monthlyPassiveIncomeUsd / $wealthThresholds[0]) * 100, 2))
                 : 0;
         } else {
             $diff = $wealthThresholds[$currentTierIndex + 1] - $wealthThresholds[$currentTierIndex];
             $above = $monthlyPassiveIncomeUsd - $wealthThresholds[$currentTierIndex];
-            $wealthProgress = $diff > 0 ? min(100, (int) (($above / $diff) * 100)) : 100;
+            $wealthProgress = $diff > 0 ? min(100, round(($above / $diff) * 100, 2)) : 100.0;
         }
 
         // Bugünkü/gecikmiş yapılacaklar

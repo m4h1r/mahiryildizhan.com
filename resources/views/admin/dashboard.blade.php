@@ -72,7 +72,7 @@
                     @endif
                 </div>
                 <span class="shrink-0 rounded-lg bg-blue-100 px-3 py-1.5 text-base font-extrabold text-blue-800 dark:bg-blue-900/40 dark:text-blue-200">
-                    %{{ $wealthProgress }}
+                    %{{ number_format($wealthProgress, 2) }}
                 </span>
             </div>
 

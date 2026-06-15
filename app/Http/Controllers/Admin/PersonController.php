@@ -12,6 +12,7 @@ use App\Models\Person;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PersonController extends Controller
@@ -112,7 +113,15 @@ class PersonController extends Controller
 
     public function store(StorePersonRequest $request): RedirectResponse
     {
-        Person::query()->create($request->validated());
+        $data = $request->validated();
+        unset($data['picture_file']);
+
+        if ($request->hasFile('picture_file')) {
+            $path = $request->file('picture_file')->store('people', 'public');
+            $data['picture'] = '/storage/'.$path;
+        }
+
+        Person::query()->create($data);
 
         return to_route('admin.people.index')->with('success', __('Person created.'));
     }
@@ -129,7 +138,18 @@ class PersonController extends Controller
 
     public function update(StorePersonRequest $request, Person $person): RedirectResponse
     {
-        $person->update($request->validated());
+        $data = $request->validated();
+        unset($data['picture_file']);
+
+        if ($request->hasFile('picture_file')) {
+            if ($person->picture && str_starts_with($person->picture, '/storage/people/')) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $person->picture));
+            }
+            $path = $request->file('picture_file')->store('people', 'public');
+            $data['picture'] = '/storage/'.$path;
+        }
+
+        $person->update($data);
 
         return to_route('admin.people.index')->with('success', __('Person updated.'));
     }

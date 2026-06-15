@@ -5,7 +5,6 @@ use App\Http\Controllers\Alice\ExpenseController;
 use App\Http\Controllers\Alice\IncomeController;
 use App\Http\Controllers\Alice\InteractionController;
 use App\Http\Controllers\Alice\MetaController;
-use App\Http\Controllers\Alice\MilestoneController;
 use App\Http\Controllers\Alice\NodeController;
 use App\Http\Controllers\Alice\PersonController;
 use App\Http\Controllers\Alice\PostController;
@@ -62,7 +61,6 @@ Route::prefix('v1/alice')
         // Personal management
         Route::apiResource('todo-items', TodoItemController::class)->except(['create', 'edit']);
         Route::apiResource('purchase-items', PurchaseItemController::class)->except(['create', 'edit']);
-        Route::apiResource('milestones', MilestoneController::class)->except(['create', 'edit']);
 
         // Knowledge & Timeline
         Route::apiResource('nodes', NodeController::class)->except(['create', 'edit']);

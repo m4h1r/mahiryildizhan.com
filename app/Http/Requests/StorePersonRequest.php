@@ -29,6 +29,7 @@ class StorePersonRequest extends FormRequest
             'blood_type_id' => ['nullable', 'integer', 'exists:blood_types,id'],
             'hair_color_id' => ['nullable', 'integer', 'exists:hair_colors,id'],
             'picture' => ['nullable', 'string', 'max:2048'],
+            'picture_file' => ['nullable', 'image', 'max:4096'],
             'mobile' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'notes' => ['nullable', 'string'],
