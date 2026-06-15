@@ -20,8 +20,14 @@ class ExpenseResource extends JsonResource
             'total_display' => number_format((float) $this->total, 2, ',', '.') . ' ₺',
             'company_expense' => $this->company_expense,
             'paid_by_others' => $this->paid_by_others,
-            'expense_type' => $this->whenLoaded('expenseType', fn () => ['id' => $this->expenseType->id, 'name' => $this->expenseType->name]),
-            'currency' => $this->whenLoaded('currency', fn () => ['id' => $this->currency->id, 'code' => $this->currency->code, 'symbol' => $this->currency->symbol]),
+            'expense_type' => $this->whenLoaded('expenseType', function () {
+                $et = $this->resource->getRelation('expenseType');
+                return $et ? ['id' => $et->id, 'name' => $et->name] : null;
+            }),
+            'currency' => $this->whenLoaded('currency', function () {
+                $c = $this->resource->getRelation('currency');
+                return $c ? ['id' => $c->id, 'code' => $c->code, 'symbol' => $c->symbol] : null;
+            }),
             'stakeholder' => $this->whenLoaded('stakeholder', fn () => $this->stakeholder ? ['id' => $this->stakeholder->id, 'title' => $this->stakeholder->title] : null),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
