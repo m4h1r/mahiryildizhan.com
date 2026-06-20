@@ -12,5 +12,11 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(php -l app/Http/Controllers/Admin/TodoItemController.php)",
+      "Bash(php -l app/Models/TodoItem.php)"
+    ]
   }
 }

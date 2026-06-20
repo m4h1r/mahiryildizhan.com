@@ -43,6 +43,25 @@
         @error('due_date')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
     </label>
 
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+        <span class="mb-1 block">{{ __('Yearly Goal') }}</span>
+        @php
+            $selectedYearlyGoal = (string) old('yearly_goal', $item->yearly_goal ?? 'NA');
+            $yearStart = now()->year - 1;
+            $yearEnd = now()->year + 5;
+        @endphp
+        <select name="yearly_goal" class="form-input-admin">
+            <option value="NA" {{ $selectedYearlyGoal === 'NA' ? 'selected' : '' }}>NA</option>
+            @if ($selectedYearlyGoal !== 'NA' && ((int) $selectedYearlyGoal < $yearStart || (int) $selectedYearlyGoal > $yearEnd))
+                <option value="{{ $selectedYearlyGoal }}" selected>{{ $selectedYearlyGoal }}</option>
+            @endif
+            @for ($y = $yearStart; $y <= $yearEnd; $y++)
+                <option value="{{ $y }}" {{ $selectedYearlyGoal === (string) $y ? 'selected' : '' }}>{{ $y }}</option>
+            @endfor
+        </select>
+        @error('yearly_goal')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+    </label>
+
     <div class="grid gap-4 sm:grid-cols-2">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
             <span class="mb-1 block">{{ __('Cost') }} (₺)</span>

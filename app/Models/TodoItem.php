@@ -18,6 +18,7 @@ class TodoItem extends Model
         'time_cost_hours',
         'due_date',
         'is_bucketlist',
+        'yearly_goal',
         'is_completed',
         'completed_at',
         'user_id',

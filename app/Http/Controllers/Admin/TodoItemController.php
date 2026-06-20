@@ -20,15 +20,21 @@ class TodoItemController extends Controller
         $query = TodoItem::query()->orderBy('due_date')->orderBy('id');
 
         $query = match ($filter) {
-            'due'        => $query->where('is_completed', false)
+            'due'         => $query->where('is_completed', false)
                                   ->whereNotNull('due_date')
-                                  ->where('due_date', '<=', now()->toDateString()),
-            'bucketlist' => $query->where('is_bucketlist', true),
-            'completed'  => $query->where('is_completed', true),
-            'pending'    => $query->where('is_completed', false),
-            'archived'   => $query->where('is_completed', true)
-                                  ->where(fn ($q) => $q->whereNotNull('cost_try')->orWhereNotNull('time_cost_hours')),
-            default      => $query,
+                                  ->where('due_date', '<=', now()->toDateString())
+                                  ->where('yearly_goal', 'NA'),
+            'bucketlist'  => $query->where('is_bucketlist', true)
+                                  ->where('yearly_goal', 'NA'),
+            'completed'   => $query->where('is_completed', true)
+                                  ->where('yearly_goal', 'NA'),
+            'pending'     => $query->where('is_completed', false)
+                                  ->where('yearly_goal', 'NA'),
+            'archived'    => $query->where('is_completed', true)
+                                  ->where(fn ($q) => $q->whereNotNull('cost_try')->orWhereNotNull('time_cost_hours'))
+                                  ->where('yearly_goal', 'NA'),
+            'yearly_goal' => $query->where('yearly_goal', '!=', 'NA'),
+            default       => $query,
         };
 
         $items = $query->paginate(20)->withQueryString();
@@ -50,11 +56,13 @@ class TodoItemController extends Controller
             'time_cost_hours' => 'nullable|numeric|min:0',
             'due_date'        => 'nullable|date',
             'is_bucketlist'   => 'boolean',
+            'yearly_goal'     => 'nullable|string|max:10',
             'is_completed'    => 'boolean',
             'image'           => 'nullable|image|max:4096',
         ]);
 
         $data['is_bucketlist'] = $request->boolean('is_bucketlist');
+        $data['yearly_goal']   = $data['yearly_goal'] ?? 'NA';
         $data['is_completed']  = $request->boolean('is_completed');
 
         if ($data['is_completed']) {
@@ -97,11 +105,13 @@ class TodoItemController extends Controller
             'time_cost_hours' => 'nullable|numeric|min:0',
             'due_date'        => 'nullable|date',
             'is_bucketlist'   => 'boolean',
+            'yearly_goal'     => 'nullable|string|max:10',
             'is_completed'    => 'boolean',
             'image'           => 'nullable|image|max:4096',
         ]);
 
         $data['is_bucketlist'] = $request->boolean('is_bucketlist');
+        $data['yearly_goal']   = $data['yearly_goal'] ?? 'NA';
         $wasCompleted = $todoItem->is_completed;
         $data['is_completed'] = $request->boolean('is_completed');
 
