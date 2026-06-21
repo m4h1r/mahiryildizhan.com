@@ -19,6 +19,7 @@ class StoreIncomeRequest extends FormRequest
             'income_type_id' => ['nullable', 'integer', 'exists:income_types,id'],
             'currency_id' => ['required', 'integer', 'exists:currencies,id'],
             'amount' => ['required', 'numeric', 'min:0'],
+            'hours' => ['nullable', 'numeric', 'min:0.01'],
             'description' => ['nullable', 'string'],
             'user_id' => ['nullable', 'integer', 'exists:users,id'],
         ];

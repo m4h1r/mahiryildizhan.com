@@ -17,6 +17,7 @@ class Income extends Model
         'income_type_id',
         'currency_id',
         'amount',
+        'hours',
         'description',
         'user_id',
     ];
@@ -26,7 +27,17 @@ class Income extends Model
         return [
             'date' => 'date',
             'amount' => 'decimal:2',
+            'hours' => 'decimal:2',
         ];
+    }
+
+    public function hourlyRate(): ?float
+    {
+        if (! $this->hours || (float) $this->hours <= 0) {
+            return null;
+        }
+
+        return (float) $this->amount / (float) $this->hours;
     }
 
     public function source()

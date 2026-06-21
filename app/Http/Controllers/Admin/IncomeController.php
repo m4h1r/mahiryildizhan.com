@@ -29,6 +29,17 @@ class IncomeController extends Controller
         $currencyId = $request->integer('currency_id') ?: null;
         $userId     = $request->integer('user_id') ?: null;
 
+        $applyFilters = function ($q) use ($year, $month, $sourceId, $typeId, $currencyId, $userId) {
+            if ($year)       { $q->whereYear('incomes.date', $year); }
+            if ($month)      { $q->whereMonth('incomes.date', $month); }
+            if ($sourceId)   { $q->where('incomes.income_source_id', $sourceId); }
+            if ($typeId)     { $q->where('incomes.income_type_id', $typeId); }
+            if ($currencyId) { $q->where('incomes.currency_id', $currencyId); }
+            if ($userId)     { $q->where('incomes.user_id', $userId); }
+
+            return $q;
+        };
+
         $query = Income::query()
             ->with(['source', 'type', 'currency', 'user'])
             ->select('incomes.*');
@@ -45,12 +56,7 @@ class IncomeController extends Controller
 
         $query->orderBy('incomes.id', 'desc');
 
-        if ($year)       { $query->whereYear('incomes.date', $year); }
-        if ($month)      { $query->whereMonth('incomes.date', $month); }
-        if ($sourceId)   { $query->where('incomes.income_source_id', $sourceId); }
-        if ($typeId)     { $query->where('incomes.income_type_id', $typeId); }
-        if ($currencyId) { $query->where('incomes.currency_id', $currencyId); }
-        if ($userId)     { $query->where('incomes.user_id', $userId); }
+        $applyFilters($query);
 
         $incomes = $query->paginate(20)->withQueryString();
 
@@ -60,12 +66,7 @@ class IncomeController extends Controller
             ->groupBy('income_types.name')
             ->orderByDesc('total');
 
-        if ($year)       { $chartQuery->whereYear('incomes.date', $year); }
-        if ($month)      { $chartQuery->whereMonth('incomes.date', $month); }
-        if ($sourceId)   { $chartQuery->where('incomes.income_source_id', $sourceId); }
-        if ($typeId)     { $chartQuery->where('incomes.income_type_id', $typeId); }
-        if ($currencyId) { $chartQuery->where('incomes.currency_id', $currencyId); }
-        if ($userId)     { $chartQuery->where('incomes.user_id', $userId); }
+        $applyFilters($chartQuery);
 
         $chartRows = $chartQuery->get();
 
@@ -73,6 +74,18 @@ class IncomeController extends Controller
             'labels' => $chartRows->pluck('type_name')->map(fn ($n) => $n ?? 'Diğer')->all(),
             'values' => $chartRows->pluck('total')->map(fn ($v) => (float) $v)->all(),
         ];
+
+        $hourlyRateQuery = Income::query()
+            ->join('currencies', 'currencies.id', '=', 'incomes.currency_id')
+            ->whereNotNull('incomes.hours')
+            ->where('incomes.hours', '>', 0)
+            ->select('currencies.code as currency_code', DB::raw('AVG(incomes.amount / incomes.hours) as avg_rate'))
+            ->groupBy('currencies.code')
+            ->orderByDesc('avg_rate');
+
+        $applyFilters($hourlyRateQuery);
+
+        $averageHourlyRates = $hourlyRateQuery->get();
 
         $availableYears = Income::query()
             ->whereNotNull('date')
@@ -94,6 +107,7 @@ class IncomeController extends Controller
             'sort'           => $sort,
             'direction'      => $direction,
             'incomeTypeChart' => $incomeTypeChart,
+            'averageHourlyRates' => $averageHourlyRates,
             'availableYears' => $availableYears,
         ]);
     }

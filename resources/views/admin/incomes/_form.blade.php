@@ -13,6 +13,12 @@
     </label>
 
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
+        <span class="mb-1 block">Saat</span>
+        <input type="number" step="0.01" min="0" name="hours" class="form-input-admin" value="{{ old('hours', $income->hours ?? '') }}">
+        @error('hours')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
+    </label>
+
+    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
         <span class="mb-1 block">Income Source</span>
         <select name="income_source_id" class="form-input-admin">
             <option value="">None</option>

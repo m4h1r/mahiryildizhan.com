@@ -20,13 +20,32 @@
 
     <div class="space-y-6">
 
-        {{-- Pie chart --}}
-        @if (!empty($incomeTypeChart['labels']))
-            <section class="card-admin p-4 md:p-6">
-                <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Gelir Türü Dağılımı</h3>
-                <div class="mx-auto mt-4 h-64 max-w-sm">
-                    <canvas id="incomeTypeChart"></canvas>
-                </div>
+        {{-- Pie chart + hourly rate --}}
+        @if (!empty($incomeTypeChart['labels']) || $averageHourlyRates->isNotEmpty())
+            <section class="grid gap-6 md:grid-cols-2">
+                @if (!empty($incomeTypeChart['labels']))
+                    <div class="card-admin p-4 md:p-6">
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Gelir Türü Dağılımı</h3>
+                        <div class="mx-auto mt-4 h-64 max-w-sm">
+                            <canvas id="incomeTypeChart"></canvas>
+                        </div>
+                    </div>
+                @endif
+
+                @if ($averageHourlyRates->isNotEmpty())
+                    <div class="card-admin p-4 md:p-6">
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Ortalama Saatlik Ücret</h3>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Sadece saat bilgisi girilen gelirlerden hesaplanır.</p>
+                        <div class="mt-4 flex flex-wrap gap-6">
+                            @foreach ($averageHourlyRates as $rate)
+                                <div>
+                                    <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ number_format((float) $rate->avg_rate, 2) }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $rate->currency_code }} / saat</div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </section>
         @endif
 
@@ -106,6 +125,8 @@
                                     Tutar {!! $sortIcon('amount') !!}
                                 </a>
                             </th>
+                            <th>Saat</th>
+                            <th>Saatlik Ücret</th>
                             <th class="text-right">İşlemler</th>
                         </tr>
                     </thead>
@@ -116,6 +137,8 @@
                                 <td>{{ optional($income->source)->name ?: '-' }}</td>
                                 <td>{{ optional($income->type)->name ?: '-' }}</td>
                                 <td>{{ number_format((float) $income->amount, 2) }} {{ optional($income->currency)->code }}</td>
+                                <td>{{ $income->hours ? number_format((float) $income->hours, 2) : '-' }}</td>
+                                <td>{{ $income->hourlyRate() !== null ? number_format($income->hourlyRate(), 2).' '.optional($income->currency)->code : '-' }}</td>
                                 <td>
                                     <div class="flex justify-end gap-1">
                                         {{-- Düzenle --}}
@@ -157,8 +180,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">Gelir bulunamadı.</td>
-                                                        <td colspan="5" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">Gelir bulunamadı.</td>
+                                <td colspan="7" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">Gelir bulunamadı.</td>
                             </tr>
                         @endforelse
                     </tbody>

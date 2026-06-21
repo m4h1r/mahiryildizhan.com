@@ -41,7 +41,8 @@
         $isBlogPostRoute => ($postTitle ? $postTitle.' | MY' : 'MY'),
         default => $title ?: ($postTitle ?: $siteName),
     };
-    $metaDescription = $description ?: ($post?->seo_description ?: $post?->excerpt ?: $defaultDescription);
+    $blogFallbackDescription = $isBlogPostRoute ? "Mahir Yıldızhan Kişisel Bloğu | {$postTitle} hakkında görüşleri." : null;
+    $metaDescription = $description ?: ($post?->seo_description ?: $post?->excerpt ?: ($blogFallbackDescription ?: $defaultDescription));
     $canonicalUrl = $canonical ?: ($post?->canonical_url ?: url()->current());
     $ogImageUrl = $resolveUrl($post?->og_image ?: $post?->cover_url ?: $post?->cover ?: $defaultOgImage);
     $schemaType = $post?->schema_type ?: 'WebPage';
