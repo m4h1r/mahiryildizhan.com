@@ -93,7 +93,7 @@
             <div class="flex items-center justify-between border-b border-[var(--color-admin-border)] px-4 py-3 dark:border-[var(--color-admin-border-dark)]">
                 <h2 class="text-sm font-semibold">Gider Listesi</h2>
                 <div class="flex gap-2">
-                    <button type="button" @click="showExport = true" class="admin-btn admin-btn-ghost">Export</button>
+                    <button type="button" @click="showExport = true" class="admin-btn admin-btn-ghost">{{ __('Export') }}</button>
                     <a href="{{ route('admin.expenses.create') }}" class="admin-btn admin-btn-primary">Yeni Gider</a>
                 </div>
             </div>

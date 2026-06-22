@@ -3,11 +3,11 @@
 @section('content')
     <div class="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
         <section class="card-admin p-6">
-            <p class="text-sm text-gray-500 dark:text-gray-400">CSV Import Pipeline</p>
-            <h2 class="mt-1 text-xl font-semibold">Run Import</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('CSV Import Pipeline') }}</p>
+            <h2 class="mt-1 text-xl font-semibold">{{ __('Run Import') }}</h2>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                Place CSV files in <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-gray-800">database/csv/{table}.csv</code> locally.
-                Production reads from <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-gray-800">storage/app/import/{table}.csv</code>.
+                {{ __('Place CSV files in') }} <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-gray-800">database/csv/{table}.csv</code> {{ __('locally.') }}
+                {{ __('Production reads from') }} <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-gray-800">storage/app/import/{table}.csv</code>.
             </p>
 
             {{-- Import All button --}}
@@ -17,8 +17,8 @@
                 <button
                     type="submit"
                     class="w-full rounded-md bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white dark:bg-white dark:text-gray-900"
-                    onclick="return confirm('Import ALL tables in dependency order? This cannot be undone.')">
-                    ⬆ Import All Tables
+                    onclick="return confirm('{{ __('Import ALL tables in dependency order? This cannot be undone.') }}')">
+                    ⬆ {{ __('Import All Tables') }}
                 </button>
             </form>
 
@@ -28,14 +28,14 @@
                 <button
                     type="submit"
                     class="w-full rounded-md bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700"
-                    onclick="return confirm('⚠️ This will DELETE all data from every table. Are you absolutely sure?')">
-                    🗑 Truncate All Tables
+                    onclick="return confirm('⚠️ {{ __('This will DELETE all data from every table. Are you absolutely sure?') }}')">
+                    🗑 {{ __('Truncate All Tables') }}
                 </button>
             </form>
 
             <div class="my-5 flex items-center gap-3 text-xs text-gray-400">
                 <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
-                <span>or import a single table</span>
+                <span>{{ __('or import a single table') }}</span>
                 <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
             </div>
 
@@ -43,9 +43,9 @@
                 @csrf
 
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                    <span class="mb-1 block">Table</span>
+                    <span class="mb-1 block">{{ __('Table') }}</span>
                     <select name="table" class="form-input-admin">
-                        <option value="">Choose a table</option>
+                        <option value="">{{ __('Choose a table') }}</option>
                         @foreach ($tables as $table)
                             <option value="{{ $table }}" @selected(old('table') === $table)>{{ $table }}</option>
                         @endforeach
@@ -57,11 +57,11 @@
 
                 <label class="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
                     <input type="checkbox" name="dry_run" value="1" @checked(old('dry_run', true))>
-                    <span>Dry run only</span>
+                    <span>{{ __('Dry run only') }}</span>
                 </label>
 
                 <button type="submit" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 dark:border-gray-600 dark:text-gray-200">
-                    Import Selected Table
+                    {{ __('Import Selected Table') }}
                 </button>
             </form>
         </section>
@@ -69,8 +69,8 @@
         <section class="card-admin p-6">
             <div class="flex items-center justify-between gap-4">
                 <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Latest Result</p>
-                    <h2 class="mt-1 text-xl font-semibold">Import Report</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Latest Result') }}</p>
+                    <h2 class="mt-1 text-xl font-semibold">{{ __('Import Report') }}</h2>
                 </div>
             </div>
 
@@ -78,7 +78,7 @@
                 <pre class="mt-4 overflow-x-auto rounded-lg bg-gray-950 p-4 text-xs leading-6 text-gray-100">{{ json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
             @else
                 <div class="mt-4 rounded-lg border border-dashed border-gray-300 p-6 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                    No import report yet.
+                    {{ __('No import report yet.') }}
                 </div>
             @endif
         </section>

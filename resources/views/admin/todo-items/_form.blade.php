@@ -38,7 +38,7 @@
             type="date"
             name="due_date"
             class="form-input-admin"
-            value="{{ old('due_date', isset($item->due_date) ? $item->due_date->format('Y-m-d') : '') }}"
+            value="{{ old('due_date', isset($item->due_date) ? $item->due_date->format('Y-m-d') : (isset($item) ? '' : now()->format('Y-m-d'))) }}"
         >
         @error('due_date')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
     </label>

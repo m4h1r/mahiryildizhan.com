@@ -5,10 +5,10 @@
         <section class="card-admin p-6">
             <div class="mb-4 flex items-center justify-between gap-4">
                 <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Dictionary Management</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Dictionary Management') }}</p>
                     <h2 class="text-xl font-semibold">{{ $definition['label'] }}</h2>
                 </div>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $records->count() }} records</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $records->count() }} {{ __('records') }}</p>
             </div>
 
             <form method="POST" action="{{ route('admin.dictionaries.store', $table) }}" class="grid gap-4 md:grid-cols-2">
@@ -51,7 +51,7 @@
 
                 <div class="md:col-span-2">
                     <button type="submit" class="admin-btn admin-btn-primary">
-                        Add Entry
+                        {{ __('Add Entry') }}
                     </button>
                 </div>
             </form>
@@ -65,7 +65,7 @@
                             @foreach ($definition['fields'] as $meta)
                                 <th>{{ $meta['label'] }}</th>
                             @endforeach
-                            <th class="text-right">Actions</th>
+                            <th class="text-right">{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -111,14 +111,14 @@
 
                                     <div class="flex justify-end gap-1.5">
                                         <button type="submit" form="dictionary-form-{{ $record->id }}" class="admin-btn-sm admin-btn-ghost">
-                                            Save
+                                            {{ __('Save') }}
                                         </button>
 
-                                        <form method="POST" action="{{ route('admin.dictionaries.destroy', [$table, $record->id]) }}" onsubmit="return confirm('Delete this entry?');">
+                                        <form method="POST" action="{{ route('admin.dictionaries.destroy', [$table, $record->id]) }}" onsubmit="return confirm('{{ __('Delete this entry?') }}');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn-sm admin-btn-danger">
-                                                Delete
+                                                {{ __('Delete') }}
                                             </button>
                                         </form>
                                     </div>
@@ -127,7 +127,7 @@
                         @empty
                             <tr>
                                 <td colspan="{{ count($definition['fields']) + 1 }}" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                    No entries yet.
+                                    {{ __('No entries yet.') }}
                                 </td>
                             </tr>
                         @endforelse

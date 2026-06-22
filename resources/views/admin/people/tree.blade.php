@@ -4,10 +4,10 @@
     <section class="card-admin p-4 md:p-6">
         <div class="mb-4 flex items-center justify-between gap-4">
             <div>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Hierarchical View</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Hierarchical View') }}</p>
                 <h2 class="text-xl font-semibold">{{ $person->name }} {{ $person->surname }}</h2>
             </div>
-            <a href="{{ route('admin.people.index') }}" class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium dark:border-gray-700">Back</a>
+            <a href="{{ route('admin.people.index') }}" class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium dark:border-gray-700">{{ __('Back') }}</a>
         </div>
 
         <div id="tree-network" class="h-[640px] w-full rounded-lg border border-gray-200 dark:border-gray-700"></div>

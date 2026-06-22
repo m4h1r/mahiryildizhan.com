@@ -23,20 +23,20 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    Back to People List
+                    {{ __('Back to People List') }}
                 </a>
                 <button onclick="downloadPDF(this)" class="inline-flex items-center bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl relative z-50">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    Download PDF
+                    {{ __('Download PDF') }}
                 </button>
             </div>
             <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                Family Graph
+                {{ __('Family Graph') }}
             </h1>
             <p class="text-gray-600 dark:text-gray-400">
-                Interactive family tree visualization
+                {{ __('Interactive family tree visualization') }}
             </p>
         </div>
 
@@ -69,7 +69,7 @@
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">
                                     {{ $person->father->father->fullName() }}
                                 </h4>
-                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Paternal Grandfather</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __('Paternal Grandfather') }}</p>
                             </div>
                             <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                 @if($person->father->father->birthday)
@@ -104,7 +104,7 @@
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">
                                     {{ $person->father->mother->fullName() }}
                                 </h4>
-                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Paternal Grandmother</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __('Paternal Grandmother') }}</p>
                             </div>
                             <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                 @if($person->father->mother->birthday)
@@ -139,7 +139,7 @@
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">
                                     {{ $person->mother->father->fullName() }}
                                 </h4>
-                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Maternal Grandfather</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __('Maternal Grandfather') }}</p>
                             </div>
                             <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                 @if($person->mother->father->birthday)
@@ -174,7 +174,7 @@
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">
                                     {{ $person->mother->mother->fullName() }}
                                 </h4>
-                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Maternal Grandmother</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __('Maternal Grandmother') }}</p>
                             </div>
                             <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                 @if($person->mother->mother->birthday)
@@ -216,7 +216,7 @@
                             <h3 class="text-base font-bold text-gray-900 dark:text-gray-100">
                                 {{ $person->father->fullName() }}
                             </h3>
-                            <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Father</p>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __('Father') }}</p>
                         </div>
                         <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                             @if($person->father->birthday)
@@ -254,7 +254,7 @@
                             <h3 class="text-base font-bold text-gray-900 dark:text-gray-100">
                                 {{ $person->mother->fullName() }}
                             </h3>
-                            <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Mother</p>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __('Mother') }}</p>
                         </div>
                         <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                             @if($person->mother->birthday)
@@ -310,7 +310,7 @@
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">
                                     {{ $sibling->fullName() }}
                                 </h4>
-                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Sibling (Older)</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __('Sibling (Older)') }}</p>
                             </div>
                             <div class="text-xs text-gray-700 dark:text-gray-300">
                                 @if($sibling->birthday)
@@ -462,7 +462,7 @@
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">
                                     {{ $sibling->fullName() }}
                                 </h4>
-                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Sibling (Younger)</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __('Sibling (Younger)') }}</p>
                             </div>
                             <div class="text-xs text-gray-700 dark:text-gray-300">
                                 @if($sibling->birthday)
@@ -521,7 +521,7 @@
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">
                                     {{ $child->fullName() }}
                                 </h4>
-                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Child</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __('Child') }}</p>
                             </div>
                             <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                 @if($child->birthday)
@@ -570,7 +570,7 @@
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">
                                     {{ $child->partner->fullName() }}
                                 </h4>
-                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Child's Spouse</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __("Child's Spouse") }}</p>
                             </div>
                             <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                 @if($child->partner->birthday)
@@ -628,7 +628,7 @@
                                         <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">
                                             {{ $grandchild->fullName() }}
                                         </h4>
-                                        <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Grandchild</p>
+                                        <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __('Grandchild') }}</p>
                                     </div>
                                     <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                         @if($grandchild->birthday)
@@ -677,7 +677,7 @@
                                         <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">
                                             {{ $grandchild->partner->fullName() }}
                                         </h4>
-                                        <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">Grandchild's Spouse</p>
+                                        <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold">{{ __("Grandchild's Spouse") }}</p>
                                     </div>
                                     <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                                         @if($grandchild->partner->birthday)
@@ -716,7 +716,7 @@ function downloadPDF(button) {
     // Show loading state
     const originalHTML = button.innerHTML;
     button.disabled = true;
-    button.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Generating...';
+    button.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>{{ __('Generating...') }}';
     
     const opt = {
         margin: [0.3, 0.3, 0.3, 0.3],
@@ -744,7 +744,7 @@ function downloadPDF(button) {
         console.error('PDF generation failed:', err);
         button.disabled = false;
         button.innerHTML = originalHTML;
-        alert('Failed to generate PDF. Please try again.');
+        alert('{{ __('Failed to generate PDF. Please try again.') }}');
     });
 }
 </script>

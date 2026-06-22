@@ -100,7 +100,7 @@
                 <h2 id="quick-stakeholder-title" class="text-lg font-semibold">Paydaş oluştur</h2>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Yeni bir paydaş oluşturun ve bu gidere bağlayın.</p>
             </div>
-            <button type="button" @click="closeQuickCreateModal()" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700" aria-label="Close quick create modal">Kapat</button>
+            <button type="button" @click="closeQuickCreateModal()" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700" aria-label="{{ __('Close quick create modal') }}">Kapat</button>
         </div>
 
         <div class="mt-4 grid gap-4 md:grid-cols-2">

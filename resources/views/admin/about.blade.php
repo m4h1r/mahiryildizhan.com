@@ -30,7 +30,7 @@
 
             {{-- English Editor --}}
             <section class="card-admin p-6" x-show="tab === 'en'">
-                <h2 class="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">English Content</h2>
+                <h2 class="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">{{ __('English Content') }}</h2>
                 <div
                     x-data="tiptapSimpleEditor({ content: {{ Js::from(old('content_en', $content_en)) }} })"
                     x-init="init()"
@@ -38,23 +38,23 @@
                 >
                     <div class="flex flex-wrap items-center gap-2">
                         <button type="button" @click="editor?.chain().focus().toggleBold().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">Bold</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Bold') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleItalic().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">Italic</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Italic') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()"
                             class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">H2</button>
                         <button type="button" @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()"
                             class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">H3</button>
                         <button type="button" @click="editor?.chain().focus().toggleBulletList().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">• List</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">• {{ __('List') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleOrderedList().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">1. List</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">1. {{ __('List') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleBlockquote().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">Quote</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Quote') }}</button>
                         <button type="button" @click="editor?.chain().focus().undo().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↩ Undo</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↩ {{ __('Undo') }}</button>
                         <button type="button" @click="editor?.chain().focus().redo().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↪ Redo</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↪ {{ __('Redo') }}</button>
                     </div>
                     <div x-ref="editor"
                         class="prose prose-sm min-h-64 max-w-none rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
@@ -65,7 +65,7 @@
 
             {{-- Turkish Editor --}}
             <section class="card-admin p-6" x-show="tab === 'tr'" x-cloak>
-                <h2 class="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">Türkçe İçerik</h2>
+                <h2 class="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">{{ __('Turkish Content') }}</h2>
                 <div
                     x-data="tiptapSimpleEditor({ content: {{ Js::from(old('content_tr', $content_tr)) }} })"
                     x-init="init()"
@@ -73,23 +73,23 @@
                 >
                     <div class="flex flex-wrap items-center gap-2">
                         <button type="button" @click="editor?.chain().focus().toggleBold().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">Bold</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Bold') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleItalic().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">Italic</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Italic') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()"
                             class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">H2</button>
                         <button type="button" @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()"
                             class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">H3</button>
                         <button type="button" @click="editor?.chain().focus().toggleBulletList().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">• List</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">• {{ __('List') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleOrderedList().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">1. List</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">1. {{ __('List') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleBlockquote().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">Quote</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Quote') }}</button>
                         <button type="button" @click="editor?.chain().focus().undo().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↩ Undo</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↩ {{ __('Undo') }}</button>
                         <button type="button" @click="editor?.chain().focus().redo().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↪ Redo</button>
+                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↪ {{ __('Redo') }}</button>
                     </div>
                     <div x-ref="editor"
                         class="prose prose-sm min-h-64 max-w-none rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
@@ -103,11 +103,11 @@
         <div class="flex items-center gap-4">
             <button type="submit"
                 class="rounded-md bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white dark:bg-white dark:text-gray-900">
-                Save Changes
+                {{ __('Save Changes') }}
             </button>
             <a href="{{ url('/about') }}" target="_blank"
                 class="text-sm text-gray-500 underline underline-offset-4 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                Preview →
+                {{ __('Preview') }} →
             </a>
         </div>
     </form>

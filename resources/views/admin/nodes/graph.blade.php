@@ -3,12 +3,12 @@
 @section('content')
     <section class="card-admin p-6">
         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Force-directed graph of nodes and directed connections.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Force-directed graph of nodes and directed connections.') }}</p>
             <div class="flex flex-wrap items-center gap-2">
-                <a href="{{ route('admin.nodes.index') }}" class="admin-btn admin-btn-ghost">Node List</a>
-                <a href="{{ route('admin.node-connections.index') }}" class="admin-btn admin-btn-ghost">Connection List</a>
-                <a href="{{ route('admin.nodes.create') }}" class="admin-btn admin-btn-primary">Add Node</a>
-                <a href="{{ route('admin.node-connections.create') }}" class="admin-btn admin-btn-primary">Add Connection</a>
+                <a href="{{ route('admin.nodes.index') }}" class="admin-btn admin-btn-ghost">{{ __('Node List') }}</a>
+                <a href="{{ route('admin.node-connections.index') }}" class="admin-btn admin-btn-ghost">{{ __('Connection List') }}</a>
+                <a href="{{ route('admin.nodes.create') }}" class="admin-btn admin-btn-primary">{{ __('Add Node') }}</a>
+                <a href="{{ route('admin.node-connections.create') }}" class="admin-btn admin-btn-primary">{{ __('Add Connection') }}</a>
             </div>
         </div>
 

@@ -1,7 +1,57 @@
 @extends('admin.layout', ['title' => 'Timeline', 'heading' => 'Timeline'])
 
 @section('content')
-<div class="space-y-4" x-data="{ modalOpen: false, modalEvent: null }">
+<div class="space-y-4"
+     x-data="{
+        modalOpen: false,
+        modalEvent: null,
+        atTop: true,
+        atBottom: false,
+        scrollable: false,
+        updateScrollState() {
+            const scrollY = window.scrollY;
+            const viewport = window.innerHeight;
+            const fullHeight = document.documentElement.scrollHeight;
+            this.scrollable = fullHeight > viewport + 40;
+            this.atTop = scrollY <= 10;
+            this.atBottom = (scrollY + viewport) >= (fullHeight - 10);
+        }
+     }"
+     x-init="updateScrollState()"
+     @scroll.window="updateScrollState"
+     @resize.window="updateScrollState"
+>
+    {{-- Scroll-to-top / scroll-to-bottom floating button — only visible at the very edges, hidden mid-scroll --}}
+    <div class="fixed right-4 bottom-20 z-50 lg:right-6 lg:bottom-6">
+        <button
+            type="button"
+            x-show="scrollable && atTop"
+            x-transition.opacity
+            style="display: none"
+            @click="window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' })"
+            class="flex h-11 w-11 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+            aria-label="{{ __('Scroll to bottom') }}"
+            title="{{ __('Scroll to bottom') }}"
+        >
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+            </svg>
+        </button>
+        <button
+            type="button"
+            x-show="scrollable && atBottom"
+            x-transition.opacity
+            style="display: none"
+            @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+            class="flex h-11 w-11 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+            aria-label="{{ __('Scroll to top') }}"
+            title="{{ __('Scroll to top') }}"
+        >
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+            </svg>
+        </button>
+    </div>
 
     <div class="flex items-center justify-between">
         <p class="text-sm text-gray-500 dark:text-gray-400">{{ $events->count() }} olay</p>
@@ -119,7 +169,7 @@
                                     <div class="mb-2 flex flex-wrap gap-1">
                                         <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold"
                                               style="background-color: {{ $color }}1a; color: {{ $color }}">
-                                            {{ $event->event_type === 'process' ? 'Süreç' : 'Milestone' }}
+                                            {{ $event->event_type === 'process' ? 'Süreç' : __('Milestone') }}
                                         </span>
                                         @if($event->category)
                                             <span class="inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-gray-700/50 dark:text-gray-400">
@@ -263,7 +313,7 @@
                         <div class="mb-4 flex flex-wrap gap-1.5">
                             <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold"
                                   :style="{ backgroundColor: modalEvent.color + '1a', color: modalEvent.color }">
-                                <span x-text="modalEvent.event_type === 'process' ? 'Süreç' : 'Milestone'"></span>
+                                <span x-text="modalEvent.event_type === 'process' ? 'Süreç' : '{{ __('Milestone') }}'"></span>
                             </span>
                             <template x-if="modalEvent.category">
                                 <span class="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 dark:bg-gray-700/50 dark:text-gray-400"
