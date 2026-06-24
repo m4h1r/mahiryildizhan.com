@@ -352,9 +352,6 @@
                             >
                             <div class="min-w-0 flex-1">
                                 <p class="text-sm font-medium text-gray-800 dark:text-gray-100">
-                                    @if ($person->deathday)
-                                        <svg aria-label="{{ __('Deceased') }}" class="mr-0.5 mb-0.5 inline-block h-3 w-2 shrink-0 fill-gray-900 dark:fill-gray-300" viewBox="0 0 8 12"><path d="M4 6 L8 0 L0 0 Z M4 6 L8 12 L0 12 Z"/></svg>
-                                    @endif
                                     {{ trim(($person->name ?? '') . ' ' . ($person->surname ?? '')) }}
                                 </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ optional($person->closest_birthday)->translatedFormat('d M') }}</p>

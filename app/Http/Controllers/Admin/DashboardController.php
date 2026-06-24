@@ -98,8 +98,9 @@ class DashboardController extends Controller
         $today = now()->startOfDay();
         $windowDays = 7;
         $upcomingBirthdays = Person::query()
-            ->select(['id', 'name', 'surname', 'birthday', 'picture', 'deathday'])
+            ->select(['id', 'name', 'surname', 'birthday', 'picture'])
             ->whereNotNull('birthday')
+            ->whereNull('deathday')
             ->get()
             ->map(function (Person $person) use ($today): Person {
                 $birthday = Carbon::parse((string) $person->birthday);
