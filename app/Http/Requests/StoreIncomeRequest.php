@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Person;
+use App\Models\Stakeholder;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreIncomeRequest extends FormRequest
@@ -22,6 +24,23 @@ class StoreIncomeRequest extends FormRequest
             'hours' => ['nullable', 'numeric', 'min:0.01'],
             'description' => ['nullable', 'string'],
             'user_id' => ['nullable', 'integer', 'exists:users,id'],
+            'sourceable' => ['nullable', 'string', function ($attribute, $value, $fail): void {
+                if ($value === null || $value === '') {
+                    return;
+                }
+
+                [$type, $id] = array_pad(explode(':', $value, 2), 2, null);
+
+                $model = match ($type) {
+                    'person' => Person::class,
+                    'stakeholder' => Stakeholder::class,
+                    default => null,
+                };
+
+                if ($model === null || ! is_numeric($id) || ! $model::whereKey($id)->exists()) {
+                    $fail('Seçilen gelir kaynağı geçersiz.');
+                }
+            }],
         ];
     }
 }

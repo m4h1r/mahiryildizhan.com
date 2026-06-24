@@ -44,4 +44,9 @@ class Stakeholder extends Model
     {
         return $this->hasMany(Expense::class, 'stakeholder_id');
     }
+
+    public function incomes()
+    {
+        return $this->morphMany(Income::class, 'sourceable');
+    }
 }

@@ -20,6 +20,8 @@ class Income extends Model
         'hours',
         'description',
         'user_id',
+        'sourceable_type',
+        'sourceable_id',
     ];
 
     protected function casts(): array
@@ -43,6 +45,26 @@ class Income extends Model
     public function source()
     {
         return $this->belongsTo(IncomeSource::class, 'income_source_id');
+    }
+
+    public function sourceable()
+    {
+        return $this->morphTo();
+    }
+
+    public function sourceableLabel(): ?string
+    {
+        $sourceable = $this->sourceable;
+
+        if ($sourceable instanceof Person) {
+            return $sourceable->fullName();
+        }
+
+        if ($sourceable instanceof Stakeholder) {
+            return $sourceable->title ?: trim(((string) $sourceable->name).' '.((string) $sourceable->surname));
+        }
+
+        return null;
     }
 
     public function type()

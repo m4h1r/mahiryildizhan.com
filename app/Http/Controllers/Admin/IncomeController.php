@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreIncomeRequest;
 use App\Models\Currency;
 use App\Models\Income;
-use App\Models\IncomeSource;
 use App\Models\IncomeType;
+use App\Models\Person;
+use App\Models\Stakeholder;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,36 +19,36 @@ class IncomeController extends Controller
 {
     public function index(Request $request): View
     {
-        $sortable  = ['date', 'amount', 'source', 'type'];
+        $sortable  = ['date', 'amount', 'type'];
         $sort      = in_array($request->input('sort'), $sortable) ? $request->input('sort') : 'date';
         $direction = $request->input('direction') === 'asc' ? 'asc' : 'desc';
 
-        $year       = $request->has('year') ? ($request->integer('year') ?: null) : now()->year;
-        $month      = $request->integer('month') ?: null;
-        $sourceId   = $request->integer('income_source_id') ?: null;
-        $typeId     = $request->integer('income_type_id') ?: null;
-        $currencyId = $request->integer('currency_id') ?: null;
-        $userId     = $request->integer('user_id') ?: null;
+        $year         = $request->has('year') ? ($request->integer('year') ?: null) : now()->year;
+        $month        = $request->integer('month') ?: null;
+        $typeId       = $request->integer('income_type_id') ?: null;
+        $currencyId   = $request->integer('currency_id') ?: null;
+        $userId       = $request->integer('user_id') ?: null;
+        $sourceableKey = $request->string('sourceable')->toString() ?: null;
+        [$sourceableType, $sourceableId] = $this->parseSourceableKey($sourceableKey);
 
-        $applyFilters = function ($q) use ($year, $month, $sourceId, $typeId, $currencyId, $userId) {
+        $applyFilters = function ($q) use ($year, $month, $typeId, $currencyId, $userId, $sourceableType, $sourceableId) {
             if ($year)       { $q->whereYear('incomes.date', $year); }
             if ($month)      { $q->whereMonth('incomes.date', $month); }
-            if ($sourceId)   { $q->where('incomes.income_source_id', $sourceId); }
             if ($typeId)     { $q->where('incomes.income_type_id', $typeId); }
             if ($currencyId) { $q->where('incomes.currency_id', $currencyId); }
             if ($userId)     { $q->where('incomes.user_id', $userId); }
+            if ($sourceableType && $sourceableId) {
+                $q->where('incomes.sourceable_type', $sourceableType)->where('incomes.sourceable_id', $sourceableId);
+            }
 
             return $q;
         };
 
         $query = Income::query()
-            ->with(['source', 'type', 'currency', 'user'])
+            ->with(['source', 'sourceable', 'type', 'currency', 'user'])
             ->select('incomes.*');
 
-        if ($sort === 'source') {
-            $query->leftJoin('income_sources', 'income_sources.id', '=', 'incomes.income_source_id')
-                  ->orderBy('income_sources.name', $direction);
-        } elseif ($sort === 'type') {
+        if ($sort === 'type') {
             $query->leftJoin('income_types', 'income_types.id', '=', 'incomes.income_type_id')
                   ->orderBy('income_types.name', $direction);
         } else {
@@ -99,11 +100,12 @@ class IncomeController extends Controller
             'title'          => 'Gelirler',
             'heading'        => 'Gelirler',
             'incomes'        => $incomes,
-            'sources'        => IncomeSource::query()->orderBy('name')->get(),
+            'people'         => Person::query()->orderBy('surname')->orderBy('name')->get(),
+            'stakeholders'   => Stakeholder::query()->orderBy('title')->orderBy('name')->get(),
             'types'          => IncomeType::query()->orderBy('name')->get(),
             'currencies'     => Currency::query()->orderBy('code')->get(),
             'users'          => User::query()->orderBy('name')->get(),
-            'filters'        => array_merge($request->only(['month', 'income_source_id', 'income_type_id', 'currency_id', 'user_id']), ['year' => $year]),
+            'filters'        => array_merge($request->only(['month', 'sourceable', 'income_type_id', 'currency_id', 'user_id']), ['year' => $year]),
             'sort'           => $sort,
             'direction'      => $direction,
             'incomeTypeChart' => $incomeTypeChart,
@@ -117,7 +119,8 @@ class IncomeController extends Controller
         return view('admin.incomes.create', [
             'title' => 'New Income',
             'heading' => 'New Income',
-            'sources' => IncomeSource::query()->orderBy('name')->get(),
+            'people' => Person::query()->orderBy('surname')->orderBy('name')->get(),
+            'stakeholders' => Stakeholder::query()->orderBy('title')->orderBy('name')->get(),
             'types' => IncomeType::query()->orderBy('name')->get(),
             'currencies' => Currency::query()->orderBy('code')->get(),
             'users' => User::query()->orderBy('name')->get(),
@@ -127,6 +130,7 @@ class IncomeController extends Controller
     public function store(StoreIncomeRequest $request): RedirectResponse
     {
         $payload = $request->validated();
+        $payload = $this->applySourceable($payload, $request->string('sourceable')->toString());
 
         if (! isset($payload['user_id']) || $payload['user_id'] === null) {
             $payload['user_id'] = $request->user()?->id;
@@ -143,16 +147,21 @@ class IncomeController extends Controller
             'title' => 'Edit Income',
             'heading' => 'Edit Income',
             'income' => $income,
-            'sources' => IncomeSource::query()->orderBy('name')->get(),
+            'people' => Person::query()->orderBy('surname')->orderBy('name')->get(),
+            'stakeholders' => Stakeholder::query()->orderBy('title')->orderBy('name')->get(),
             'types' => IncomeType::query()->orderBy('name')->get(),
             'currencies' => Currency::query()->orderBy('code')->get(),
             'users' => User::query()->orderBy('name')->get(),
+            'currentSourceableKey' => $this->sourceableKey($income),
         ]);
     }
 
     public function update(StoreIncomeRequest $request, Income $income): RedirectResponse
     {
-        $income->update($request->validated());
+        $payload = $request->validated();
+        $payload = $this->applySourceable($payload, $request->string('sourceable')->toString());
+
+        $income->update($payload);
 
         return to_route('admin.incomes.index')->with('success', 'Income updated.');
     }
@@ -171,5 +180,54 @@ class IncomeController extends Controller
         $copy->save();
 
         return to_route('admin.incomes.edit', $copy)->with('success', 'Income duplicated.');
+    }
+
+    /**
+     * Parse a "person:<id>" / "stakeholder:<id>" select value into [morph class, id].
+     */
+    private function parseSourceableKey(?string $key): array
+    {
+        if (! $key) {
+            return [null, null];
+        }
+
+        [$type, $id] = array_pad(explode(':', $key, 2), 2, null);
+
+        $model = match ($type) {
+            'person' => Person::class,
+            'stakeholder' => Stakeholder::class,
+            default => null,
+        };
+
+        if ($model === null || ! is_numeric($id)) {
+            return [null, null];
+        }
+
+        return [$model, (int) $id];
+    }
+
+    private function applySourceable(array $payload, ?string $key): array
+    {
+        [$type, $id] = $this->parseSourceableKey($key);
+
+        $payload['sourceable_type'] = $type;
+        $payload['sourceable_id'] = $id;
+
+        return $payload;
+    }
+
+    private function sourceableKey(Income $income): string
+    {
+        if (! $income->sourceable_type || ! $income->sourceable_id) {
+            return '';
+        }
+
+        $prefix = match ($income->sourceable_type) {
+            Person::class => 'person',
+            Stakeholder::class => 'stakeholder',
+            default => null,
+        };
+
+        return $prefix ? "{$prefix}:{$income->sourceable_id}" : '';
     }
 }

@@ -66,11 +66,18 @@
                     @endforeach
                 </select>
 
-                <select name="income_source_id" class="form-input-admin">
+                <select name="sourceable" class="form-input-admin">
                     <option value="">Tüm Kaynaklar</option>
-                    @foreach ($sources as $source)
-                        <option value="{{ $source->id }}" @selected((string) ($filters['income_source_id'] ?? '') === (string) $source->id)>{{ $source->name }}</option>
-                    @endforeach
+                    <optgroup label="{{ __('People') }}">
+                        @foreach ($people as $person)
+                            <option value="person:{{ $person->id }}" @selected(($filters['sourceable'] ?? '') === 'person:'.$person->id)>{{ $person->fullName() }}</option>
+                        @endforeach
+                    </optgroup>
+                    <optgroup label="{{ __('Stakeholders') }}">
+                        @foreach ($stakeholders as $stakeholder)
+                            <option value="stakeholder:{{ $stakeholder->id }}" @selected(($filters['sourceable'] ?? '') === 'stakeholder:'.$stakeholder->id)>{{ $stakeholder->title ?: trim(($stakeholder->name ?? '').' '.($stakeholder->surname ?? '')) }}</option>
+                        @endforeach
+                    </optgroup>
                 </select>
 
                 <select name="income_type_id" class="form-input-admin">
@@ -110,11 +117,7 @@
                                     Tarih {!! $sortIcon('date') !!}
                                 </a>
                             </th>
-                            <th>
-                                <a href="{{ $sortUrl('source') }}" class="inline-flex items-center gap-1 hover:text-gray-900 dark:hover:text-gray-100">
-                                    Kaynak {!! $sortIcon('source') !!}
-                                </a>
-                            </th>
+                            <th>Kaynak</th>
                             <th>
                                 <a href="{{ $sortUrl('type') }}" class="inline-flex items-center gap-1 hover:text-gray-900 dark:hover:text-gray-100">
                                     Tür {!! $sortIcon('type') !!}
@@ -134,7 +137,7 @@
                         @forelse ($incomes as $income)
                             <tr>
                                 <td>{{ optional($income->date)->toDateString() }}</td>
-                                <td>{{ optional($income->source)->name ?: '-' }}</td>
+                                <td>{{ $income->sourceableLabel() ?? (optional($income->source)->name ?: '-') }}</td>
                                 <td>{{ optional($income->type)->name ?: '-' }}</td>
                                 <td>{{ number_format((float) $income->amount, 2) }} {{ optional($income->currency)->code }}</td>
                                 <td>{{ $income->hours ? number_format((float) $income->hours, 2) : '-' }}</td>

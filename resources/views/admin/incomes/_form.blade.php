@@ -18,14 +18,23 @@
         @error('hours')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
     </label>
 
+    @php($initialSourceableKey = old('sourceable', $currentSourceableKey ?? ''))
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
         <span class="mb-1 block">{{ __('Income Source') }}</span>
-        <select name="income_source_id" class="form-input-admin">
+        <select name="sourceable" class="form-input-admin">
             <option value="">{{ __('None') }}</option>
-            @foreach ($sources as $source)
-                <option value="{{ $source->id }}" @selected((string) old('income_source_id', $income->income_source_id ?? '') === (string) $source->id)>{{ $source->name }}</option>
-            @endforeach
+            <optgroup label="{{ __('People') }}">
+                @foreach ($people as $person)
+                    <option value="person:{{ $person->id }}" @selected($initialSourceableKey === 'person:'.$person->id)>{{ $person->fullName() }}</option>
+                @endforeach
+            </optgroup>
+            <optgroup label="{{ __('Stakeholders') }}">
+                @foreach ($stakeholders as $stakeholder)
+                    <option value="stakeholder:{{ $stakeholder->id }}" @selected($initialSourceableKey === 'stakeholder:'.$stakeholder->id)>{{ $stakeholder->title ?: trim(($stakeholder->name ?? '').' '.($stakeholder->surname ?? '')) }}</option>
+                @endforeach
+            </optgroup>
         </select>
+        @error('sourceable')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
     </label>
 
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200">

@@ -127,6 +127,11 @@ class Person extends Model
         return $this->hasMany(Interaction::class, 'person_id');
     }
 
+    public function incomes()
+    {
+        return $this->morphMany(Income::class, 'sourceable');
+    }
+
     public function zodiacName(): ?string
     {
         if (! $this->birthday) {
