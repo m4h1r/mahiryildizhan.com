@@ -51,6 +51,26 @@ class InteractionController extends Controller
         ]);
     }
 
+    public function womenInCircle(): View
+    {
+        $people = Interaction::query()
+            ->with('person')
+            ->where('interaction_type_id', 5)
+            ->whereHas('person')
+            ->latest('date')
+            ->latest('id')
+            ->get()
+            ->unique('person_id')
+            ->map(fn (Interaction $interaction) => $interaction->person)
+            ->values();
+
+        return view('admin.interactions.women-in-circle', [
+            'title' => 'Women In Circle',
+            'heading' => 'Women In Circle',
+            'people' => $people,
+        ]);
+    }
+
     public function create(Request $request): View
     {
         return view('admin.interactions.create', [

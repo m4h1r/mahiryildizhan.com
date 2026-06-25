@@ -116,6 +116,8 @@ Route::resource('/people', PersonController::class)
 	->except(['show'])
 	->names('admin.people');
 
+Route::get('/interactions/women-in-circle', [InteractionController::class, 'womenInCircle'])
+	->name('admin.interactions.women-in-circle');
 Route::post('/interactions/{interaction}/duplicate', [InteractionController::class, 'duplicate'])
 	->name('admin.interactions.duplicate');
 Route::resource('/interactions', InteractionController::class)

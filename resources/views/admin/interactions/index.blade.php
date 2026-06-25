@@ -32,7 +32,10 @@
         <section class="admin-table-shell">
             <div class="flex items-center justify-between border-b border-[var(--color-admin-border)] px-4 py-3 dark:border-[var(--color-admin-border-dark)]">
                 <h2 class="text-sm font-semibold">{{ __('Interaction List') }}</h2>
-                <a href="{{ route('admin.interactions.create') }}" class="admin-btn admin-btn-primary">{{ __('New Interaction') }}</a>
+                <div class="flex gap-2">
+                    <a href="{{ route('admin.interactions.create') }}" class="admin-btn admin-btn-primary">{{ __('New Interaction') }}</a>
+                    <a href="{{ route('admin.interactions.women-in-circle') }}" class="admin-btn bg-red-600 text-white hover:bg-red-700">{{ __('Women In Circle') }}</a>
+                </div>
             </div>
 
             <div class="overflow-x-auto overscroll-x-contain">
