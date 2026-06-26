@@ -53,21 +53,43 @@ class InteractionController extends Controller
 
     public function womenInCircle(): View
     {
-        $people = Interaction::query()
+        $interactions = Interaction::query()
             ->with('person')
             ->where('interaction_type_id', 5)
             ->whereHas('person')
             ->latest('date')
             ->latest('id')
-            ->get()
+            ->get();
+
+        $people = $interactions
             ->unique('person_id')
             ->map(fn (Interaction $interaction) => $interaction->person)
+            ->values();
+
+        $candidatePersonIds = Interaction::query()
+            ->where('notes', 'like', '%#wiccandidate%')
+            ->whereHas('person')
+            ->pluck('person_id')
+            ->unique();
+
+        $candidates = Person::query()
+            ->whereIn('id', $candidatePersonIds)
+            ->get()
+            ->map(function (Person $person) {
+                $person->effectScore = (int) $person->interactions()->sum('effect');
+
+                return $person;
+            })
+            ->sortByDesc('effectScore')
             ->values();
 
         return view('admin.interactions.women-in-circle', [
             'title' => 'Women In Circle',
             'heading' => 'Women In Circle',
             'people' => $people,
+            'totalInteractions' => $interactions->count(),
+            'centerPerson' => Person::find(1),
+            'candidates' => $candidates,
         ]);
     }
 
