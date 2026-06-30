@@ -66,14 +66,8 @@ class InteractionController extends Controller
             ->map(fn (Interaction $interaction) => $interaction->person)
             ->values();
 
-        $candidatePersonIds = Interaction::query()
-            ->where('notes', 'like', '%#wiccandidate%')
-            ->whereHas('person')
-            ->pluck('person_id')
-            ->unique();
-
         $candidates = Person::query()
-            ->whereIn('id', $candidatePersonIds)
+            ->where('notes', 'like', '%#wiccandidate%')
             ->get()
             ->map(function (Person $person) {
                 $person->effectScore = (int) $person->interactions()->sum('effect');
