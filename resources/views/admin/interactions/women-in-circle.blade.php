@@ -30,7 +30,7 @@
             @else
                 <div
                     id="circle-stage"
-                    class="relative mx-auto aspect-square w-full max-w-[640px] rounded-full bg-[radial-gradient(circle,_rgba(220,38,38,0.08)_0%,_transparent_70%)] ring-1 ring-red-100 transition-[max-width] duration-300 dark:ring-red-900/40"
+                    class="relative mx-auto aspect-square w-full max-w-[640px] rounded-full bg-[radial-gradient(circle,_rgba(220,38,38,0.08)_0%,_transparent_70%)] ring-1 ring-red-100 dark:ring-red-900/40"
                 >
                     @if ($centerPerson)
                         <a

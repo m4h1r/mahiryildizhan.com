@@ -54,7 +54,7 @@
             <option value="">{{ __('Unknown') }}</option>
             @foreach ($peopleOptions as $candidate)
                 <option value="{{ $candidate->id }}" @selected((string) old('father_id', $person->father_id ?? '') === (string) $candidate->id)>
-                    {{ $candidate->surname }}, {{ $candidate->name }} {{ optional($candidate->birthday)->format('Y') ? '('.optional($candidate->birthday)->format('Y').')' : '' }}
+                    {{ $candidate->name }} {{ $candidate->surname }} {{ optional($candidate->birthday)->format('Y') ? '('.optional($candidate->birthday)->format('Y').')' : '' }}
                 </option>
             @endforeach
         </select>
@@ -66,7 +66,7 @@
             <option value="">{{ __('Unknown') }}</option>
             @foreach ($peopleOptions as $candidate)
                 <option value="{{ $candidate->id }}" @selected((string) old('mother_id', $person->mother_id ?? '') === (string) $candidate->id)>
-                    {{ $candidate->surname }}, {{ $candidate->name }} {{ optional($candidate->birthday)->format('Y') ? '('.optional($candidate->birthday)->format('Y').')' : '' }}
+                    {{ $candidate->name }} {{ $candidate->surname }} {{ optional($candidate->birthday)->format('Y') ? '('.optional($candidate->birthday)->format('Y').')' : '' }}
                 </option>
             @endforeach
         </select>
@@ -78,7 +78,7 @@
             <option value="">{{ __('None') }}</option>
             @foreach ($peopleOptions as $candidate)
                 <option value="{{ $candidate->id }}" @selected((string) old('partner_id', $person->partner_id ?? '') === (string) $candidate->id)>
-                    {{ $candidate->surname }}, {{ $candidate->name }}
+                    {{ $candidate->name }} {{ $candidate->surname }}
                 </option>
             @endforeach
         </select>
