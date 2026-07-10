@@ -329,8 +329,8 @@ class PersonController extends Controller
             'hairColors' => HairColor::query()->orderBy('name')->get(),
             'peopleOptions' => Person::query()
                 ->when($excludeId !== null, fn ($query) => $query->where('id', '!=', $excludeId))
-                ->orderBy('surname')
                 ->orderBy('name')
+                ->orderBy('surname')
                 ->get(['id', 'name', 'surname', 'birthday']),
         ];
     }

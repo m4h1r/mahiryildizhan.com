@@ -1,7 +1,13 @@
 # MY Teknoloji — Audit Report
-Project: mahiryildizhan.com
-Date: 2026-04-21
+Project: laravel/laravel (mahiryildizhan.com — **custom hand-rolled admin, NOT Filament**)
+Date: 2026-07-10
 Topics: all
+Standards: v built 2026-07-03 (157 rules / 17 topics)
+
+> ⚠️ **This project does not use Filament.** The admin panel is a custom Blade app
+> (`routes/web.php` → `Route::prefix('admin')`, `resources/views/admin/*`). All
+> `[FILAMENT]` and `[MEDIA]` (curator) rules are marked **— N/A** and reinterpreted
+> against the always-on intent (e.g. "MFA on every admin panel") where meaningful.
 
 ---
 
@@ -9,89 +15,98 @@ Topics: all
 
 | Rule | Status | Detail |
 |------|--------|--------|
-| **LARAVEL** | | |
-| L1 | ❌ | `env()` called directly in app/ — AppServiceProvider.php:34-35, EnsureAdmin.php:19, DashboardController.php:22-24, MailchimpService.php:67,72,77, RecaptchaService.php:12 |
-| L3 | ⚠️ | No `app/Enums/` directory |
-| L4 | ✅ | No closure routes; groups use typed closures |
-| L5 | ✅ | Form Requests exist; no `->all()` in controllers |
-| L6 | ✅ | `app/Services/` exists (CsvImport, Image, Mailchimp, Media, Recaptcha, Sitemap) |
-| **FILAMENT** | | |
-| F1-F8 | — | Filament not installed; custom admin panel used |
-| **MEDIA** | | |
-| M1 | ❌ | `spatie/laravel-medialibrary` not in composer.json; `filament-curator` not installed |
-| M2-M5 | — | N/A — media packages not installed |
-| **FRONTEND** | | |
-| V1 | ✅ | `public/build` and `node_modules` in .gitignore |
-| V3 | ❌ | `@vite()` called in 5 separate files: welcome.blade.php, admin/layout.blade.php, public/layout.blade.php, layouts/guest.blade.php, layouts/app.blade.php |
-| V4 | ✅ | No `console.log` in resources/js; no jQuery |
-| V5 | ⚠️ | `public/logo.png` missing |
-| V6 | ❌ | No MY Teknoloji footer credit in any layout |
-| **SECURITY** | | |
-| S1 (APP_DEBUG) | ❌ | `APP_DEBUG=true` in .env.example — must be `false` |
-| S1 (SESSION) | ⚠️ | `SESSION_SECURE_COOKIE` not set in .env.example |
-| S1 (.env gitignore) | ✅ | `.env` in .gitignore |
-| S3 | ✅ | No `$request->all()` usage found |
-| S4 | ✅ | Recaptcha configured (AppServiceProvider + RecaptchaService) |
-| S5 | ❌ | 55 views contain `<form` but 0 have `x-honeypot` |
-| S6 | ⚠️ | RateLimiter only on login; no rate limiting on public comment/contact forms |
-| **DATABASE** | | |
-| D1 | ✅ | All CREATE migrations have timestamps; ALTER migrations exempt |
-| D2 | ✅ | No float/double columns in migrations |
-| D5 | ✅ | No string status columns found |
-| D6 | ⚠️ | 1 factory vs 28 models |
-| D7 | ❌ | No `database/seeders/UserSeeder.php` |
-| **SEO** | | |
-| E1 | ✅ | `/sitemap.xml` route exists (routes/public.php:42) |
-| E2 | ⚠️ | No robots.txt route in routes/ |
-| E3 | ⚠️ | No ads.txt route in routes/ |
-| E4 | ✅ | OG tags in `resources/views/components/seo-meta.blade.php` |
-| E5 | ⚠️ | No `resources/views/components/tracking-scripts.blade.php` |
-| **GIT** | | |
-| G1 | ✅ | 6 commits; remote origin set (github.com/m4h1r/mahiryildizhan.com) |
-| G2 | ⚠️ | No `develop` branch |
-| G3 | ✅ | `public/build` in .gitignore |
-| **LOCALIZATION** | | |
-| T2 | — | Single-language site; mcamara package N/A |
-| T3 | ⚠️ | No `lang/tr/` directory; 27 views use `__()` helpers |
-| **TESTING** | | |
-| X1 | ✅ | `pestphp/pest` installed |
-| X2 | ✅ | `tests/Feature/` exists (11 test files) |
-| X3 | ✅ | No DatabaseSeeder called in tests |
-| X4 | ⚠️ | 1 factory vs 28 models |
-| X7 | ✅ | `DB_DATABASE=:memory:`, `QUEUE_CONNECTION=sync`, `MAIL_MAILER=array` in phpunit.xml |
-| **EMAIL** | | |
-| R1 | — | No Mailables exist |
-| R2 | ✅ | No `Mail::send()` in production code |
-| R3 | — | No Mailables; email layout N/A |
-| R4 | ⚠️ | `MAIL_FROM_ADDRESS="hello@example.com"` still placeholder in .env.example |
-| R5 | ⚠️ | No `failed_jobs` table migration |
-| R6 | — | No Mailables; N/A |
-| R9 | ❌ | No `app/Console/Commands/MailTestCommand.php` |
+| P1 (php) | ⚠️ | `composer.json` php `^8.3` — baseline 8.5, min 8.4. Bump to `^8.4`. |
+| P1 (vite) | ⚠️ | `vite ^7.0.7` — baseline Vite 8 (Rolldown). |
+| P1 (pest) | ✅ | Pest 4 installed. |
+| P1 (filament) | — | Filament not used (custom admin). |
+| L1 env() | ✅ | No `env()` calls in `app/`. |
+| L4 closures | ✅ | Only `Route::group/prefix` closures (normal), no action closures. |
+| L5 all()/Requests | ✅ | No `->all()`; `app/Http/Requests/` present. |
+| L6 Services | ✅ | `app/Services/` present. |
+| L3 Enums | ⚠️ | No `app/Enums/` — status stored as DB `enum()`, no backed PHP enums/casts. |
+| L2 SoftDeletes | ⚠️ | 32 models; no Filament resources to auto-map — **verify admin-CRUD models use SoftDeletes** manually. |
+| L9 activitylog | ⚠️ | `spatie/laravel-activitylog` not installed. |
+| FILAMENT (all) | — | N/A — custom admin, no Filament panel. |
+| M1 medialibrary | ⚠️ | No `spatie/laravel-medialibrary` / curator (custom app — verify uploads are validated & non-public). |
+| V1 gitignore | ✅ | `public/build` + `node_modules` ignored. |
+| V4 console.log/jquery | ✅ | None found. |
+| V6 footer credit | ✅ | `myteknoloji.com` credit present. |
+| V5 logo | ⚠️ | No `public/logo.png`. |
+| V8b palette | ⚠️ | Only 6 of 11 palette tokens in `@theme`. |
+| V8c scrollbar | ⚠️ | No `scrollbar-width:thin` + `scrollbar-color` brand rule (only `admin-scrollbar` webkit). |
+| V9 PWA | ⚠️ | No `public/manifest.json` / service worker. |
+| V12 error pages | ⚠️ | 404/500/503 present but 419/429 missing; 404/503 `@extends('public.layout')` — should be **standalone**. |
+| V13 reading-progress | ⚠️ | No `reading-progress` component on content pages. |
+| TY1 @theme/fonts | ✅ | `@theme` block with `--font-body/editorial/mono` slots. |
+| TY2 font load | ✅ | `@fontsource/inter` bundled. |
+| A3 skip link | ✅ | Skip-to-content in admin + public layouts. |
+| A4 focus-visible | ✅ | `:focus-visible` ring; `outline:none` paired with focus ring. |
+| A8 reduced-motion | ✅ | `prefers-reduced-motion` block present. |
+| S1 env/debug | ✅ | `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`, `.env` gitignored. |
+| S3 request->all() | ✅ | None. |
+| S4 captcha | ✅ | reCAPTCHA wired via Settings. |
+| S5 honeypot | ⚠️ | Honeypot only in 1 view (welcome). Verify newsletter/comment/search public forms are covered. |
+| S6 rate limit | ✅ | `throttle:6,1` on auth routes. |
+| S9 SecurityHeaders | ✅ | `SecurityHeadersMiddleware` registered in `bootstrap/app.php`. |
+| S11 session | ⚠️ | `SESSION_DRIVER=database` — prefer `redis`. |
+| S13 MFA | ❌ | No 2FA/TOTP anywhere — admin login has no MFA. |
+| S14 Password policy | ⚠️ | `Password::defaults()` used but not configured in `AppServiceProvider` (`min(12)->uncompromised()`). |
+| D2 money | ✅ | No float/double columns. |
+| D5 status | ✅ | Status columns use `enum()`, not string. |
+| D7 UserSeeder | ✅ | Present. |
+| D6 factories | ⚠️ | 1 factory for 32 models. |
+| D9 cascade | ⚠️ | 4 `cascadeOnDelete` (interactions→people, node_connections→nodes, comments→posts) — verify parents are NOT soft-deletable. |
+| E1 sitemap | ✅ | `/sitemap.xml` route. |
+| E2 robots | ⚠️ | No `/robots.txt` route (only meta robots). |
+| E4 OG | ✅ | `seo-meta` component with `og:title`. |
+| E6 NoIndex | ⚠️ | No NoIndex middleware for `/admin`/auth routes (one view has meta noindex). |
+| E7 consent | ⚠️ | No cookie-consent component (only needed once analytics/tracking added). |
+| G1 repo | ✅ | 43 commits, GitHub remote. |
+| G2 develop | ⚠️ | No `develop` branch. |
+| G5 CI | ❌ | No `.github/workflows/ci.yml`. |
+| G5 dependabot | ⚠️ | No `.github/dependabot.yml`. |
+| Q1 pint | ❌ | `laravel/pint` installed but **no `pint.json`**. |
+| Q2 phpstan | ❌ | No `larastan/larastan` + no `phpstan.neon`. |
+| Q3 rector | ⚠️ | No `rector/rector` + no `rector.php`. |
+| B1 backup | ❌ | No `spatie/laravel-backup`, not scheduled, no `BACKUP_ARCHIVE_PASSWORD` (KVKK). |
+| X2 tests | ✅ | `tests/Feature/` present (Pest). |
+| X9 smoke | ❌ | No `tests/Feature/SmokeTest.php`. |
+| X11 smoke.sh | ❌ | No `scripts/smoke-test.sh`. |
+| R1 queued mail | ❌ | 1 Mailable, 0 `ShouldQueue`. |
+| R4 mail from | ✅ | `MAIL_FROM_ADDRESS` set. |
+| R9 MailTest | ✅ | `MailTestCommand` present. |
+| W9 health | ⚠️ | Custom `/health` route exists; no `spatie/laravel-health` monitoring. |
+| F8 admin path | ⚠️ | Admin at predictable `/admin` prefix (custom app — consider obscuring). |
 
 ---
 
 ## Remediation Plan
 
 ### ⚡ Quick (< 10 min)
-- [ ] [S1] Set `APP_DEBUG=false` in .env.example — one line change
-- [ ] [S1] Add `SESSION_SECURE_COOKIE=true` to .env.example
-- [ ] [V6] Add `<x-footer-credit />` component to all 5 layout files
-- [ ] [D7] Create `database/seeders/UserSeeder.php` with admin@mahiryildizhan.com / Mahir Yıldızhan
-- [ ] [G2] `git checkout -b develop && git push -u origin develop`
-- [ ] [R4] Update `MAIL_FROM_ADDRESS` in .env.example to real address
+- [ ] **B1** Install backup: `composer require spatie/laravel-backup` + publish config + add `BACKUP_ARCHIVE_PASSWORD` to `.env.example`.
+- [ ] **Q1** Add `pint.json` to project root (MY Teknoloji preset).
+- [ ] **G5** Add `.github/dependabot.yml` (composer + npm weekly).
+- [ ] **V12** Add branded `resources/views/errors/419.blade.php` + `429.blade.php`.
+- [ ] **P1** Bump `php` constraint to `^8.4` in `composer.json`.
+- [ ] **E2** Add `/robots.txt` route.
+- [ ] **S14** Configure `Password::defaults(fn () => Password::min(12)->uncompromised())` in `AppServiceProvider::boot`.
 
 ### 🔧 Standard (30–60 min)
-- [ ] [L1] Move all `env()` calls in app/ to config files — create `config/services.recaptcha.php`, `config/admin.php`, `config/weather.php`, `config/mailchimp.php`; update ~10 call sites to use `config()`
-- [ ] [R9] Scaffold `MailTestCommand` from email.md §10 template — `php artisan make:command MailTestCommand`
-- [ ] [E2] Add robots.txt route + inline response in routes/public.php
-- [ ] [E3] Add ads.txt route + inline response in routes/public.php
-- [ ] [E5] Create `resources/views/components/tracking-scripts.blade.php` with GTM/GA placeholder
-- [ ] [R5] `php artisan queue:failed-table && php artisan migrate`
+- [ ] **Q2** `composer require --dev larastan/larastan` + add `phpstan.neon` (level 6+).
+- [ ] **G5** Add `.github/workflows/ci.yml` (pint --test, phpstan, pest).
+- [ ] **X9 / X11** Create `tests/Feature/SmokeTest.php` (all public routes → 200) + `scripts/smoke-test.sh` (curl -I against live URL).
+- [ ] **R1** Make Mailable(s) `implements ShouldQueue` + confirm `QUEUE_CONNECTION` + queue worker.
+- [ ] **V8b/V8c** Complete 11-token palette in `@theme` + add thin brand-colored `scrollbar-width:thin; scrollbar-color:var(--color-primary) transparent`.
+- [ ] **S5** Add `<x-honeypot />` to every public form (newsletter, blog comment, search) — currently only on welcome.
+- [ ] **E6** Add `NoIndex` middleware and apply to `/admin` + auth route groups.
+- [ ] **D6** Backfill model factories (32 models, 1 factory) — at least for tested models.
 
 ### 🏗️ Larger (own task/phase)
-- [ ] [M1] Install + configure media: `composer require spatie/laravel-medialibrary awcodes/filament-curator` → add HasMedia to relevant models → register MediaConversions → configure media disk → register CuratorPlugin. Estimate: 2–3 hours
-- [ ] [S5] Add honeypot to all public forms: `composer require msurguy/honeypot` → add `x-honeypot` to each of the 55 form views → add HoneypotMiddleware to public routes. Estimate: 1–2 hours
-- [ ] [V3] Consolidate @vite() to single root layout — merge admin/layout, public/layout, layouts/app, layouts/guest into a shared base blade component or single root layout extending pattern. Estimate: 1–2 hours
+- [ ] **S13** Add MFA/TOTP to admin login (e.g. `laravel/fortify` 2FA or `pragmarx/google2fa-laravel`) — always-on rule for every admin panel.
+- [ ] **P1** Upgrade Vite 7 → 8 (Rolldown); test build + HMR.
+- [ ] **L9** Add `spatie/laravel-activitylog` + `LogsActivity` on key models + an admin activity view.
+- [ ] **D9** Audit the 4 `cascadeOnDelete` FKs — if any parent uses SoftDeletes, replace with restrict/nullOnDelete to avoid silent data loss.
+- [ ] **V9** Add PWA manifest + icons + service worker (installable).
 
 ---
-*Generated by /my-standards audit — MY Teknoloji Standards v2026-04-21*
+*Generated by /my-standards audit — MY Teknoloji Standards (graph built 2026-07-03)*
