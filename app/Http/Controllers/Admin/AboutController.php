@@ -13,7 +13,7 @@ class AboutController extends Controller
     public function index(): View
     {
         return view('admin.about', [
-            'title'   => 'About Page',
+            'title' => 'About Page',
             'heading' => 'About Page',
             'content_en' => Setting::get('about_content_en', ''),
             'content_tr' => Setting::get('about_content_tr', ''),

@@ -95,6 +95,6 @@ abstract class AliceController extends Controller
             return '0,00 ₺';
         }
 
-        return number_format((float) $amount, 2, ',', '.') . ' ₺';
+        return number_format((float) $amount, 2, ',', '.').' ₺';
     }
 }

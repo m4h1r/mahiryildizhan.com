@@ -12,6 +12,7 @@ use App\Models\Stakeholder;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -19,24 +20,34 @@ class IncomeController extends Controller
 {
     public function index(Request $request): View
     {
-        $sortable  = ['date', 'amount', 'type'];
-        $sort      = in_array($request->input('sort'), $sortable) ? $request->input('sort') : 'date';
+        $sortable = ['date', 'amount', 'type'];
+        $sort = in_array($request->input('sort'), $sortable) ? $request->input('sort') : 'date';
         $direction = $request->input('direction') === 'asc' ? 'asc' : 'desc';
 
-        $year         = $request->has('year') ? ($request->integer('year') ?: null) : now()->year;
-        $month        = $request->integer('month') ?: null;
-        $typeId       = $request->integer('income_type_id') ?: null;
-        $currencyId   = $request->integer('currency_id') ?: null;
-        $userId       = $request->integer('user_id') ?: null;
+        $year = $request->has('year') ? ($request->integer('year') ?: null) : now()->year;
+        $month = $request->integer('month') ?: null;
+        $typeId = $request->integer('income_type_id') ?: null;
+        $currencyId = $request->integer('currency_id') ?: null;
+        $userId = $request->integer('user_id') ?: null;
         $sourceableKey = $request->string('sourceable')->toString() ?: null;
         [$sourceableType, $sourceableId] = $this->parseSourceableKey($sourceableKey);
 
         $applyFilters = function ($q) use ($year, $month, $typeId, $currencyId, $userId, $sourceableType, $sourceableId) {
-            if ($year)       { $q->whereYear('incomes.date', $year); }
-            if ($month)      { $q->whereMonth('incomes.date', $month); }
-            if ($typeId)     { $q->where('incomes.income_type_id', $typeId); }
-            if ($currencyId) { $q->where('incomes.currency_id', $currencyId); }
-            if ($userId)     { $q->where('incomes.user_id', $userId); }
+            if ($year) {
+                $q->whereYear('incomes.date', $year);
+            }
+            if ($month) {
+                $q->whereMonth('incomes.date', $month);
+            }
+            if ($typeId) {
+                $q->where('incomes.income_type_id', $typeId);
+            }
+            if ($currencyId) {
+                $q->where('incomes.currency_id', $currencyId);
+            }
+            if ($userId) {
+                $q->where('incomes.user_id', $userId);
+            }
             if ($sourceableType && $sourceableId) {
                 $q->where('incomes.sourceable_type', $sourceableType)->where('incomes.sourceable_id', $sourceableId);
             }
@@ -50,7 +61,7 @@ class IncomeController extends Controller
 
         if ($sort === 'type') {
             $query->leftJoin('income_types', 'income_types.id', '=', 'incomes.income_type_id')
-                  ->orderBy('income_types.name', $direction);
+                ->orderBy('income_types.name', $direction);
         } else {
             $query->orderBy('incomes.'.$sort, $direction);
         }
@@ -91,23 +102,23 @@ class IncomeController extends Controller
         $availableYears = Income::query()
             ->whereNotNull('date')
             ->pluck('date')
-            ->map(fn ($date) => (int) \Illuminate\Support\Carbon::parse($date)->year)
+            ->map(fn ($date) => (int) Carbon::parse($date)->year)
             ->unique()
             ->sortDesc()
             ->values();
 
         return view('admin.incomes.index', [
-            'title'          => 'Gelirler',
-            'heading'        => 'Gelirler',
-            'incomes'        => $incomes,
-            'people'         => Person::query()->orderBy('surname')->orderBy('name')->get(),
-            'stakeholders'   => Stakeholder::query()->orderBy('title')->orderBy('name')->get(),
-            'types'          => IncomeType::query()->orderBy('name')->get(),
-            'currencies'     => Currency::query()->orderBy('code')->get(),
-            'users'          => User::query()->orderBy('name')->get(),
-            'filters'        => array_merge($request->only(['month', 'sourceable', 'income_type_id', 'currency_id', 'user_id']), ['year' => $year]),
-            'sort'           => $sort,
-            'direction'      => $direction,
+            'title' => 'Gelirler',
+            'heading' => 'Gelirler',
+            'incomes' => $incomes,
+            'people' => Person::query()->orderBy('surname')->orderBy('name')->get(),
+            'stakeholders' => Stakeholder::query()->orderBy('title')->orderBy('name')->get(),
+            'types' => IncomeType::query()->orderBy('name')->get(),
+            'currencies' => Currency::query()->orderBy('code')->get(),
+            'users' => User::query()->orderBy('name')->get(),
+            'filters' => array_merge($request->only(['month', 'sourceable', 'income_type_id', 'currency_id', 'user_id']), ['year' => $year]),
+            'sort' => $sort,
+            'direction' => $direction,
             'incomeTypeChart' => $incomeTypeChart,
             'averageHourlyRates' => $averageHourlyRates,
             'availableYears' => $availableYears,

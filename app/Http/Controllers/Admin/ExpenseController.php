@@ -222,7 +222,7 @@ class ExpenseController extends Controller
         $filename = 'giderler_'.now()->format('Y-m-d_His').'.csv';
 
         return response("\xEF\xBB\xBF".$output, 200, [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
     }

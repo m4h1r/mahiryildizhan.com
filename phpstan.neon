@@ -1,11 +1,10 @@
 includes:
     - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
 
 parameters:
     paths:
         - app
     level: 5
-    ignoreErrors:
-        - '#Unsafe usage of new static#'
     excludePaths:
-        - app/Http/Middleware/TrustProxies.php
+        - app/Http/Middleware/TrustProxies.php (?)

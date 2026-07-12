@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\PersonalAccessToken;
 use Symfony\Component\HttpFoundation\Response;
 
 class AliceAuthenticate
@@ -15,7 +16,7 @@ class AliceAuthenticate
             return $this->unauthorized('Token gereklidir');
         }
 
-        $token = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+        $token = PersonalAccessToken::findToken($request->bearerToken());
 
         if (! $token || ($token->expires_at && $token->expires_at->isPast())) {
             return $this->unauthorized('Geçersiz veya süresi dolmuş token');

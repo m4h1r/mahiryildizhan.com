@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Node;
+use App\Models\NodeConnection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -79,7 +80,7 @@ class NodeController extends Controller
             'size' => $node->image ? 30 : 18,
         ])->values();
 
-        $graphEdges = \App\Models\NodeConnection::query()
+        $graphEdges = NodeConnection::query()
             ->orderBy('id')
             ->get()
             ->map(fn ($connection) => [

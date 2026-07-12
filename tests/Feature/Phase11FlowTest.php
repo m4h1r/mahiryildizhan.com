@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Subscriber;
 use App\Models\TimelineEvent;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -93,7 +94,7 @@ class Phase11FlowTest extends TestCase
             'subscribed_at' => now(),
         ]);
 
-        $admin = \App\Models\User::factory()->create(['is_admin' => true]);
+        $admin = User::factory()->create(['is_admin' => true]);
 
         $response = $this->actingAs($admin)->get(route('admin.subscribers.export'));
 

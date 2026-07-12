@@ -204,7 +204,7 @@ class DictionaryController extends Controller
     {
         $modelClass = $definition['model'];
 
-        return new $modelClass();
+        return new $modelClass;
     }
 
     private function validatedPayload(Request $request, string $table, array $definition, ?int $ignoreId = null): array

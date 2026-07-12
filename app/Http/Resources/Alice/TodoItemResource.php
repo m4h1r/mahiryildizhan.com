@@ -14,7 +14,7 @@ class TodoItemResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'cost_try' => $this->cost_try,
-            'cost_display' => $this->cost_try ? number_format((float) $this->cost_try, 2, ',', '.') . ' ₺' : null,
+            'cost_display' => $this->cost_try ? number_format((float) $this->cost_try, 2, ',', '.').' ₺' : null,
             'time_cost_hours' => $this->time_cost_hours,
             'due_date' => $this->due_date?->toDateString(),
             'is_bucketlist' => $this->is_bucketlist,

@@ -4,6 +4,7 @@ namespace Tests\Feature\Alice;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 abstract class AliceTestCase extends TestCase
@@ -28,44 +29,44 @@ abstract class AliceTestCase extends TestCase
     protected function aliceHeaders(array $extra = []): array
     {
         return array_merge([
-            'Authorization' => 'Bearer ' . $this->token,
+            'Authorization' => 'Bearer '.$this->token,
             'Accept' => 'application/json',
             'X-Alice-Source' => 'alice',
         ], $extra);
     }
 
-    protected function aliceGet(string $path, array $query = []): \Illuminate\Testing\TestResponse
+    protected function aliceGet(string $path, array $query = []): TestResponse
     {
-        $url = '/api/v1/alice/' . ltrim($path, '/');
+        $url = '/api/v1/alice/'.ltrim($path, '/');
         if ($query) {
-            $url .= '?' . http_build_query($query);
+            $url .= '?'.http_build_query($query);
         }
 
         return $this->getJson($url, $this->aliceHeaders());
     }
 
-    protected function alicePost(string $path, array $data = [], array $headers = []): \Illuminate\Testing\TestResponse
+    protected function alicePost(string $path, array $data = [], array $headers = []): TestResponse
     {
         return $this->postJson(
-            '/api/v1/alice/' . ltrim($path, '/'),
+            '/api/v1/alice/'.ltrim($path, '/'),
             $data,
             $this->aliceHeaders($headers)
         );
     }
 
-    protected function alicePatch(string $path, array $data = []): \Illuminate\Testing\TestResponse
+    protected function alicePatch(string $path, array $data = []): TestResponse
     {
         return $this->patchJson(
-            '/api/v1/alice/' . ltrim($path, '/'),
+            '/api/v1/alice/'.ltrim($path, '/'),
             $data,
             $this->aliceHeaders()
         );
     }
 
-    protected function aliceDelete(string $path): \Illuminate\Testing\TestResponse
+    protected function aliceDelete(string $path): TestResponse
     {
         return $this->deleteJson(
-            '/api/v1/alice/' . ltrim($path, '/'),
+            '/api/v1/alice/'.ltrim($path, '/'),
             [],
             $this->aliceHeaders()
         );

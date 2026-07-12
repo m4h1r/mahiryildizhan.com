@@ -1,9 +1,7 @@
 <?php
 
 use App\Jobs\GenerateSitemapJob;
-use App\Models\Comment;
 use App\Models\Media;
-use App\Models\Person;
 use App\Models\Post;
 use App\Services\CsvImportService;
 use App\Services\MediaService;
@@ -65,6 +63,7 @@ Artisan::command('media:migrate-covers {--dry-run}', function () {
 
         if ($cover === '' || str_starts_with($cover, 'http://') || str_starts_with($cover, 'https://')) {
             $skipped++;
+
             continue;
         }
 
@@ -75,6 +74,7 @@ Artisan::command('media:migrate-covers {--dry-run}', function () {
         if ($dryRun) {
             $this->line("[DRY] Post #{$post->id} -> {$relativePath}");
             $linked++;
+
             continue;
         }
 
@@ -83,6 +83,7 @@ Artisan::command('media:migrate-covers {--dry-run}', function () {
 
             if (! $media instanceof Media) {
                 $skipped++;
+
                 continue;
             }
 
@@ -108,6 +109,13 @@ Artisan::command('media:migrate-covers {--dry-run}', function () {
     return $failed > 0 ? self::FAILURE : self::SUCCESS;
 })->purpose('Migrate legacy posts.cover file paths into media records and assign cover_media_id.');
 
-Schedule::job(new GenerateSitemapJob())->daily();
-Schedule::command('model:prune', ['--model' => [Post::class, Comment::class, Person::class]])->weekly();
+Schedule::job(new GenerateSitemapJob)->daily();
+// `model:prune` for Post/Comment/Person was removed: none of these models implement
+// Prunable, so this command threw BadMethodCallException on every scheduled run
+// (see AUDIT_REPORT.md D9). Re-add only once a real retention policy + prunable()
+// scope is defined — until then there is nothing here for the scheduler to do.
 Schedule::command('alice:prune-audit-log')->weekly();
+
+// Backups (spatie/laravel-backup) — B1
+Schedule::command('backup:clean')->daily()->at('01:30');
+Schedule::command('backup:run')->daily()->at('02:00');

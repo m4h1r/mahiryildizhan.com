@@ -4,11 +4,11 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function (): void {
+Route::prefix('admin')->middleware(['auth', 'admin', 'noindex'])->group(function (): void {
     require __DIR__.'/admin.php';
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'noindex'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -32,4 +32,6 @@ Route::get('/theme/{scope}/{theme}', function (Request $request, string $scope, 
     return back();
 })->name('theme.switch');
 
-require __DIR__.'/auth.php';
+Route::middleware('noindex')->group(function (): void {
+    require __DIR__.'/auth.php';
+});

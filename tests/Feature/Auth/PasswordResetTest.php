@@ -5,6 +5,7 @@ namespace Tests\Feature\Auth;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
@@ -50,6 +51,8 @@ class PasswordResetTest extends TestCase
     public function test_password_can_be_reset_with_valid_token(): void
     {
         Notification::fake();
+        // Avoid a real network call to the pwnedpasswords API (Password::uncompromised()).
+        Http::fake(['api.pwnedpasswords.com/*' => Http::response('', 200)]);
 
         $user = User::factory()->create();
 
@@ -59,8 +62,8 @@ class PasswordResetTest extends TestCase
             $response = $this->post('/reset-password', [
                 'token' => $notification->token,
                 'email' => $user->email,
-                'password' => 'password',
-                'password_confirmation' => 'password',
+                'password' => 'a-Str0ng-Rand0m-Passw0rd!',
+                'password_confirmation' => 'a-Str0ng-Rand0m-Passw0rd!',
             ]);
 
             $response

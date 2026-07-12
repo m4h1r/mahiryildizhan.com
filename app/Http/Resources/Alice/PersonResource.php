@@ -26,6 +26,7 @@ class PersonResource extends JsonResource
             'gender' => $this->whenLoaded('gender', fn () => $this->gender ? ['id' => $this->gender->id, 'name' => $this->gender->name] : null),
             'blood_type' => $this->whenLoaded('bloodType', function () {
                 $bt = $this->resource->getRelation('bloodType');
+
                 return $bt ? ['id' => $bt->id, 'name' => $bt->name] : null;
             }),
             'eye_color' => $this->whenLoaded('eyeColor', fn () => $this->eyeColor ? ['id' => $this->eyeColor->id, 'name' => $this->eyeColor->name] : null),

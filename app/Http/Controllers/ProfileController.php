@@ -16,8 +16,18 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+
+        $twoFactorEnabled = ! is_null($user->two_factor_secret) && ! is_null($user->two_factor_confirmed_at);
+        $twoFactorPending = ! is_null($user->two_factor_secret) && is_null($user->two_factor_confirmed_at);
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'twoFactorEnabled' => $twoFactorEnabled,
+            'twoFactorPending' => $twoFactorPending,
+            'qrCodeSvg' => $twoFactorPending ? $user->twoFactorQrCodeSvg() : null,
+            'secretKey' => $twoFactorPending ? decrypt($user->two_factor_secret) : null,
+            'recoveryCodes' => $twoFactorEnabled ? $user->recoveryCodes() : [],
         ]);
     }
 

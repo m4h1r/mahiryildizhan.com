@@ -4,7 +4,6 @@ namespace Tests\Feature\Alice;
 
 use App\Models\Currency;
 use App\Models\Expense;
-use App\Models\ExpenseType;
 
 class ExpenseCrudTest extends AliceTestCase
 {

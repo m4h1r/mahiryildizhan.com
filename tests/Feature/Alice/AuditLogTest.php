@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Alice;
 
-use App\Models\AliceAuditLog;
 use App\Models\Currency;
 use App\Models\Income;
 

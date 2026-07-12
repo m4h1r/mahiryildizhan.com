@@ -41,10 +41,10 @@ class LinkController extends Controller
             ->pluck('value', 'key');
 
         return view('public.biolink.index', [
-            'title'   => 'Biolink | '.config('app.name'),
-            'links'   => $links,
-            'posts'   => $posts,
-            'social'  => $socialSettings,
+            'title' => 'Biolink | '.config('app.name'),
+            'links' => $links,
+            'posts' => $posts,
+            'social' => $socialSettings,
         ]);
     }
 }

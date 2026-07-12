@@ -1,0 +1,1459 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Relation ''language'' is not found in App\\Models\\Adage model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/AdageController.php
+
+		-
+			message: '#^Relation ''post'' is not found in App\\Models\\Comment model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/CommentController.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Comment model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/CommentController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Person\:\:\$days_from_today\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/DashboardController.php
+
+		-
+			message: '#^Comparison operation "\>" between 250 and 0 is always true\.$#'
+			identifier: greater.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Admin/DashboardController.php
+
+		-
+			message: '#^Relation ''post'' is not found in App\\Models\\Comment model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/DashboardController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Expense\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ExpenseController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Expense\:\:\$expenseType\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ExpenseController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Expense\:\:\$stakeholder\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Admin/ExpenseController.php
+
+		-
+			message: '#^Relation ''currency'' is not found in App\\Models\\Expense model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Admin/ExpenseController.php
+
+		-
+			message: '#^Relation ''expenseType'' is not found in App\\Models\\Expense model\.$#'
+			identifier: larastan.relationExistence
+			count: 3
+			path: app/Http/Controllers/Admin/ExpenseController.php
+
+		-
+			message: '#^Relation ''stakeholder'' is not found in App\\Models\\Expense model\.$#'
+			identifier: larastan.relationExistence
+			count: 4
+			path: app/Http/Controllers/Admin/ExpenseController.php
+
+		-
+			message: '#^Relation ''currency'' is not found in App\\Models\\Income model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/IncomeController.php
+
+		-
+			message: '#^Relation ''source'' is not found in App\\Models\\Income model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/IncomeController.php
+
+		-
+			message: '#^Relation ''sourceable'' is not found in App\\Models\\Income model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/IncomeController.php
+
+		-
+			message: '#^Relation ''type'' is not found in App\\Models\\Income model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/IncomeController.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Income model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/IncomeController.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between mixed and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Http/Controllers/Admin/IncomeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Interaction\:\:\$person\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/InteractionController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Person\:\:\$effectScore\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/InteractionController.php
+
+		-
+			message: '#^Relation ''person'' is not found in App\\Models\\Interaction model\.$#'
+			identifier: larastan.relationExistence
+			count: 4
+			path: app/Http/Controllers/Admin/InteractionController.php
+
+		-
+			message: '#^Relation ''type'' is not found in App\\Models\\Interaction model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/InteractionController.php
+
+		-
+			message: '#^Relation ''fromNode'' is not found in App\\Models\\NodeConnection model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/NodeConnectionController.php
+
+		-
+			message: '#^Relation ''toNode'' is not found in App\\Models\\NodeConnection model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/NodeConnectionController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Person\:\:\$father\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Person\:\:\$gender\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Person\:\:\$mother\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Person\:\:\$partner\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Admin\\PersonController\:\:addPersonNode\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Relation ''bloodType'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Relation ''father'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Relation ''gender'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Relation ''mother'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Relation ''partner'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between non\-falsy\-string and ''0'' will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Http/Controllers/Admin/PersonController.php
+
+		-
+			message: '#^Relation ''author'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/PostController.php
+
+		-
+			message: '#^Relation ''category'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/PostController.php
+
+		-
+			message: '#^Relation ''coverMedia'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/PostController.php
+
+		-
+			message: '#^Relation ''language'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/PostController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>published_at" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Admin/PostController.php
+
+		-
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: app/Http/Controllers/Admin/PurchaseItemController.php
+
+		-
+			message: '#^Cannot call method toDateTimeString\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Admin/PurchaseItemController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Expense\:\:\$day\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ReportController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Expense\:\:\$month\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ReportController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Income\:\:\$month\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ReportController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Income\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ReportController.php
+
+		-
+			message: '#^Comparison operation "\>" between int\<1, max\> and 0 is always true\.$#'
+			identifier: greater.alwaysTrue
+			count: 2
+			path: app/Http/Controllers/Admin/ReportController.php
+
+		-
+			message: '#^Offset ''income'' on array\{labels\: non\-empty\-list\<non\-falsy\-string\>, company\: non\-empty\-list\<float\>, personal\: non\-empty\-list\<float\>, tax\: non\-empty\-list\<float\>, income\: non\-empty\-list\<float\>\} in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.offset
+			count: 1
+			path: app/Http/Controllers/Admin/ReportController.php
+
+		-
+			message: '#^Variable \$monthlyExpenseTotals in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: app/Http/Controllers/Admin/ReportController.php
+
+		-
+			message: '#^Relation ''creator'' is not found in App\\Models\\Stakeholder model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/StakeholderController.php
+
+		-
+			message: '#^Cannot call method copy\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/Admin/TimelineController.php
+
+		-
+			message: '#^Cannot call method unix\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Admin/TimelineController.php
+
+		-
+			message: '#^Parameter \#1 \$date of closure expects Illuminate\\Support\\Carbon, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Admin/TimelineController.php
+
+		-
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: app/Http/Controllers/Admin/TodoItemController.php
+
+		-
+			message: '#^Cannot call method toDateTimeString\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Admin/TodoItemController.php
+
+		-
+			message: '#^Relation ''language'' is not found in App\\Models\\Adage model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/AdageController.php
+
+		-
+			message: '#^Relation ''currency'' is not found in App\\Models\\Expense model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/ExpenseController.php
+
+		-
+			message: '#^Relation ''expenseType'' is not found in App\\Models\\Expense model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/ExpenseController.php
+
+		-
+			message: '#^Relation ''stakeholder'' is not found in App\\Models\\Expense model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/ExpenseController.php
+
+		-
+			message: '#^Relation ''currency'' is not found in App\\Models\\Income model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/IncomeController.php
+
+		-
+			message: '#^Relation ''source'' is not found in App\\Models\\Income model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/IncomeController.php
+
+		-
+			message: '#^Relation ''type'' is not found in App\\Models\\Income model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/IncomeController.php
+
+		-
+			message: '#^Relation ''person'' is not found in App\\Models\\Interaction model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/InteractionController.php
+
+		-
+			message: '#^Relation ''type'' is not found in App\\Models\\Interaction model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/InteractionController.php
+
+		-
+			message: '#^Relation ''linksFrom'' is not found in App\\Models\\Node model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/NodeController.php
+
+		-
+			message: '#^Relation ''linksTo'' is not found in App\\Models\\Node model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Alice/NodeController.php
+
+		-
+			message: '#^Relation ''bloodType'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/PersonController.php
+
+		-
+			message: '#^Relation ''eyeColor'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/PersonController.php
+
+		-
+			message: '#^Relation ''father'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Alice/PersonController.php
+
+		-
+			message: '#^Relation ''gender'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/PersonController.php
+
+		-
+			message: '#^Relation ''hairColor'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/PersonController.php
+
+		-
+			message: '#^Relation ''mother'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Alice/PersonController.php
+
+		-
+			message: '#^Relation ''partner'' is not found in App\\Models\\Person model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Alice/PersonController.php
+
+		-
+			message: '#^Relation ''category'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/PostController.php
+
+		-
+			message: '#^Relation ''language'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Alice/PostController.php
+
+		-
+			message: '#^Parameter \#1 \$user of class Illuminate\\Auth\\Events\\Verified constructor expects Illuminate\\Contracts\\Auth\\MustVerifyEmail, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Auth/VerifyEmailController.php
+
+		-
+			message: '#^Relation ''author'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/PublicSite/BlogController.php
+
+		-
+			message: '#^Relation ''category'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/PublicSite/BlogController.php
+
+		-
+			message: '#^Relation ''comments'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/PublicSite/BlogController.php
+
+		-
+			message: '#^Relation ''coverMedia'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/PublicSite/BlogController.php
+
+		-
+			message: '#^Relation ''language'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/PublicSite/BlogController.php
+
+		-
+			message: '#^Relation ''coverMedia'' is not found in App\\Models\\Post model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/PublicSite/LinkController.php
+
+		-
+			message: '#^Result of \|\| is always true\.$#'
+			identifier: booleanOr.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/PublicSite/SubscriberController.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between ''active''\|''unsubscribed'' and ''pending'' will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/PublicSite/SubscriberController.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between ''unsubscribed'' and ''unsubscribed'' will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/PublicSite/SubscriberController.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: app/Http/Controllers/PublicSite/SubscriberController.php
+
+		-
+			message: '#^Offset ''DELETE''\|''PATCH''\|''POST''\|''PUT'' on array\{POST\: ''created'', PATCH\: ''updated'', PUT\: ''updated'', DELETE\: ''deleted''\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Http/Middleware/AliceAudit.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_admin\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Middleware/AliceAuthenticate.php
+
+		-
+			message: '#^Parameter \#1 \$user of method Illuminate\\Contracts\\Auth\\Guard\:\:setUser\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Middleware/AliceAuthenticate.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\AdageResource\:\:\$adage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/AdageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\AdageResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/AdageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\AdageResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/AdageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\AdageResource\:\:\$keywords\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/AdageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\AdageResource\:\:\$language\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/AdageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\AdageResource\:\:\$owner\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/AdageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\AdageResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/AdageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$company_expense\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$paid_by_others\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$price\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$quantity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$stakeholder\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$tax\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\IncomeResource\:\:\$amount\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/Alice/IncomeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\IncomeResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/IncomeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\IncomeResource\:\:\$date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/IncomeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\IncomeResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/IncomeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\IncomeResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/IncomeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\IncomeResource\:\:\$source\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/IncomeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\IncomeResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/IncomeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\IncomeResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/IncomeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\InteractionResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/InteractionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\InteractionResource\:\:\$date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/InteractionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\InteractionResource\:\:\$effect\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/InteractionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\InteractionResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/InteractionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\InteractionResource\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/InteractionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\InteractionResource\:\:\$person\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/InteractionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\InteractionResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/InteractionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\InteractionResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/InteractionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\NodeResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/NodeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\NodeResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/NodeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\NodeResource\:\:\$linksFrom\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/NodeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\NodeResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/NodeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\NodeResource\:\:\$text_color\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/NodeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\NodeResource\:\:\$text_size\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/NodeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\NodeResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/NodeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$address\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$birth_place\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$birthday\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$death_place\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$deathday\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$eyeColor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$gender\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$hairColor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$mobile\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$pictureUrl\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$second_surname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$surname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\Alice\\PersonResource\:\:fullName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PersonResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$category\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$excerpt\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$language\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$published\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$published_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$reading_time\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$view_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PostResource\:\:\$word_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PurchaseItemResource\:\:\$completed_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PurchaseItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PurchaseItemResource\:\:\$cost_try\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/Alice/PurchaseItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PurchaseItemResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PurchaseItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PurchaseItemResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PurchaseItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PurchaseItemResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PurchaseItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PurchaseItemResource\:\:\$is_bucketlist\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PurchaseItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PurchaseItemResource\:\:\$is_completed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PurchaseItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PurchaseItemResource\:\:\$is_grocery\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PurchaseItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PurchaseItemResource\:\:\$time_cost_hours\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PurchaseItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PurchaseItemResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PurchaseItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PurchaseItemResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/PurchaseItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$address\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$city\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$company_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$country\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$note\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$phone\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$sector\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$surname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$tax_office_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$vkn_tckn\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$website\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\SubscriberResource\:\:\$confirmed_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/SubscriberResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\SubscriberResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/SubscriberResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\SubscriberResource\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/SubscriberResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\SubscriberResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/SubscriberResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\SubscriberResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/SubscriberResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\SubscriberResource\:\:\$subscribed_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/SubscriberResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\SubscriberResource\:\:\$unsubscribed_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/SubscriberResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\SubscriberResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/SubscriberResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$category\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$color\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$end_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$event_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$icon\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$is_public\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$location\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$order\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$start_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$tags\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TimelineEventResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TimelineEventResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$completed_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$cost_try\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$due_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$is_bucketlist\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$is_completed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$time_cost_hours\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Comment\:\:\$post\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Jobs/SendCommentNotificationJob.php
+
+		-
+			message: '#^Relation ''post'' is not found in App\\Models\\Comment model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Jobs/SendCommentNotificationJob.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Income\:\:\$sourceable\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Income.php
+
+		-
+			message: '#^Offset ''lg''\|''md''\|''sm'' on string\|null in empty\(\) does not exist\.$#'
+			identifier: empty.offset
+			count: 1
+			path: app/Models/Media.php
+
+		-
+			message: '#^Offset string on string\|null on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Models/Media.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Person\:\:\$gender\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/Person.php
+
+		-
+			message: '#^Parameter \#1 \$date of static method Intervention\\Zodiac\\Calculator\:\:fromDate\(\) expects DateTimeInterface, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Person.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\:\:\$coverMedia\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Post.php
+
+		-
+			message: '#^Method App\\Services\\CsvImportService\:\:resolveNullableLookup\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Services/CsvImportService.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between non\-empty\-string and '''' will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Services/CsvImportService.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between mixed and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Services/CsvImportService.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between non\-empty\-list\<string\|null\> and array\{\} will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Services/CsvImportService.php
+
+		-
+			message: '#^Empty array passed to foreach\.$#'
+			identifier: foreach.emptyArray
+			count: 1
+			path: app/Services/MediaService.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Services/MediaService.php
+
+		-
+			message: '#^Property App\\Models\\Media\:\:\$variant_paths \(string\|null\) does not accept array\<string, string\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Services/MediaService.php

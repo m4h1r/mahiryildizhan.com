@@ -12,7 +12,7 @@ class ImageService
 {
     public function optimize(UploadedFile $file, int $maxW, int $maxH, string $directory): string
     {
-        $manager = new ImageManager(new Driver());
+        $manager = new ImageManager(new Driver);
         $image = $manager->read($file->getRealPath());
         $image->scaleDown($maxW, $maxH);
 

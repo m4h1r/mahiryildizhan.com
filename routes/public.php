@@ -8,6 +8,7 @@ use App\Http\Controllers\PublicSite\SitemapController;
 use App\Http\Controllers\PublicSite\SubscriberController;
 use App\Http\Controllers\PublicSite\TimelineController;
 use App\Models\Post;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,7 @@ Route::get('/', function () {
         ->first();
 
     return view('public.welcome', [
-        'latestPost'    => $latestPost,
+        'latestPost' => $latestPost,
         'featuredPosts' => Post::query()
             ->with(['category', 'coverMedia'])
             ->publiclyVisible()
@@ -41,9 +42,27 @@ Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/files/{slug}', [LinkController::class, 'show'])->name('links.show');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap.xml');
 
+Route::get('/robots.txt', function () {
+    $lines = [
+        'User-agent: *',
+        'Disallow: /admin',
+        'Disallow: /login',
+        'Disallow: /register',
+        'Disallow: /forgot-password',
+        'Disallow: /reset-password',
+        'Disallow: /profile',
+        '',
+        'Sitemap: '.route('sitemap.xml'),
+    ];
+
+    return response(implode("\n", $lines)."\n", 200, [
+        'Content-Type' => 'text/plain',
+    ]);
+})->name('robots.txt');
+
 Route::get('/ads.txt', function () {
     $clientId = config('services.adsense.client_id')
-        ?: \App\Models\Setting::get('adsense_client_id');
+        ?: Setting::get('adsense_client_id');
 
     if (! $clientId) {
         abort(404);

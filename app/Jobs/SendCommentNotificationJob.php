@@ -17,9 +17,7 @@ class SendCommentNotificationJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(public readonly int $commentId)
-    {
-    }
+    public function __construct(public readonly int $commentId) {}
 
     public function handle(): void
     {

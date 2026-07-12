@@ -21,10 +21,10 @@ class PurchaseItemController extends Controller
 
         $query = match ($filter) {
             'bucketlist' => $query->where('is_bucketlist', true),
-            'grocery'    => $query->where('is_grocery', true),
-            'completed'  => $query->where('is_completed', true),
-            'pending'    => $query->where('is_completed', false),
-            default      => $query,
+            'grocery' => $query->where('is_grocery', true),
+            'completed' => $query->where('is_completed', true),
+            'pending' => $query->where('is_completed', false),
+            default => $query,
         };
 
         $items = $query->paginate(20)->withQueryString();
@@ -40,19 +40,19 @@ class PurchaseItemController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'title'           => 'required|string|max:255',
-            'description'     => 'nullable|string|max:1000',
-            'cost_try'        => 'nullable|numeric|min:0',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'cost_try' => 'nullable|numeric|min:0',
             'time_cost_hours' => 'nullable|numeric|min:0',
-            'is_bucketlist'   => 'boolean',
-            'is_grocery'      => 'boolean',
-            'is_completed'    => 'boolean',
-            'image'           => 'nullable|image|max:4096',
+            'is_bucketlist' => 'boolean',
+            'is_grocery' => 'boolean',
+            'is_completed' => 'boolean',
+            'image' => 'nullable|image|max:4096',
         ]);
 
         $data['is_bucketlist'] = $request->boolean('is_bucketlist');
-        $data['is_grocery']    = $request->boolean('is_grocery');
-        $data['is_completed']  = $request->boolean('is_completed');
+        $data['is_grocery'] = $request->boolean('is_grocery');
+        $data['is_completed'] = $request->boolean('is_completed');
 
         if ($data['is_completed']) {
             $data['completed_at'] = now();
@@ -67,13 +67,13 @@ class PurchaseItemController extends Controller
 
         if ($item->is_bucketlist && $item->is_completed && $item->image_path) {
             TimelineEvent::create([
-                'title'       => $item->title,
+                'title' => $item->title,
                 'description' => $item->description,
-                'event_type'  => 'milestone',
-                'start_date'  => $item->completed_at?->toDateString() ?? now()->toDateString(),
-                'image'       => $item->image_path,
-                'category'    => 'bucketlist',
-                'is_public'   => true,
+                'event_type' => 'milestone',
+                'start_date' => $item->completed_at?->toDateString() ?? now()->toDateString(),
+                'image' => $item->image_path,
+                'category' => 'bucketlist',
+                'is_public' => true,
             ]);
         }
 
@@ -88,18 +88,18 @@ class PurchaseItemController extends Controller
     public function update(Request $request, PurchaseItem $purchaseItem): RedirectResponse
     {
         $data = $request->validate([
-            'title'           => 'required|string|max:255',
-            'description'     => 'nullable|string|max:1000',
-            'cost_try'        => 'nullable|numeric|min:0',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'cost_try' => 'nullable|numeric|min:0',
             'time_cost_hours' => 'nullable|numeric|min:0',
-            'is_bucketlist'   => 'boolean',
-            'is_grocery'      => 'boolean',
-            'is_completed'    => 'boolean',
-            'image'           => 'nullable|image|max:4096',
+            'is_bucketlist' => 'boolean',
+            'is_grocery' => 'boolean',
+            'is_completed' => 'boolean',
+            'image' => 'nullable|image|max:4096',
         ]);
 
         $data['is_bucketlist'] = $request->boolean('is_bucketlist');
-        $data['is_grocery']    = $request->boolean('is_grocery');
+        $data['is_grocery'] = $request->boolean('is_grocery');
         $wasCompleted = $purchaseItem->is_completed;
         $data['is_completed'] = $request->boolean('is_completed');
 
@@ -126,13 +126,13 @@ class PurchaseItemController extends Controller
 
         if ($purchaseItem->is_bucketlist && $purchaseItem->is_completed && ! $wasCompleted && $purchaseItem->image_path) {
             TimelineEvent::create([
-                'title'       => $purchaseItem->title,
+                'title' => $purchaseItem->title,
                 'description' => $purchaseItem->description,
-                'event_type'  => 'milestone',
-                'start_date'  => $purchaseItem->completed_at?->toDateString() ?? now()->toDateString(),
-                'image'       => $purchaseItem->image_path,
-                'category'    => 'bucketlist',
-                'is_public'   => true,
+                'event_type' => 'milestone',
+                'start_date' => $purchaseItem->completed_at?->toDateString() ?? now()->toDateString(),
+                'image' => $purchaseItem->image_path,
+                'category' => 'bucketlist',
+                'is_public' => true,
             ]);
         }
 
@@ -155,19 +155,19 @@ class PurchaseItemController extends Controller
 
         if ($purchaseItem->is_bucketlist && $purchaseItem->is_completed && ! $wasCompleted && $purchaseItem->image_path) {
             TimelineEvent::create([
-                'title'       => $purchaseItem->title,
+                'title' => $purchaseItem->title,
                 'description' => $purchaseItem->description,
-                'event_type'  => 'milestone',
-                'start_date'  => $purchaseItem->completed_at?->toDateString() ?? now()->toDateString(),
-                'image'       => $purchaseItem->image_path,
-                'category'    => 'bucketlist',
-                'is_public'   => true,
+                'event_type' => 'milestone',
+                'start_date' => $purchaseItem->completed_at?->toDateString() ?? now()->toDateString(),
+                'image' => $purchaseItem->image_path,
+                'category' => 'bucketlist',
+                'is_public' => true,
             ]);
         }
 
         if (request()->expectsJson()) {
             return response()->json([
-                'completed'    => $purchaseItem->is_completed,
+                'completed' => $purchaseItem->is_completed,
                 'completed_at' => $purchaseItem->completed_at?->toDateTimeString(),
             ]);
         }

@@ -17,9 +17,7 @@ class MailchimpSubscribeJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(public readonly int $subscriberId)
-    {
-    }
+    public function __construct(public readonly int $subscriberId) {}
 
     public function handle(MailchimpService $mailchimpService): void
     {

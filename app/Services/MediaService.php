@@ -19,7 +19,7 @@ class MediaService
 
     public function upload(UploadedFile $file, string $directory = 'media'): Media
     {
-        $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $filename = Str::uuid().'.'.$file->getClientOriginalExtension();
         $path = $file->storeAs(trim($directory, '/'), $filename, 'public');
         $fullPath = Storage::disk('public')->path($path);
 
@@ -58,10 +58,11 @@ class MediaService
                 $media->height = $size[1];
                 $media->save();
             }
+
             return;
         }
 
-        $manager = new ImageManager(new Driver());
+        $manager = new ImageManager(new Driver);
         $image = $manager->read($fullPath);
 
         $media->width = $image->width();

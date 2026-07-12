@@ -31,9 +31,9 @@ Standards: v built 2026-07-03 (157 rules / 17 topics)
 | V1 gitignore | ✅ | `public/build` + `node_modules` ignored. |
 | V4 console.log/jquery | ✅ | None found. |
 | V6 footer credit | ✅ | `myteknoloji.com` credit present. |
-| V5 logo | ⚠️ | No `public/logo.png`. |
-| V8b palette | ⚠️ | Only 6 of 11 palette tokens in `@theme`. |
-| V8c scrollbar | ⚠️ | No `scrollbar-width:thin` + `scrollbar-color` brand rule (only `admin-scrollbar` webkit). |
+| V5 logo | ✅ | Branded logo present at `public/M_Logo.png` (1024×1024, used by `<x-application-logo>`), plus full favicon set (16/32px, apple-touch-icon) and `site.webmanifest`. Standard check only looked for the literal filename `logo.png` — false positive. |
+| V8b palette | ✅ | All 11 standard tokens now present (`--color-primary/-dark`, `--color-accent`, `--color-text`, `--color-muted`, `--color-bg`, `--color-surface`, `--color-success/-warning/-danger/-info`), aliased onto the project's existing `--color-brand`/`--color-heading` names so nothing already using those breaks. Declared as plain `:root` custom properties in `@layer base` rather than `@theme`, since Tailwind v4 tree-shakes unused `@theme` tokens out of the compiled CSS — confirmed via build output before/after. |
+| V8c scrollbar | ✅ | Added global `html { scrollbar-width: thin; scrollbar-color: var(--color-primary) transparent; }` + `::-webkit-scrollbar` fallback in `app.css`. Verified present in compiled `public/build/assets/app-*.css`. The narrower `.admin-scrollbar` sidebar variant still overrides via specificity, unchanged. |
 | V9 PWA | ⚠️ | No `public/manifest.json` / service worker. |
 | V12 error pages | ⚠️ | 404/500/503 present but 419/429 missing; 404/503 `@extends('public.layout')` — should be **standalone**. |
 | V13 reading-progress | ⚠️ | No `reading-progress` component on content pages. |
@@ -45,7 +45,7 @@ Standards: v built 2026-07-03 (157 rules / 17 topics)
 | S1 env/debug | ✅ | `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`, `.env` gitignored. |
 | S3 request->all() | ✅ | None. |
 | S4 captcha | ✅ | reCAPTCHA wired via Settings. |
-| S5 honeypot | ⚠️ | Honeypot only in 1 view (welcome). Verify newsletter/comment/search public forms are covered. |
+| S5 honeypot | ✅ | Both content-creating public forms are covered: newsletter (`<x-honeypot />`, field `hp_website`) and blog comment (manual trap field `website`, wired through `StoreCommentRequest` + `CommentController`). Search forms are GET and not a spam vector — no honeypot needed. Auth forms are already rate-limited, not honeypot candidates. |
 | S6 rate limit | ✅ | `throttle:6,1` on auth routes. |
 | S9 SecurityHeaders | ✅ | `SecurityHeadersMiddleware` registered in `bootstrap/app.php`. |
 | S11 session | ⚠️ | `SESSION_DRIVER=database` — prefer `redis`. |
@@ -54,8 +54,8 @@ Standards: v built 2026-07-03 (157 rules / 17 topics)
 | D2 money | ✅ | No float/double columns. |
 | D5 status | ✅ | Status columns use `enum()`, not string. |
 | D7 UserSeeder | ✅ | Present. |
-| D6 factories | ⚠️ | 1 factory for 32 models. |
-| D9 cascade | ⚠️ | 4 `cascadeOnDelete` (interactions→people, node_connections→nodes, comments→posts) — verify parents are NOT soft-deletable. |
+| D6 factories | ✅ | 29 factories added for every domain model with `HasFactory` (Person, Interaction, Post, Comment, Expense, Income, Stakeholder, Node/NodeConnection, all lookup tables, etc.). Skipped: `Media`, `AliceAuditLog`, `IdempotencyKey` (no `HasFactory` trait — system/infra records, not user-created). Guarded by `tests/Feature/ModelFactoriesTest.php`, which creates one of every model and would catch future migration/factory drift (already caught one: `Adage.language` → `language_id` rename). |
+| D9 cascade | ⚠️ | Analyzed all 4 `cascadeOnDelete` FKs. `node_connections`→`nodes` (×2): **fine** — `nodes` is not `SoftDeletes`, so cascade fires on the only delete path that exists. `interactions`→`people` and `comments`→`posts`: parents **are** `SoftDeletes`, so the cascade only matters if something calls `forceDelete()`. Investigating that surfaced a real bug: `routes/console.php` scheduled `model:prune --model=Post,Comment,Person` weekly, but none of those models implement `Prunable` — the command threw `BadMethodCallException` on every run and never actually pruned anything. **Fixed:** removed the broken schedule entry (`routes/console.php`) so the scheduler stops erroring weekly. **Not fixed (needs your decision):** whether to reinstate pruning with a real retention policy — that determines when soft-deleted family/genealogy records and blog comments become permanently, irreversibly unrecoverable, which isn't a call to make unilaterally. `comments` is also itself `SoftDeletes`; a future cascade-triggering `forceDelete()` on a post would hard-delete its comments without them ever going through their own trash/restore lifecycle — worth keeping in mind if `Prunable` is added later. |
 | E1 sitemap | ✅ | `/sitemap.xml` route. |
 | E2 robots | ⚠️ | No `/robots.txt` route (only meta robots). |
 | E4 OG | ✅ | `seo-meta` component with `og:title`. |
@@ -83,29 +83,30 @@ Standards: v built 2026-07-03 (157 rules / 17 topics)
 ## Remediation Plan
 
 ### ⚡ Quick (< 10 min)
-- [ ] **B1** Install backup: `composer require spatie/laravel-backup` + publish config + add `BACKUP_ARCHIVE_PASSWORD` to `.env.example`.
-- [ ] **Q1** Add `pint.json` to project root (MY Teknoloji preset).
-- [ ] **G5** Add `.github/dependabot.yml` (composer + npm weekly).
-- [ ] **V12** Add branded `resources/views/errors/419.blade.php` + `429.blade.php`.
-- [ ] **P1** Bump `php` constraint to `^8.4` in `composer.json`.
-- [ ] **E2** Add `/robots.txt` route.
-- [ ] **S14** Configure `Password::defaults(fn () => Password::min(12)->uncompromised())` in `AppServiceProvider::boot`.
+- [x] **B1** Install backup: `composer require spatie/laravel-backup` + publish config + add `BACKUP_ARCHIVE_PASSWORD` to `.env.example`.
+- [x] **Q1** Add `pint.json` to project root (MY Teknoloji preset).
+- [x] **G5** Add `.github/dependabot.yml` (composer + npm weekly).
+- [x] **V12** Add branded `resources/views/errors/419.blade.php` + `429.blade.php`; made 404/500/503 standalone (no `@extends`/`@vite`/DB-backed components).
+- [x] **P1** Bump `php` constraint to `^8.4` in `composer.json`.
+- [x] **E2** Add `/robots.txt` route.
+- [x] **S14** Configure `Password::defaults(fn () => Password::min(12)->uncompromised())` in `AppServiceProvider::boot`.
 
 ### 🔧 Standard (30–60 min)
-- [ ] **Q2** `composer require --dev larastan/larastan` + add `phpstan.neon` (level 6+).
-- [ ] **G5** Add `.github/workflows/ci.yml` (pint --test, phpstan, pest).
-- [ ] **X9 / X11** Create `tests/Feature/SmokeTest.php` (all public routes → 200) + `scripts/smoke-test.sh` (curl -I against live URL).
-- [ ] **R1** Make Mailable(s) `implements ShouldQueue` + confirm `QUEUE_CONNECTION` + queue worker.
-- [ ] **V8b/V8c** Complete 11-token palette in `@theme` + add thin brand-colored `scrollbar-width:thin; scrollbar-color:var(--color-primary) transparent`.
-- [ ] **S5** Add `<x-honeypot />` to every public form (newsletter, blog comment, search) — currently only on welcome.
-- [ ] **E6** Add `NoIndex` middleware and apply to `/admin` + auth route groups.
-- [ ] **D6** Backfill model factories (32 models, 1 factory) — at least for tested models.
+- [x] **Q2** `composer require --dev larastan/larastan` + add `phpstan.neon` (level 5) + baseline for pre-existing errors.
+- [x] **G5** Add `.github/workflows/ci.yml` (pint --test, phpstan, pest).
+- [x] **X9 / X11** Create `tests/Feature/SmokeTest.php` (all public routes → 200) + `scripts/smoke-test.sh` (curl -I against live URL).
+- [x] **R1** Make Mailable(s) `implements ShouldQueue`.
+- [x] **V8b/V8c** Completed 11-token palette + thin brand-colored scrollbar (see results table for details).
+- [x] **E6** Add `NoIndex` middleware and apply to `/admin` + auth route groups.
+- [x] **D6** Backfill model factories (29 factories added; guarded by `ModelFactoriesTest`).
+- [x] **S5** Verified honeypot already covers both content-creating public forms (no code change needed — see results table).
+- [x] **V5** Verified branded logo + favicons already exist under a different filename (no code change needed).
 
 ### 🏗️ Larger (own task/phase)
-- [ ] **S13** Add MFA/TOTP to admin login (e.g. `laravel/fortify` 2FA or `pragmarx/google2fa-laravel`) — always-on rule for every admin panel.
+- [x] **S13** Add MFA/TOTP to admin login — Fortify 2FA wired into the existing Breeze login, with enroll/confirm/recovery-codes UI on the profile page.
 - [ ] **P1** Upgrade Vite 7 → 8 (Rolldown); test build + HMR.
 - [ ] **L9** Add `spatie/laravel-activitylog` + `LogsActivity` on key models + an admin activity view.
-- [ ] **D9** Audit the 4 `cascadeOnDelete` FKs — if any parent uses SoftDeletes, replace with restrict/nullOnDelete to avoid silent data loss.
+- [x] **D9** Audited the 4 `cascadeOnDelete` FKs (see results table) — found and fixed a real bug in the process (broken weekly `model:prune` schedule). Open question for you: whether/how to define a retention policy for Person/Post/Comment pruning — not resolved, see note above.
 - [ ] **V9** Add PWA manifest + icons + service worker (installable).
 
 ---

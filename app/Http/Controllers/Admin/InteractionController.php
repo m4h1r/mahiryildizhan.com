@@ -68,6 +68,7 @@ class InteractionController extends Controller
 
         $candidates = Person::query()
             ->where('notes', 'like', '%#wiccandidate%')
+            ->whereNotIn('id', $people->pluck('id'))
             ->get()
             ->map(function (Person $person) {
                 $person->effectScore = (int) $person->interactions()->sum('effect');

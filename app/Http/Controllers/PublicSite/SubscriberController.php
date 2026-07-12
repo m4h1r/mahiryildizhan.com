@@ -20,7 +20,7 @@ class SubscriberController extends Controller
             return back()->with('success', __('A confirmation email has been sent. Please check your inbox.'));
         }
 
-        $key = 'subscribe:' . $request->ip();
+        $key = 'subscribe:'.$request->ip();
         if (RateLimiter::tooManyAttempts($key, 3)) {
             return back()->withErrors(['email' => __('Too many attempts. Please try again later.')]);
         }
@@ -50,8 +50,8 @@ class SubscriberController extends Controller
         }
 
         $subscriber = Subscriber::query()->create([
-            'email'              => $payload['email'],
-            'status'             => 'pending',
+            'email' => $payload['email'],
+            'status' => 'pending',
             'confirmation_token' => Str::random(64),
         ]);
 
@@ -67,10 +67,10 @@ class SubscriberController extends Controller
         }
 
         $subscriber->update([
-            'status'             => 'active',
+            'status' => 'active',
             'confirmation_token' => null,
-            'subscribed_at'      => now(),
-            'confirmed_at'       => now(),
+            'subscribed_at' => now(),
+            'confirmed_at' => now(),
         ]);
 
         $mailchimpService = app(MailchimpService::class);
@@ -86,7 +86,7 @@ class SubscriberController extends Controller
     {
         return route('public.subscribers.confirm', [
             'subscriber' => $subscriber->id,
-            'token'      => $subscriber->confirmation_token,
+            'token' => $subscriber->confirmation_token,
         ]);
     }
 }

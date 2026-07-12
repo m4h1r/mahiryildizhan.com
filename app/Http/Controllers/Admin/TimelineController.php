@@ -28,32 +28,34 @@ class TimelineController extends Controller
                 if ($event->end_date) {
                     $dates[] = $event->end_date;
                 }
+
                 return $dates;
             })->sortBy(fn ($d) => $d->unix())->values();
 
-            $earliest  = $allDates->first()->copy()->subDays(45);
-            $latest    = $allDates->last()->copy()->addDays(45);
+            $earliest = $allDates->first()->copy()->subDays(45);
+            $latest = $allDates->last()->copy()->addDays(45);
             $totalDays = max(1, $earliest->diffInDays($latest));
 
-            $usable          = (int) min(4000, max(900, $totalDays * 4));
+            $usable = (int) min(4000, max(900, $totalDays * 4));
             $containerHeight = $usable + 120;
-            $topPad          = 60;
+            $topPad = 60;
 
             $toPx = fn (Carbon $date): int => $topPad + (int) round(
                 $earliest->diffInDays($date) / $totalDays * $usable
             );
 
             $events = $events->map(function ($event) use ($toPx) {
-                $startPx  = $toPx($event->start_date);
-                $endPx    = $event->end_date ? $toPx($event->end_date) : null;
+                $startPx = $toPx($event->start_date);
+                $endPx = $event->end_date ? $toPx($event->end_date) : null;
                 $heightPx = $endPx !== null ? max(24, $endPx - $startPx) : null;
-                $isProc   = $event->event_type === 'process' && $heightPx !== null;
-                $cardPx   = $isProc ? (int) ($startPx + $heightPx / 2) : $startPx;
+                $isProc = $event->event_type === 'process' && $heightPx !== null;
+                $cardPx = $isProc ? (int) ($startPx + $heightPx / 2) : $startPx;
 
                 $event->setAttribute('start_px', $startPx);
                 $event->setAttribute('end_px', $endPx);
                 $event->setAttribute('height_px', $heightPx);
                 $event->setAttribute('card_px', $cardPx);
+
                 return $event;
             })->values();
 
@@ -84,11 +86,11 @@ class TimelineController extends Controller
         }
 
         return view('admin.timeline.visualize', [
-            'title'           => 'Timeline',
-            'heading'         => 'Timeline',
-            'events'          => $events,
+            'title' => 'Timeline',
+            'heading' => 'Timeline',
+            'events' => $events,
             'containerHeight' => $containerHeight,
-            'yearMarkers'     => $yearMarkers,
+            'yearMarkers' => $yearMarkers,
         ]);
     }
 

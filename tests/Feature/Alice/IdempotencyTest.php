@@ -22,7 +22,7 @@ class IdempotencyTest extends AliceTestCase
             'currency_id' => $this->currency->id,
         ];
 
-        $headers = ['Idempotency-Key' => 'test-key-' . uniqid()];
+        $headers = ['Idempotency-Key' => 'test-key-'.uniqid()];
 
         // First request
         $first = $this->alicePost('incomes', $payload, $headers);

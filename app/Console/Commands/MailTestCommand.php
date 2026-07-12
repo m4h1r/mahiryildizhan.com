@@ -19,7 +19,7 @@ class MailTestCommand extends Command
     public function handle(): int
     {
         $isLocal = $this->option('local');
-        $isLive  = $this->option('live');
+        $isLive = $this->option('live');
 
         if (! $isLocal && ! $isLive) {
             $this->error('Bir mod seçin: --local veya --live');
@@ -45,7 +45,7 @@ class MailTestCommand extends Command
             try {
                 Mail::raw(
                     $this->body('local'),
-                    fn (Message $m) => $m->to($to)->subject('[LOCAL] Mail Servisi Test — ' . config('app.name'))
+                    fn (Message $m) => $m->to($to)->subject('[LOCAL] Mail Servisi Test — '.config('app.name'))
                 );
 
                 $this->info('✅ Log mailer başarılı.');
@@ -54,7 +54,7 @@ class MailTestCommand extends Command
 
                 return self::SUCCESS;
             } catch (\Exception $e) {
-                $this->error('❌ Log mailer hatası: ' . $e->getMessage());
+                $this->error('❌ Log mailer hatası: '.$e->getMessage());
 
                 return self::FAILURE;
             }
@@ -64,10 +64,10 @@ class MailTestCommand extends Command
         $this->line('');
         $this->info('═══ CANLI TEST (gerçek SMTP) ════════════════════════');
         $this->line("Alıcı : {$to}");
-        $this->line('Mailer: ' . config('mail.default'));
-        $this->line('Host  : ' . config('mail.mailers.smtp.host', '—'));
-        $this->line('Port  : ' . config('mail.mailers.smtp.port', '—'));
-        $this->line('From  : ' . config('mail.from.address'));
+        $this->line('Mailer: '.config('mail.default'));
+        $this->line('Host  : '.config('mail.mailers.smtp.host', '—'));
+        $this->line('Port  : '.config('mail.mailers.smtp.port', '—'));
+        $this->line('From  : '.config('mail.from.address'));
         $this->line('');
 
         if (! $this->confirm('Yukarıdaki SMTP ayarlarıyla devam edilsin mi?', true)) {
@@ -79,7 +79,7 @@ class MailTestCommand extends Command
         try {
             Mail::raw(
                 $this->body('live'),
-                fn (Message $m) => $m->to($to)->subject('[LIVE] Mail Servisi Test — ' . config('app.name'))
+                fn (Message $m) => $m->to($to)->subject('[LIVE] Mail Servisi Test — '.config('app.name'))
             );
 
             $this->info('✅ Test e-postası gönderildi!');
@@ -88,7 +88,7 @@ class MailTestCommand extends Command
 
             return self::SUCCESS;
         } catch (\Exception $e) {
-            $this->error('❌ Gönderim başarısız: ' . $e->getMessage());
+            $this->error('❌ Gönderim başarısız: '.$e->getMessage());
             $this->line('');
             $this->line('Kontrol listesi:');
             $this->line('  [ ] .env: MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD doğru mu?');
@@ -103,13 +103,13 @@ class MailTestCommand extends Command
     private function body(string $mode): string
     {
         return implode("\n", [
-            'Bu bir ' . ($mode === 'local' ? 'YEREL (log)' : 'CANLI (SMTP)') . ' test e-postasıdır.',
+            'Bu bir '.($mode === 'local' ? 'YEREL (log)' : 'CANLI (SMTP)').' test e-postasıdır.',
             '',
-            'Proje  : ' . config('app.name'),
-            'Ortam  : ' . app()->environment(),
-            'URL    : ' . config('app.url'),
-            'Mailer : ' . config('mail.default'),
-            'Zaman  : ' . now()->format('d.m.Y H:i:s T'),
+            'Proje  : '.config('app.name'),
+            'Ortam  : '.app()->environment(),
+            'URL    : '.config('app.url'),
+            'Mailer : '.config('mail.default'),
+            'Zaman  : '.now()->format('d.m.Y H:i:s T'),
             '',
             'Mail servisi düzgün çalışıyorsa bu e-postayı aldınız demektir.',
         ]);

@@ -8,7 +8,10 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateTimelineEventRequest extends FormRequest
 {
-    public function authorize(): bool { return true; }
+    public function authorize(): bool
+    {
+        return true;
+    }
 
     public function rules(): array
     {

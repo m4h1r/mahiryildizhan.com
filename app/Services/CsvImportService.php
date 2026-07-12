@@ -112,9 +112,9 @@ class CsvImportService
             'boolean_columns' => [],
             'json_columns' => [],
             'column_aliases' => [
-                'eye_color'  => 'eye_color_name',
+                'eye_color' => 'eye_color_name',
                 'hair_color' => 'hair_color_name',
-                'gender'     => 'gender_id',
+                'gender' => 'gender_id',
                 'blood_type' => 'blood_type_name',
             ],
             'ignore_columns' => [],
@@ -127,7 +127,7 @@ class CsvImportService
             'json_columns' => [],
             'column_aliases' => [
                 'language' => 'language_id',
-                'views'    => 'view_count',
+                'views' => 'view_count',
             ],
             'ignore_columns' => ['keywords'],
         ],
@@ -143,9 +143,9 @@ class CsvImportService
             'boolean_columns' => [],
             'json_columns' => [],
             'column_aliases' => [
-                'source'   => 'income_source_name',
+                'source' => 'income_source_name',
                 'currency' => 'currency_symbol',
-                'type'     => 'income_type_name',
+                'type' => 'income_type_name',
             ],
             'ignore_columns' => [],
         ],
@@ -155,7 +155,7 @@ class CsvImportService
             'boolean_columns' => ['company_expense', 'paid_by_others'],
             'json_columns' => [],
             'column_aliases' => [
-                'type'     => 'expense_type_name',
+                'type' => 'expense_type_name',
                 'currency' => 'currency_symbol',
             ],
             'ignore_columns' => ['seller', 'expense_category_id'],
@@ -168,7 +168,7 @@ class CsvImportService
             'json_columns' => [],
             'column_aliases' => [
                 'in_date' => 'date',
-                'type'    => 'interaction_type_id',
+                'type' => 'interaction_type_id',
             ],
             'ignore_columns' => [],
             'preserve_id' => true,
@@ -408,6 +408,7 @@ class CsvImportService
 
         if ($headers === false) {
             fclose($handle);
+
             // Empty file — return empty result instead of throwing
             return [[], []];
         }

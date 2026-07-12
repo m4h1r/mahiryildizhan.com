@@ -257,10 +257,11 @@ class ReportController extends Controller
                     return 0;
                 }
                 $ratio = $val / $rowMax;
+
                 return $ratio > 0.75 ? 4 : ($ratio > 0.5 ? 3 : ($ratio > 0.25 ? 2 : 1));
             }, $months);
             $categoryHeatmap[] = [
-                'name'   => (string) ($topCatNames[$catId] ?? 'Other'),
+                'name' => (string) ($topCatNames[$catId] ?? 'Other'),
                 'months' => $months,
                 'levels' => $levels,
             ];
@@ -303,12 +304,15 @@ class ReportController extends Controller
             }
             $rowMax = max($months) ?: 0.0;
             $levels = array_map(function (float $val) use ($rowMax): int {
-                if ($val <= 0 || $rowMax <= 0) { return 0; }
+                if ($val <= 0 || $rowMax <= 0) {
+                    return 0;
+                }
                 $ratio = $val / $rowMax;
+
                 return $ratio > 0.75 ? 4 : ($ratio > 0.5 ? 3 : ($ratio > 0.25 ? 2 : 1));
             }, $months);
             $incomeCategoryHeatmap[] = [
-                'name'   => (string) ($topIncTypeNames[$typeId] ?? 'Other'),
+                'name' => (string) ($topIncTypeNames[$typeId] ?? 'Other'),
                 'months' => $months,
                 'levels' => $levels,
             ];

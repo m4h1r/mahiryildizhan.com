@@ -45,20 +45,20 @@ class AliceRotateToken extends Command
         }
 
         $envContent = "# Alice Bridge API Token\n";
-        $envContent .= "# Üretildi: " . now()->toIso8601String() . "\n";
-        $envContent .= "ALICE_PANEL_URL=" . config('app.url') . "\n";
+        $envContent .= '# Üretildi: '.now()->toIso8601String()."\n";
+        $envContent .= 'ALICE_PANEL_URL='.config('app.url')."\n";
         $envContent .= "ALICE_PANEL_TOKEN={$plainText}\n";
         $envContent .= "ALICE_BASE_PATH=/api/v1/alice\n";
 
-        file_put_contents($envDir . '/.env.alice', $envContent);
+        file_put_contents($envDir.'/.env.alice', $envContent);
 
-        $this->info("Yeni token üretildi.");
-        $this->info("Token: " . $plainText);
-        $this->info("Kaydedildi: storage/app/alice/.env.alice");
+        $this->info('Yeni token üretildi.');
+        $this->info('Token: '.$plainText);
+        $this->info('Kaydedildi: storage/app/alice/.env.alice');
         $this->newLine();
-        $this->comment("Alice kurulum komutu:");
+        $this->comment('Alice kurulum komutu:');
         $this->line("export ALICE_PANEL_TOKEN='{$plainText}'");
-        $this->line("export ALICE_PANEL_URL='" . config('app.url') . "'");
+        $this->line("export ALICE_PANEL_URL='".config('app.url')."'");
 
         return self::SUCCESS;
     }

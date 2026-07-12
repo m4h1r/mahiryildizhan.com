@@ -11,9 +11,7 @@ use Illuminate\View\View;
 
 class CsvImportController extends Controller
 {
-    public function __construct(private readonly CsvImportService $csvImportService)
-    {
-    }
+    public function __construct(private readonly CsvImportService $csvImportService) {}
 
     public function index(): View
     {
@@ -59,8 +57,8 @@ class CsvImportController extends Controller
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         return to_route('admin.import.index')->with('import_report', [
-            'action'  => 'truncate_all',
-            'tables'  => $tables,
+            'action' => 'truncate_all',
+            'tables' => $tables,
             'message' => 'All tables truncated successfully.',
         ]);
     }

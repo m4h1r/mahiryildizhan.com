@@ -9,6 +9,7 @@ use App\Observers\ExpenseObserver;
 use App\Observers\IncomeObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 use Throwable;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Expense::observe(ExpenseObserver::class);
         Income::observe(IncomeObserver::class);
+
+        Password::defaults(fn () => Password::min(12)->uncompromised());
 
         try {
             if (Schema::hasTable('settings')) {

@@ -53,7 +53,7 @@ DB_PASSWORD=[auto-filled by panel]
 
 CACHE_STORE=redis
 QUEUE_CONNECTION=redis
-SESSION_DRIVER=redis          ← audit S11: currently `database`, switch to redis in prod
+SESSION_DRIVER=redis
 SESSION_SECURE_COOKIE=true
 
 MAIL_MAILER=smtp

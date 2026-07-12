@@ -8,6 +8,7 @@ use App\Http\Resources\Alice\PostResource;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PostController extends AliceController
 {
@@ -40,7 +41,7 @@ class PostController extends AliceController
     {
         $data = $request->validated();
         if (empty($data['slug'])) {
-            $data['slug'] = \Illuminate\Support\Str::slug($data['title']) . '-' . uniqid();
+            $data['slug'] = Str::slug($data['title']).'-'.uniqid();
         }
 
         $post = Post::create($data);
