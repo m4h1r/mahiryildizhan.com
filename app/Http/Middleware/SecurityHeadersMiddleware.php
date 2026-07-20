@@ -27,7 +27,7 @@ class SecurityHeadersMiddleware
             "style-src 'self' 'unsafe-inline'; ".
             "font-src 'self' data:; ".
             "connect-src 'self' https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net https://*.googleadservices.com https://adservice.google.com; ".
-            'frame-src https://www.google.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net'
+            'frame-src https://www.google.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net https://www.youtube.com https://www.youtube-nocookie.com'
         );
 
         if ($request->isSecure()) {

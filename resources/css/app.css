@@ -235,6 +235,11 @@
 		@apply border-l-4 border-[var(--color-accent)]/70 bg-orange-50/60 px-5 py-3 text-gray-800 dark:bg-orange-500/10 dark:text-gray-100;
 	}
 
+	.prose-blog iframe {
+		@apply my-6 aspect-video w-full rounded-xl;
+		height: auto;
+	}
+
 	.public-glass {
 		@apply border border-gray-200/80 bg-white/85 backdrop-blur-xl dark:border-gray-800 dark:bg-gray-900/75;
 	}

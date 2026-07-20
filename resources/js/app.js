@@ -4,6 +4,7 @@ import Alpine from 'alpinejs';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
+import Youtube from '@tiptap/extension-youtube';
 import Chart from 'chart.js/auto';
 import { DataSet } from 'vis-data';
 import { Network } from 'vis-network';
@@ -263,7 +264,11 @@ window.tiptapPostEditor = (config) => ({
 	init() {
 		this.editor = new Editor({
 			element: this.$refs.editor,
-			extensions: [StarterKit, Image],
+			extensions: [
+				StarterKit,
+				Image,
+				Youtube.configure({ nocookie: true }),
+			],
 			content: this.content,
 			onUpdate: ({ editor }) => {
 				this.content = editor.getHTML();
@@ -274,6 +279,16 @@ window.tiptapPostEditor = (config) => ({
 	},
 	triggerImagePicker() {
 		this.$refs.imageInput.click();
+	},
+	insertYoutubeVideo() {
+		const url = window.prompt('YouTube video URL');
+
+		if (!url) {
+			return;
+		}
+
+		this.editor.chain().focus().setYoutubeVideo({ src: url }).run();
+		this.content = this.editor.getHTML();
 	},
 	async openMediaLibrary() {
 		this.showMediaLibrary = true;

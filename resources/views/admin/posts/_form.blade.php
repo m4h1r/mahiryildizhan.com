@@ -37,6 +37,7 @@
                 <button type="button" @click="editor?.chain().focus().toggleBulletList().run()" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700">{{ __('List') }}</button>
                 <button type="button" @click="triggerImagePicker()" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700">{{ __('Image') }}</button>
                 <button type="button" @click="openMediaLibrary()" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700">{{ __('Media Library') }}</button>
+                <button type="button" @click="insertYoutubeVideo()" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700">{{ __('YouTube') }}</button>
                 <span x-show="loadingImage" x-cloak class="text-xs text-gray-500">{{ __('Uploading image...') }}</span>
             </div>
 
