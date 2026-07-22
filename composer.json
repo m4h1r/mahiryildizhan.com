@@ -11,7 +11,7 @@
     "require": {
         "php": "^8.4",
         "intervention/image": "^3.11",
-        "intervention/zodiac": "^6.0",
+        "intervention/zodiac": "^7.0",
         "kyslik/column-sortable": "^8.0",
         "laravel/fortify": "^1.37",
         "laravel/framework": "^13.0",
