@@ -1,20 +1,57 @@
 {
-  "name": "Mahir Y\u0131ld\u0131zhan",
+  "id": "/",
+  "name": "Mahir Yıldızhan",
   "short_name": "Mahir",
   "icons": [
     {
       "src": "/icons/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icons/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "theme_color": "#111214",
+  "theme_color": "#0071e3",
   "background_color": "#fbfbfd",
   "display": "standalone",
-  "start_url": "/"
+  "orientation": "any",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "shortcuts": [
+    {
+      "name": "Stories",
+      "short_name": "Stories",
+      "url": "/blog?source=pwa",
+      "icons": [
+        {
+          "src": "/icons/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "About",
+      "short_name": "About",
+      "url": "/about?source=pwa",
+      "icons": [
+        {
+          "src": "/icons/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }

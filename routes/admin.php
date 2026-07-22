@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AboutController;
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AdageController;
 use App\Http\Controllers\Admin\BucketlistController;
 use App\Http\Controllers\Admin\CommentController;
@@ -26,6 +27,8 @@ use App\Services\CsvImportService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('admin.activity-log.index');
 
 // Purchase Items
 Route::patch('/purchase-items/{purchaseItem}/toggle-complete', [PurchaseItemController::class, 'toggleComplete'])

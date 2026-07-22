@@ -2,11 +2,15 @@
 
 namespace App\Providers;
 
+use App\Models\Comment;
 use App\Models\Expense;
 use App\Models\Income;
+use App\Models\Person;
+use App\Models\Post;
+use App\Models\PurchaseItem;
 use App\Models\Setting;
-use App\Observers\ExpenseObserver;
-use App\Observers\IncomeObserver;
+use App\Models\TodoItem;
+use App\Observers\ActivityLogObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -27,8 +31,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Expense::observe(ExpenseObserver::class);
-        Income::observe(IncomeObserver::class);
+        foreach ([Expense::class, Income::class, Post::class, Person::class, Comment::class, TodoItem::class, PurchaseItem::class] as $observedModel) {
+            $observedModel::observe(ActivityLogObserver::class);
+        }
 
         Password::defaults(fn () => Password::min(12)->uncompromised());
 

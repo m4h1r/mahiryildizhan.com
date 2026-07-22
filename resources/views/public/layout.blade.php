@@ -32,6 +32,13 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <x-adsense-head />
         <x-gtm-head />
+        <script nonce="{{ request()->attributes->get('csp_nonce', '') }}">
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker.register('/sw.js', { scope: '/' });
+                });
+            }
+        </script>
     </head>
     <body class="min-h-screen bg-[var(--color-surface)] text-gray-900 antialiased dark:bg-[var(--color-surface-dark)] dark:text-gray-100">
         <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-3 focus:bg-white focus:text-black">

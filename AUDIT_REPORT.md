@@ -15,8 +15,8 @@ Standards: v built 2026-07-03 (157 rules / 17 topics)
 
 | Rule | Status | Detail |
 |------|--------|--------|
-| P1 (php) | ⚠️ | `composer.json` php `^8.3` — baseline 8.5, min 8.4. Bump to `^8.4`. |
-| P1 (vite) | ⚠️ | `vite ^7.0.7` — baseline Vite 8 (Rolldown). |
+| P1 (php) | ✅ | `composer.json` now `^8.4` (table row was stale — fix already landed in the Quick pass). |
+| P1 (vite) | ✅ | Upgraded to `vite ^8.1.5` (Rolldown) + `laravel-vite-plugin ^3.1.3` + `@tailwindcss/vite ^4.3.3` (the 4.2.x line didn't declare a Vite 8 peer range yet). `rollupOptions.manualChunks` vendor splitting still works unchanged. Build time dropped ~2.7s → ~1s. Also ran `npm audit fix` while in here — cleared 8 pre-existing vulnerabilities (2 critical) in dev-tooling transitives, 0 remaining. |
 | P1 (pest) | ✅ | Pest 4 installed. |
 | P1 (filament) | — | Filament not used (custom admin). |
 | L1 env() | ✅ | No `env()` calls in `app/`. |
@@ -25,7 +25,7 @@ Standards: v built 2026-07-03 (157 rules / 17 topics)
 | L6 Services | ✅ | `app/Services/` present. |
 | L3 Enums | ⚠️ | No `app/Enums/` — status stored as DB `enum()`, no backed PHP enums/casts. |
 | L2 SoftDeletes | ⚠️ | 32 models; no Filament resources to auto-map — **verify admin-CRUD models use SoftDeletes** manually. |
-| L9 activitylog | ⚠️ | `spatie/laravel-activitylog` not installed. |
+| L9 activitylog | ✅ | Project already had a custom `ActivityLog` model + observer pattern (not `spatie/laravel-activitylog` — installing that would've meant two parallel audit-log systems on a custom, non-Filament admin). Extended it instead: generic `ActivityLogObserver` now covers all 7 admin-CRUD/SoftDeletes models (Post, Person, Comment, TodoItem, PurchaseItem, Expense, Income), replacing the two bespoke `ExpenseObserver`/`IncomeObserver` classes; added `LogSuccessfulLogin`/`LogFailedLogin`/`LogSuccessfulLogout` listeners logging ip+user_agent per L9's auth-event rule; added a read-only `/admin/activity-log` viewer (Systems nav group). `action` column widened from a 3-value enum to `varchar(20)` (portable across MySQL/SQLite, no more migrations needed for new action types). |
 | FILAMENT (all) | — | N/A — custom admin, no Filament panel. |
 | M1 medialibrary | ⚠️ | No `spatie/laravel-medialibrary` / curator (custom app — verify uploads are validated & non-public). |
 | V1 gitignore | ✅ | `public/build` + `node_modules` ignored. |
@@ -34,7 +34,7 @@ Standards: v built 2026-07-03 (157 rules / 17 topics)
 | V5 logo | ✅ | Branded logo present at `public/M_Logo.png` (1024×1024, used by `<x-application-logo>`), plus full favicon set (16/32px, apple-touch-icon) and `site.webmanifest`. Standard check only looked for the literal filename `logo.png` — false positive. |
 | V8b palette | ✅ | All 11 standard tokens now present (`--color-primary/-dark`, `--color-accent`, `--color-text`, `--color-muted`, `--color-bg`, `--color-surface`, `--color-success/-warning/-danger/-info`), aliased onto the project's existing `--color-brand`/`--color-heading` names so nothing already using those breaks. Declared as plain `:root` custom properties in `@layer base` rather than `@theme`, since Tailwind v4 tree-shakes unused `@theme` tokens out of the compiled CSS — confirmed via build output before/after. |
 | V8c scrollbar | ✅ | Added global `html { scrollbar-width: thin; scrollbar-color: var(--color-primary) transparent; }` + `::-webkit-scrollbar` fallback in `app.css`. Verified present in compiled `public/build/assets/app-*.css`. The narrower `.admin-scrollbar` sidebar variant still overrides via specificity, unchanged. |
-| V9 PWA | ⚠️ | No `public/manifest.json` / service worker. |
+| V9 PWA | ⚠️ | Core installability done: `site.webmanifest` completed (`id`, `start_url=/?source=pwa`, `scope`, `theme_color` now synced to `--color-primary` #0071e3, 2 shortcuts, a properly safe-zoned `maskable` icon generated separately from the `any` icons — never `"any maskable"` on one file), `public/sw.js` (network-first navigation, falls back to branded `offline.html` — deliberately does **not** cache hashed Vite build assets, to avoid serving stale CSS/JS after a deploy), registered on the public layout only. **Not done** (needs real asset generation I can't produce here): narrow+wide **screenshots**, iOS **splash screens** via `pwa-asset-generator`. Push notification VAPID setup skipped — not requested/no push feature exists yet. |
 | V12 error pages | ⚠️ | 404/500/503 present but 419/429 missing; 404/503 `@extends('public.layout')` — should be **standalone**. |
 | V13 reading-progress | ⚠️ | No `reading-progress` component on content pages. |
 | TY1 @theme/fonts | ✅ | `@theme` block with `--font-body/editorial/mono` slots. |
@@ -104,10 +104,10 @@ Standards: v built 2026-07-03 (157 rules / 17 topics)
 
 ### 🏗️ Larger (own task/phase)
 - [x] **S13** Add MFA/TOTP to admin login — Fortify 2FA wired into the existing Breeze login, with enroll/confirm/recovery-codes UI on the profile page.
-- [ ] **P1** Upgrade Vite 7 → 8 (Rolldown); test build + HMR.
-- [ ] **L9** Add `spatie/laravel-activitylog` + `LogsActivity` on key models + an admin activity view.
+- [x] **P1** Upgraded Vite 7 → 8 (Rolldown) + `laravel-vite-plugin` 2→3 + `@tailwindcss/vite` bump; production build and `npm run dev` both verified working, full test suite unaffected.
+- [x] **L9** Extended the project's existing custom `ActivityLog` system (not spatie's package — see results table) to 7 admin-CRUD models + auth events (login/logout/failed) + a read-only admin viewer.
 - [x] **D9** Audited the 4 `cascadeOnDelete` FKs (see results table) — found and fixed a real bug in the process (broken weekly `model:prune` schedule). Open question for you: whether/how to define a retention policy for Person/Post/Comment pruning — not resolved, see note above.
-- [ ] **V9** Add PWA manifest + icons + service worker (installable).
+- [x] **V9** Manifest completed + `sw.js` + `offline.html` — installable now. Screenshots + iOS splash screens still open (see results table — need real asset generation, e.g. via `pwa-asset-generator` against a running instance).
 
 ---
 *Generated by /my-standards audit — MY Teknoloji Standards (graph built 2026-07-03)*
