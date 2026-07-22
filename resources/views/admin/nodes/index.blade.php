@@ -38,7 +38,7 @@
                                 <td>
                                     <div class="flex justify-end gap-1.5">
                                         <a href="{{ route('admin.nodes.edit', $node) }}" class="admin-btn-sm admin-btn-ghost">{{ __('Edit') }}</a>
-                                        <form method="POST" action="{{ route('admin.nodes.destroy', $node) }}" onsubmit="return confirm('{{ __('Delete this node?') }}');">
+                                        <form method="POST" action="{{ route('admin.nodes.destroy', $node) }}" data-confirm="{{ __('Delete this node?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>

@@ -6,6 +6,7 @@
 
         @php
             $groupLabels = [
+                'brand'        => __('Marka'),
                 'financial'    => __('Finansal'),
                 'general'      => __('General'),
                 'analytics'    => __('Analytics'),
@@ -19,7 +20,7 @@
             ];
         @endphp
 
-        <div x-data="{ activeTab: '{{ old('_tab', 'financial') }}' }">
+        <div x-data="{ activeTab: '{{ old('_tab', 'brand') }}' }">
 
             {{-- Tab başlıkları --}}
             <div class="mb-6 flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-800">
@@ -146,6 +147,17 @@
                                             <option value="tr" @selected($selectedLocale === 'tr')>{{ __('Turkish') }}</option>
                                             <option value="en" @selected($selectedLocale === 'en')>{{ __('English') }}</option>
                                         </select>
+                                    @elseif (($item['type'] ?? 'text') === 'color')
+                                        @php($colorValue = old('settings.'.$item['key'], $item['value'] ?: '#0071e3'))
+                                        <div class="flex items-center gap-3">
+                                            <input
+                                                type="color"
+                                                name="settings[{{ $item['key'] }}]"
+                                                value="{{ $colorValue }}"
+                                                class="h-11 w-16 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700"
+                                            >
+                                            <span class="font-mono text-xs text-gray-500">{{ $colorValue }}</span>
+                                        </div>
                                     @else
                                         <input
                                             name="settings[{{ $item['key'] }}]"

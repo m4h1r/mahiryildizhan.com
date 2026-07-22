@@ -133,7 +133,7 @@
                                             </svg>
                                         </a>
 
-                                        <form method="POST" action="{{ route('admin.people.destroy', $person) }}" onsubmit="return confirm('{{ __('Delete this person?') }}');">
+                                        <form method="POST" action="{{ route('admin.people.destroy', $person) }}" data-confirm="{{ __('Delete this person?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}" class="admin-btn-sm admin-btn-danger w-8 p-0">

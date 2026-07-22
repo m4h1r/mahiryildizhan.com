@@ -62,7 +62,7 @@
                                             <button type="submit" class="admin-btn-sm admin-btn-ghost">{{ __('Duplicate') }}</button>
                                         </form>
 
-                                        <form method="POST" action="{{ route('admin.stakeholders.destroy', $stakeholder) }}" onsubmit="return confirm('{{ __('Delete this stakeholder?') }}');">
+                                        <form method="POST" action="{{ route('admin.stakeholders.destroy', $stakeholder) }}" data-confirm="{{ __('Delete this stakeholder?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>

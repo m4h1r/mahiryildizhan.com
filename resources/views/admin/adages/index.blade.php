@@ -43,7 +43,7 @@
                                 <td>
                                     <div class="flex justify-end gap-1.5">
                                         <a href="{{ route('admin.adages.edit', $adage) }}" class="admin-btn-sm admin-btn-ghost">{{ __('Edit') }}</a>
-                                        <form method="POST" action="{{ route('admin.adages.destroy', $adage) }}" onsubmit="return confirm('{{ __('Delete this adage?') }}');">
+                                        <form method="POST" action="{{ route('admin.adages.destroy', $adage) }}" data-confirm="{{ __('Delete this adage?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>

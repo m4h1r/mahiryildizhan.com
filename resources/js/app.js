@@ -280,8 +280,8 @@ window.tiptapPostEditor = (config) => ({
 	triggerImagePicker() {
 		this.$refs.imageInput.click();
 	},
-	insertYoutubeVideo() {
-		const url = window.prompt('YouTube video URL');
+	async insertYoutubeVideo() {
+		const url = await window.appDialog.prompt('YouTube video URL');
 
 		if (!url) {
 			return;
@@ -328,7 +328,7 @@ window.tiptapPostEditor = (config) => ({
 			this.mediaItems = response?.data?.data ?? [];
 			this.libraryMeta = response?.data?.meta ?? this.libraryMeta;
 		} catch (error) {
-			window.alert(error?.response?.data?.message ?? 'Media library could not be loaded.');
+			await window.appDialog.alert(error?.response?.data?.message ?? 'Media library could not be loaded.');
 		} finally {
 			this.loadingLibrary = false;
 		}
@@ -364,7 +364,7 @@ window.tiptapPostEditor = (config) => ({
 			this.editor.chain().focus().setImage({ src: response.data.url, alt: file.name }).run();
 			this.content = this.editor.getHTML();
 		} catch (error) {
-			window.alert(error?.response?.data?.message ?? 'Image upload failed.');
+			await window.appDialog.alert(error?.response?.data?.message ?? 'Image upload failed.');
 		} finally {
 			event.target.value = '';
 			this.loadingImage = false;
@@ -394,9 +394,110 @@ const mountPeopleLiveSearch = () => {
 	input.dataset.liveSearchBound = '1';
 };
 
+const setupAppDialog = () => {
+	const dialog = document.getElementById('app-dialog');
+
+	if (!dialog || dialog.dataset.bound === '1') {
+		return;
+	}
+	dialog.dataset.bound = '1';
+
+	const messageEl = document.getElementById('app-dialog-message');
+	const inputEl = document.getElementById('app-dialog-input');
+	const cancelBtn = document.getElementById('app-dialog-cancel');
+	const okBtn = document.getElementById('app-dialog-ok');
+	const okLabelEl = document.getElementById('app-dialog-ok-label');
+	const defaultOkLabel = okLabelEl.textContent;
+
+	let resolvePromise = null;
+	let currentMode = 'alert';
+
+	const open = (message, { mode = 'alert', defaultValue = '', okLabel = null, danger = false } = {}) => new Promise((resolve) => {
+		resolvePromise = resolve;
+		currentMode = mode;
+		messageEl.textContent = message;
+
+		const showInput = mode === 'prompt';
+		const showCancel = mode !== 'alert';
+
+		inputEl.classList.toggle('hidden', !showInput);
+		cancelBtn.classList.toggle('hidden', !showCancel);
+		okLabelEl.textContent = okLabel ?? defaultOkLabel;
+		okBtn.classList.toggle('admin-btn-danger', danger);
+		okBtn.classList.toggle('admin-btn-primary', !danger);
+
+		if (showInput) {
+			inputEl.value = defaultValue;
+		}
+
+		dialog.showModal();
+
+		if (showInput) {
+			requestAnimationFrame(() => inputEl.focus());
+		}
+	});
+
+	cancelBtn.addEventListener('click', () => {
+		dialog.close('cancel');
+	});
+
+	dialog.addEventListener('close', () => {
+		if (!resolvePromise) {
+			return;
+		}
+
+		const resolve = resolvePromise;
+		resolvePromise = null;
+
+		if (currentMode === 'prompt') {
+			resolve(dialog.returnValue === 'ok' ? inputEl.value : null);
+		} else if (currentMode === 'confirm') {
+			resolve(dialog.returnValue === 'ok');
+		} else {
+			resolve(true);
+		}
+	});
+
+	window.appDialog = {
+		alert: (message) => open(message, { mode: 'alert' }),
+		confirm: (message, { okLabel = null, danger = true } = {}) => open(message, { mode: 'confirm', okLabel, danger }),
+		prompt: (message, defaultValue = '') => open(message, { mode: 'prompt', defaultValue }),
+	};
+};
+
+const setupConfirmForms = () => {
+	if (document.body.dataset.confirmFormsBound === '1') {
+		return;
+	}
+	document.body.dataset.confirmFormsBound = '1';
+
+	document.addEventListener('submit', async (event) => {
+		const form = event.target;
+
+		if (!(form instanceof HTMLFormElement) || !form.dataset.confirm || form.dataset.confirmed === '1') {
+			return;
+		}
+
+		event.preventDefault();
+
+		const confirmed = await window.appDialog.confirm(form.dataset.confirm, {
+			okLabel: form.dataset.confirmLabel || undefined,
+		});
+
+		if (confirmed) {
+			form.dataset.confirmed = '1';
+			form.requestSubmit();
+		}
+	});
+};
+
 document.addEventListener('DOMContentLoaded', mountPeopleLiveSearch);
 window.addEventListener('pageshow', mountPeopleLiveSearch);
 document.addEventListener('DOMContentLoaded', mountThemeToggle);
 window.addEventListener('pageshow', mountThemeToggle);
+document.addEventListener('DOMContentLoaded', setupAppDialog);
+window.addEventListener('pageshow', setupAppDialog);
+document.addEventListener('DOMContentLoaded', setupConfirmForms);
+window.addEventListener('pageshow', setupConfirmForms);
 
 Alpine.start();

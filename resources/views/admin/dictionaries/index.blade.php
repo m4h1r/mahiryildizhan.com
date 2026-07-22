@@ -114,7 +114,7 @@
                                             {{ __('Save') }}
                                         </button>
 
-                                        <form method="POST" action="{{ route('admin.dictionaries.destroy', [$table, $record->id]) }}" onsubmit="return confirm('{{ __('Delete this entry?') }}');">
+                                        <form method="POST" action="{{ route('admin.dictionaries.destroy', [$table, $record->id]) }}" data-confirm="{{ __('Delete this entry?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn-sm admin-btn-danger">

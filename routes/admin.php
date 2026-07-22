@@ -86,7 +86,8 @@ Route::get('/media/library', [MediaController::class, 'library'])->name('admin.m
 Route::post('/media/upload-json', [MediaController::class, 'uploadJson'])->name('admin.media.upload-json');
 Route::resource('/media', MediaController::class)
     ->only(['index', 'store', 'destroy'])
-    ->names('admin.media');
+    ->names('admin.media')
+    ->parameters(['media' => 'media']);
 
 Route::get('/nodes/graph', [NodeController::class, 'graph'])->name('admin.nodes.graph');
 Route::resource('/nodes', NodeController::class)

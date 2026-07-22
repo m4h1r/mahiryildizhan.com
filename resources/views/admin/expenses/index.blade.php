@@ -209,7 +209,7 @@
                                             </button>
                                         </form>
 
-                                        <form method="POST" action="{{ route('admin.expenses.destroy', $expense) }}" onsubmit="return confirm('Bu gideri silmek istediğinize emin misiniz?');">
+                                        <form method="POST" action="{{ route('admin.expenses.destroy', $expense) }}" data-confirm="Bu gideri silmek istediğinize emin misiniz?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn-sm admin-btn-danger" title="Sil" aria-label="Sil">

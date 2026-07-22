@@ -20,6 +20,7 @@
         "spatie/laravel-backup": "^10.3"
     },
     "require-dev": {
+        "beyondcode/laravel-query-detector": "^2.3",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.10",
         "laravel/breeze": "^2.4",
@@ -27,7 +28,10 @@
         "laravel/pint": "^1.27",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^12.5.12"
+        "pestphp/pest": "^4.4",
+        "pestphp/pest-plugin-laravel": "^4.1",
+        "phpunit/phpunit": "^12.5.12",
+        "rector/rector": "^2.5"
     },
     "autoload": {
         "psr-4": {

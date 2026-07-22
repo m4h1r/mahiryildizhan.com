@@ -11,10 +11,9 @@
         <form method="POST" action="{{ route('two-factor.login.store') }}">
             @csrf
 
-            <div x-show="! recovery">
+            <div x-show="! recovery" x-ref="codeWrapper">
                 <x-input-label for="code" :value="__('Code')" />
-                <x-text-input id="code" class="block mt-1 w-full" type="text" name="code"
-                    inputmode="numeric" autofocus x-ref="code" autocomplete="one-time-code" />
+                <x-otp-input name="code" :length="6" autofocus />
                 <x-input-error :messages="$errors->get('code')" class="mt-2" />
             </div>
 
@@ -34,7 +33,7 @@
 
                 <button type="button" class="text-sm text-gray-600 underline hover:text-gray-900 cursor-pointer"
                     x-cloak x-show="recovery"
-                    x-on:click="recovery = false; $nextTick(() => $refs.code.focus())">
+                    x-on:click="recovery = false; $nextTick(() => $refs.codeWrapper.querySelector('input[type=text]')?.focus())">
                     {{ __('Use an authentication code') }}
                 </button>
 

@@ -56,7 +56,7 @@
                                 <td>
                                     <div class="flex justify-end gap-1.5">
                                         <a href="{{ route('admin.timeline.edit', $event) }}" class="admin-btn-sm admin-btn-ghost">{{ __('Edit') }}</a>
-                                        <form method="POST" action="{{ route('admin.timeline.destroy', $event) }}" onsubmit="return confirm('{{ __('Delete this event?') }}');">
+                                        <form method="POST" action="{{ route('admin.timeline.destroy', $event) }}" data-confirm="{{ __('Delete this event?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>

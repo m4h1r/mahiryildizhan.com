@@ -157,7 +157,7 @@
                     this.mediaItems = resp?.data?.data ?? [];
                     this.libraryMeta = resp?.data?.meta ?? this.libraryMeta;
                 } catch (e) {
-                    window.alert(e?.response?.data?.message ?? 'Media library could not be loaded.');
+                    await window.appDialog.alert(e?.response?.data?.message ?? 'Media library could not be loaded.');
                 } finally {
                     this.loadingLibrary = false;
                 }

@@ -67,7 +67,7 @@
                                             <button type="submit" class="admin-btn-sm admin-btn-ghost">{{ __('Duplicate') }}</button>
                                         </form>
 
-                                        <form method="POST" action="{{ route('admin.interactions.destroy', $interaction) }}" onsubmit="return confirm('{{ __('Delete this interaction?') }}');">
+                                        <form method="POST" action="{{ route('admin.interactions.destroy', $interaction) }}" data-confirm="{{ __('Delete this interaction?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>

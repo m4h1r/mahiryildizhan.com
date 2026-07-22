@@ -167,7 +167,7 @@
                                         </form>
 
                                         {{-- Sil --}}
-                                        <form method="POST" action="{{ route('admin.incomes.destroy', $income) }}" onsubmit="return confirm('Bu geliri silmek istediğinize emin misiniz?');">
+                                        <form method="POST" action="{{ route('admin.incomes.destroy', $income) }}" data-confirm="Bu geliri silmek istediğinize emin misiniz?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"

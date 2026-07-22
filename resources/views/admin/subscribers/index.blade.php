@@ -58,7 +58,7 @@
                                                 <button type="submit" class="admin-btn-sm admin-btn-ghost">{{ __('Unsubscribe') }}</button>
                                             </form>
                                         @endif
-                                        <form method="POST" action="{{ route('admin.subscribers.destroy', $subscriber) }}" onsubmit="return confirm('{{ __('Delete this subscriber?') }}');">
+                                        <form method="POST" action="{{ route('admin.subscribers.destroy', $subscriber) }}" data-confirm="{{ __('Delete this subscriber?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>

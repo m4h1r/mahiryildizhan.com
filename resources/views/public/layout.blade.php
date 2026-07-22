@@ -30,6 +30,8 @@
             })();
         </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <x-brand-vars />
+        <x-consent-defaults />
         <x-adsense-head />
         <x-gtm-head />
         <script nonce="{{ request()->attributes->get('csp_nonce', '') }}">
@@ -110,5 +112,6 @@
             </div>
         </footer>
         <x-footer-credit />
+        <x-cookie-consent />
     </body>
 </html>

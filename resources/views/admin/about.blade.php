@@ -4,12 +4,6 @@
     <form method="POST" action="{{ route('admin.about.update') }}" class="space-y-6">
         @csrf
 
-        @if (session('success'))
-            <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-900/30 dark:text-green-400">
-                {{ session('success') }}
-            </div>
-        @endif
-
         <div x-data="{ tab: 'en' }" class="space-y-6">
 
             {{-- Tab switcher --}}

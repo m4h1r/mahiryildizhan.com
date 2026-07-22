@@ -17,7 +17,7 @@
                 {{ __('Cancel') }}
             </a>
             <form method="POST" action="{{ route('admin.todo-items.destroy', $item->id) }}" class="ml-auto"
-                  onsubmit="return confirm('Bu görevi silmek istediğine emin misin?')">
+                  data-confirm="Bu görevi silmek istediğine emin misin?">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="text-sm text-red-600 hover:text-red-800 dark:text-red-400">

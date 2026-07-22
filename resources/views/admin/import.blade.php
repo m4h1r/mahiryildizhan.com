@@ -11,24 +11,22 @@
             </p>
 
             {{-- Import All button --}}
-            <form method="POST" action="{{ route('admin.import.run') }}" class="mt-5">
+            <form method="POST" action="{{ route('admin.import.run') }}" class="mt-5" data-confirm="{{ __('Import ALL tables in dependency order? This cannot be undone.') }}">
                 @csrf
                 <input type="hidden" name="import_all" value="1">
                 <button
                     type="submit"
-                    class="w-full rounded-md bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white dark:bg-white dark:text-gray-900"
-                    onclick="return confirm('{{ __('Import ALL tables in dependency order? This cannot be undone.') }}')">
+                    class="w-full rounded-md bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white dark:bg-white dark:text-gray-900">
                     ⬆ {{ __('Import All Tables') }}
                 </button>
             </form>
 
             {{-- Truncate All button --}}
-            <form method="POST" action="{{ route('admin.import.truncate') }}" class="mt-3">
+            <form method="POST" action="{{ route('admin.import.truncate') }}" class="mt-3" data-confirm="⚠️ {{ __('This will DELETE all data from every table. Are you absolutely sure?') }}" data-confirm-label="{{ __('Truncate') }}">
                 @csrf
                 <button
                     type="submit"
-                    class="w-full rounded-md bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700"
-                    onclick="return confirm('⚠️ {{ __('This will DELETE all data from every table. Are you absolutely sure?') }}')">
+                    class="w-full rounded-md bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700">
                     🗑 {{ __('Truncate All Tables') }}
                 </button>
             </form>

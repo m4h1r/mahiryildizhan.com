@@ -24,6 +24,7 @@
             })();
         </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <x-brand-vars />
     </head>
     <body
         class="min-h-screen bg-[var(--color-admin-bg)] text-gray-900 antialiased dark:bg-[var(--color-admin-bg-dark)] dark:text-gray-100"
@@ -399,6 +400,7 @@
                 <span>{{ __('More') }}</span>
             </button>
         </nav>
+        <x-app-dialog />
         <x-footer-credit />
     </body>
 </html>

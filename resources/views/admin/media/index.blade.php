@@ -53,7 +53,7 @@
                             </div>
                         @endif
                         <div class="mt-2 flex justify-end">
-                            <form method="POST" action="{{ route('admin.media.destroy', $item) }}" onsubmit="return confirm('{{ __('Delete this media item?') }}');">
+                            <form method="POST" action="{{ route('admin.media.destroy', $item) }}" data-confirm="{{ __('Delete this media item?') }}">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="admin-btn-sm admin-btn-danger disabled:cursor-not-allowed disabled:opacity-50" @disabled(($item->cover_posts_count ?? 0) > 0)>{{ __('Delete') }}</button>

@@ -27,7 +27,7 @@
                             <td>
                                 <div class="flex justify-end gap-1.5">
                                     <a href="{{ route('admin.node-connections.edit', $connection) }}" class="admin-btn-sm admin-btn-ghost">{{ __('Edit') }}</a>
-                                    <form method="POST" action="{{ route('admin.node-connections.destroy', $connection) }}" onsubmit="return confirm('{{ __('Delete this connection?') }}');">
+                                    <form method="POST" action="{{ route('admin.node-connections.destroy', $connection) }}" data-confirm="{{ __('Delete this connection?') }}">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>

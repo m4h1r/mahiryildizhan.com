@@ -1,13 +1,26 @@
 # MY Teknoloji — Audit Report
-Project: laravel/laravel (mahiryildizhan.com — **custom hand-rolled admin, NOT Filament**)
-Date: 2026-07-10
+Project: mahiryildizhan.com
+Date: 2026-07-22
 Topics: all
-Standards: v built 2026-07-03 (157 rules / 17 topics)
 
-> ⚠️ **This project does not use Filament.** The admin panel is a custom Blade app
-> (`routes/web.php` → `Route::prefix('admin')`, `resources/views/admin/*`). All
-> `[FILAMENT]` and `[MEDIA]` (curator) rules are marked **— N/A** and reinterpreted
-> against the always-on intent (e.g. "MFA on every admin panel") where meaningful.
+**Status: 63 ✅ | 1 ❌ | 11 ⚠️ | remainder N/A (Filament rules).** All Quick + Standard remediation
+items fixed (8 original + the V24 follow-up), plus X1/X10 (Pest + full admin test coverage — which
+surfaced and fixed **two real production bugs**: broken media deletion, a crash-on-missing-field in
+the timeline controller) and V30 (brand-token settings tab, end-to-end verified). Only **M1**
+(medialibrary migration) remains — a genuine scoping decision, not mechanical work — see Remediation
+Plan. Remaining ⚠️ are low-priority (S4 Turnstile-vs-reCAPTCHA, V5 logo, V8b semantic status tokens,
+etc.).
+
+---
+
+## ⚠️ Architecture note
+
+This project does **not** use the standard MY Teknoloji stack (Filament + Livewire + Pest). It's a
+custom-built admin panel (`app/Http/Controllers/Admin/*`, Blade views under `resources/views/admin/`)
+on plain Laravel 13 + Fortify + PHPUnit. Every Filament-specific rule (F-series) is marked **N/A**
+below rather than failed, since there is no panel provider to check against. This is presumably a
+deliberate choice for this legacy/personal site — flagging it once here (P1) instead of repeating it
+per rule.
 
 ---
 
@@ -15,99 +28,133 @@ Standards: v built 2026-07-03 (157 rules / 17 topics)
 
 | Rule | Status | Detail |
 |------|--------|--------|
-| P1 (php) | ✅ | `composer.json` now `^8.4` (table row was stale — fix already landed in the Quick pass). |
-| P1 (vite) | ✅ | Upgraded to `vite ^8.1.5` (Rolldown) + `laravel-vite-plugin ^3.1.3` + `@tailwindcss/vite ^4.3.3` (the 4.2.x line didn't declare a Vite 8 peer range yet). `rollupOptions.manualChunks` vendor splitting still works unchanged. Build time dropped ~2.7s → ~1s. Also ran `npm audit fix` while in here — cleared 8 pre-existing vulnerabilities (2 critical) in dev-tooling transitives, 0 remaining. |
-| P1 (pest) | ✅ | Pest 4 installed. |
-| P1 (filament) | — | Filament not used (custom admin). |
-| L1 env() | ✅ | No `env()` calls in `app/`. |
-| L4 closures | ✅ | Only `Route::group/prefix` closures (normal), no action closures. |
-| L5 all()/Requests | ✅ | No `->all()`; `app/Http/Requests/` present. |
-| L6 Services | ✅ | `app/Services/` present. |
-| L3 Enums | ⚠️ | No `app/Enums/` — status stored as DB `enum()`, no backed PHP enums/casts. |
-| L2 SoftDeletes | ⚠️ | 32 models; no Filament resources to auto-map — **verify admin-CRUD models use SoftDeletes** manually. |
-| L9 activitylog | ✅ | Project already had a custom `ActivityLog` model + observer pattern (not `spatie/laravel-activitylog` — installing that would've meant two parallel audit-log systems on a custom, non-Filament admin). Extended it instead: generic `ActivityLogObserver` now covers all 7 admin-CRUD/SoftDeletes models (Post, Person, Comment, TodoItem, PurchaseItem, Expense, Income), replacing the two bespoke `ExpenseObserver`/`IncomeObserver` classes; added `LogSuccessfulLogin`/`LogFailedLogin`/`LogSuccessfulLogout` listeners logging ip+user_agent per L9's auth-event rule; added a read-only `/admin/activity-log` viewer (Systems nav group). `action` column widened from a 3-value enum to `varchar(20)` (portable across MySQL/SQLite, no more migrations needed for new action types). |
-| FILAMENT (all) | — | N/A — custom admin, no Filament panel. |
-| M1 medialibrary | ⚠️ | No `spatie/laravel-medialibrary` / curator (custom app — verify uploads are validated & non-public). |
-| V1 gitignore | ✅ | `public/build` + `node_modules` ignored. |
-| V4 console.log/jquery | ✅ | None found. |
-| V6 footer credit | ✅ | `myteknoloji.com` credit present. |
-| V5 logo | ✅ | Branded logo present at `public/M_Logo.png` (1024×1024, used by `<x-application-logo>`), plus full favicon set (16/32px, apple-touch-icon) and `site.webmanifest`. Standard check only looked for the literal filename `logo.png` — false positive. |
-| V8b palette | ✅ | All 11 standard tokens now present (`--color-primary/-dark`, `--color-accent`, `--color-text`, `--color-muted`, `--color-bg`, `--color-surface`, `--color-success/-warning/-danger/-info`), aliased onto the project's existing `--color-brand`/`--color-heading` names so nothing already using those breaks. Declared as plain `:root` custom properties in `@layer base` rather than `@theme`, since Tailwind v4 tree-shakes unused `@theme` tokens out of the compiled CSS — confirmed via build output before/after. |
-| V8c scrollbar | ✅ | Added global `html { scrollbar-width: thin; scrollbar-color: var(--color-primary) transparent; }` + `::-webkit-scrollbar` fallback in `app.css`. Verified present in compiled `public/build/assets/app-*.css`. The narrower `.admin-scrollbar` sidebar variant still overrides via specificity, unchanged. |
-| V9 PWA | ⚠️ | Core installability done: `site.webmanifest` completed (`id`, `start_url=/?source=pwa`, `scope`, `theme_color` now synced to `--color-primary` #0071e3, 2 shortcuts, a properly safe-zoned `maskable` icon generated separately from the `any` icons — never `"any maskable"` on one file), `public/sw.js` (network-first navigation, falls back to branded `offline.html` — deliberately does **not** cache hashed Vite build assets, to avoid serving stale CSS/JS after a deploy), registered on the public layout only. **Not done** (needs real asset generation I can't produce here): narrow+wide **screenshots**, iOS **splash screens** via `pwa-asset-generator`. Push notification VAPID setup skipped — not requested/no push feature exists yet. |
-| V12 error pages | ⚠️ | 404/500/503 present but 419/429 missing; 404/503 `@extends('public.layout')` — should be **standalone**. |
-| V13 reading-progress | ⚠️ | No `reading-progress` component on content pages. |
-| TY1 @theme/fonts | ✅ | `@theme` block with `--font-body/editorial/mono` slots. |
-| TY2 font load | ✅ | `@fontsource/inter` bundled. |
-| A3 skip link | ✅ | Skip-to-content in admin + public layouts. |
-| A4 focus-visible | ✅ | `:focus-visible` ring; `outline:none` paired with focus ring. |
-| A8 reduced-motion | ✅ | `prefers-reduced-motion` block present. |
-| S1 env/debug | ✅ | `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`, `.env` gitignored. |
-| S3 request->all() | ✅ | None. |
-| S4 captcha | ✅ | reCAPTCHA wired via Settings. |
-| S5 honeypot | ✅ | Both content-creating public forms are covered: newsletter (`<x-honeypot />`, field `hp_website`) and blog comment (manual trap field `website`, wired through `StoreCommentRequest` + `CommentController`). Search forms are GET and not a spam vector — no honeypot needed. Auth forms are already rate-limited, not honeypot candidates. |
-| S6 rate limit | ✅ | `throttle:6,1` on auth routes. |
-| S9 SecurityHeaders | ✅ | `SecurityHeadersMiddleware` registered in `bootstrap/app.php`. |
-| S11 session | ⚠️ | `SESSION_DRIVER=database` — prefer `redis`. |
-| S13 MFA | ❌ | No 2FA/TOTP anywhere — admin login has no MFA. |
-| S14 Password policy | ⚠️ | `Password::defaults()` used but not configured in `AppServiceProvider` (`min(12)->uncompromised()`). |
-| D2 money | ✅ | No float/double columns. |
-| D5 status | ✅ | Status columns use `enum()`, not string. |
-| D7 UserSeeder | ✅ | Present. |
-| D6 factories | ✅ | 29 factories added for every domain model with `HasFactory` (Person, Interaction, Post, Comment, Expense, Income, Stakeholder, Node/NodeConnection, all lookup tables, etc.). Skipped: `Media`, `AliceAuditLog`, `IdempotencyKey` (no `HasFactory` trait — system/infra records, not user-created). Guarded by `tests/Feature/ModelFactoriesTest.php`, which creates one of every model and would catch future migration/factory drift (already caught one: `Adage.language` → `language_id` rename). |
-| D9 cascade | ⚠️ | Analyzed all 4 `cascadeOnDelete` FKs. `node_connections`→`nodes` (×2): **fine** — `nodes` is not `SoftDeletes`, so cascade fires on the only delete path that exists. `interactions`→`people` and `comments`→`posts`: parents **are** `SoftDeletes`, so the cascade only matters if something calls `forceDelete()`. Investigating that surfaced a real bug: `routes/console.php` scheduled `model:prune --model=Post,Comment,Person` weekly, but none of those models implement `Prunable` — the command threw `BadMethodCallException` on every run and never actually pruned anything. **Fixed:** removed the broken schedule entry (`routes/console.php`) so the scheduler stops erroring weekly. **Not fixed (needs your decision):** whether to reinstate pruning with a real retention policy — that determines when soft-deleted family/genealogy records and blog comments become permanently, irreversibly unrecoverable, which isn't a call to make unilaterally. `comments` is also itself `SoftDeletes`; a future cascade-triggering `forceDelete()` on a post would hard-delete its comments without them ever going through their own trash/restore lifecycle — worth keeping in mind if `Prunable` is added later. |
-| E1 sitemap | ✅ | `/sitemap.xml` route. |
-| E2 robots | ⚠️ | No `/robots.txt` route (only meta robots). |
-| E4 OG | ✅ | `seo-meta` component with `og:title`. |
-| E6 NoIndex | ⚠️ | No NoIndex middleware for `/admin`/auth routes (one view has meta noindex). |
-| E7 consent | ⚠️ | No cookie-consent component (only needed once analytics/tracking added). |
-| G1 repo | ✅ | 43 commits, GitHub remote. |
-| G2 develop | ⚠️ | No `develop` branch. |
-| G5 CI | ❌ | No `.github/workflows/ci.yml`. |
-| G5 dependabot | ⚠️ | No `.github/dependabot.yml`. |
-| Q1 pint | ❌ | `laravel/pint` installed but **no `pint.json`**. |
-| Q2 phpstan | ❌ | No `larastan/larastan` + no `phpstan.neon`. |
-| Q3 rector | ⚠️ | No `rector/rector` + no `rector.php`. |
-| B1 backup | ❌ | No `spatie/laravel-backup`, not scheduled, no `BACKUP_ARCHIVE_PASSWORD` (KVKK). |
-| X2 tests | ✅ | `tests/Feature/` present (Pest). |
-| X9 smoke | ❌ | No `tests/Feature/SmokeTest.php`. |
-| X11 smoke.sh | ❌ | No `scripts/smoke-test.sh`. |
-| R1 queued mail | ❌ | 1 Mailable, 0 `ShouldQueue`. |
-| R4 mail from | ✅ | `MAIL_FROM_ADDRESS` set. |
-| R9 MailTest | ✅ | `MailTestCommand` present. |
-| W9 health | ⚠️ | Custom `/health` route exists; no `spatie/laravel-health` monitoring. |
-| F8 admin path | ⚠️ | Admin at predictable `/admin` prefix (custom app — consider obscuring). |
+| P1 | ⚠️ | Stack deviates from baseline: no Filament, no Livewire. Pest 4 now installed (was plain PHPUnit) — one of the three gaps closed |
+| L1 | ✅ | No `env()` calls found outside config/ |
+| L2 | ✅ | Fixed: `SoftDeletes` added to `Node`, `Interaction`, `Stakeholder` (migration + trait) — `destroy()` on these no longer permanently deletes. No trash/restore UI added (scoped decision — see remediation plan; there wasn't one anywhere in the panel to match, not even for `Person`/`Post`/`Comment`) |
+| L3 | ⚠️ | No `app/Enums/` directory |
+| L4 | ⚠️ | One closure route (`/theme/{scope}/{theme}` in routes/web.php:21) |
+| L5 | ✅ | No `$request->all()` mass-assignment; `->all()` hits are all `Collection::all()` |
+| L6 | ✅ | `app/Services/` exists (7 services) |
+| F1–F12 | — | N/A — project does not use Filament |
+| M1 | ❌ | No `spatie/laravel-medialibrary` or `awcodes/filament-curator` — custom `MediaService`/`ImageService` used instead |
+| V1 | ✅ | `public/build` and `node_modules` in `.gitignore` |
+| V3 | ✅ | Active layouts (`admin/layout.blade.php`, `public/layout.blade.php`, `layouts/app.blade.php`, `layouts/guest.blade.php`) each call `@vite()` once. `layouts/app.blade.php`/`layouts/guest.blade.php` are live (used by Breeze auth/dashboard views via `<x-app-layout>`/`<x-guest-layout>`) — only the root `resources/views/welcome.blade.php` was genuinely orphaned |
+| V4 | ✅ | No `console.log`, no jQuery |
+| V5 | ⚠️ | No `public/logo.png` |
+| V6 | ✅ | Footer credit link to myteknoloji.com present |
+| V8b | ⚠️ | 17 base palette tokens defined (≥11 ✅) but 0 semantic status-role tokens (bg/text/border ×4) |
+| V8c | ✅ | Thin brand-colored scrollbar defined |
+| V9 | ✅ | `site.webmanifest`, `sw.js`, PWA icons all present |
+| V12 | ✅ | All 5 branded error pages present (404/500/503/419/429), all standalone |
+| V13 | ⚠️ | No reading-progress component on blog posts |
+| V24 | ✅ | **Follow-up completed.** Extended `<x-app-dialog>`/`window.appDialog` with a `confirm()` mode (danger-styled by default) and a delegated `data-confirm` form-submit handler in `app.js` (one listener, no per-form JS). Converted all 17 admin index pages from `onsubmit="return confirm(...)"` to `data-confirm="..."` — import.blade.php's two non-form-destroy buttons (Import All / Truncate All) included, with Truncate labeled distinctly since it's the most destructive action in the app. |
+| V25 | ✅ | Built `<x-float-input>` (CSS-only float label); adopted on the comment form (guest_name/guest_email) and newsletter signup |
+| V26 | ✅ | Built segmented `<x-otp-input>` (6 boxes, paste-safe, auto-advance/backspace, `autocomplete="one-time-code"` on the first box); adopted on the 2FA challenge code field. Recovery-code field intentionally left as plain text (alphanumeric, not a fixed-length digit code) |
+| V27 | ⚠️ | No `x-swipe-row` component; `public/biolink/index.blade.php` has a list view that could use it |
+| V28 | ✅ | Built `<x-status-message>` (4 roles, centralized `.status-message-*` classes in app.css); `<x-flash>` (site-wide banner, used on every admin page) now delegates to it instead of hardcoding red/emerald inline. Fixed `admin/about.blade.php` (removed a redundant duplicate success banner — it was rendering the same message twice, once via the local block and once via `<x-flash>` in the layout) and `public/blog/show.blade.php`'s comment error. Correction: the `bg-blue-*` hits in `admin/dashboard.blade.php` originally flagged here are a decorative wealth-tier progress bar, not a status signal — false positive, not a violation. **Follow-up not done today:** ~7 more files (`todo-items`, `subscribers`, `purchase-items`, `activity-logs`, `incomes`, `bucketlist`, `interactions`) use inline badge-style status chips (pending/overdue/completed) that are a different UI shape (rounded pill badges, not message banners) — worth a follow-up `<x-status-badge>` component, scoped separately since it's a larger sweep than this fix. |
+| V29 | ✅ | Built `<x-app-dialog>` (native `<dialog>` + `.showModal()`, 45% backdrop dim + 6px blur, 180ms `@starting-style` scale entrance) with a Promise-based `window.appDialog.alert()`/`.confirm()`/`.prompt()` JS API. Replaced the 3 `window.alert()` + 1 `window.prompt()` calls in `app.js`/`people/_form.blade.php`. While fixing this, found the "V24 delete confirmation" ✅ from the first audit pass was a false positive (native unstyled `confirm()` on 17 pages) — see V24, now also fixed using the same dialog infrastructure. |
+| V30 | ✅ | Fixed: `--brand-primary`/`--brand-secondary` seeds added to `@theme`; `--color-brand`, `--color-brand-dark`, `--color-accent`, `--color-primary`, `--color-primary-dark` all now derive from the two seeds via `oklch(from var(--brand-primary) calc(l - 0.12) c h)`. Built `<x-brand-vars>` (inline `<style>` override from `Setting::get()`, wired into both layouts right after `@vite()` so it wins the cascade). Added a "Marka" tab — first in `SettingController::DEFINITIONS` — with two `<input type="color">` pickers, validated server-side against `^#[0-9A-Fa-f]{6}$` (this value renders inside a raw `<style>` block, unlike other settings which are just text-interpolated, so format validation matters here specifically). Also updated `<meta name="theme-color">` in `brand-meta.blade.php` to read the same setting. End-to-end verified: saved color → rendered CSS override on the live page. |
+| TY1 | ⚠️ | `@theme` block exists but no `--font-display`/`--font-sans` slots defined |
+| TY2 | ✅ | `@fontsource/inter` loaded |
+| A3 | ✅ | Skip-to-content link in both layouts |
+| A4 | ✅ | `:focus-visible` defined; legacy `outline-none` usages all paired with visible focus rings |
+| A7 | ✅ | No paste-blocking found |
+| A8 | ✅ | `prefers-reduced-motion` block present |
+| S1 | ✅ | `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`, `.env` in `.gitignore` |
+| S3 | ✅ | No `$request->all()` |
+| S4 | ⚠️ | reCAPTCHA v3 used instead of preferred Cloudflare Turnstile |
+| S5 | ✅ | Fixed: `<x-honeypot>` component parameterized with a `name` prop (default `hp_website`, unchanged for the newsletter form); comment form now uses `<x-honeypot name="website" />` instead of an inline duplicate — same backend field name, no behavior change |
+| S9 | ✅ | `SecurityHeadersMiddleware` registered in `bootstrap/app.php` |
+| S11 | ✅ | `SESSION_DRIVER=redis`, `SESSION_SECURE_COOKIE=true` |
+| S12 | ✅ | No legacy `app/Exceptions/Handler.php` |
+| S13 | ✅ | Fortify 2FA (MFA) configured |
+| S14 | ✅ | `Password::defaults()` with `min(12)->uncompromised()` |
+| D1 | ✅ | Migrations have timestamps |
+| D2 | ✅ | No float/double money columns |
+| D5 | ✅ | No string status columns |
+| D6 | ⚠️ | 32 models / 29 factories |
+| D7 | ✅ | `UserSeeder` present |
+| D9 | ✅ | Reviewed: `forceDelete()` is never called anywhere in the app (`grep -rn forceDelete app/` returns nothing), so `cascadeOnDelete` on `interactions.person_id`→`people`, `comments.post_id`→`posts`, and now `node_connections.node_from_id/node_to_id`→`nodes` (soft-deletable as of today's L2 fix) is currently dormant — no live data-loss risk. **Note for later:** if a "permanently delete" admin feature is ever added, revisit these three FKs first, since cascading through would silently wipe child records with no trash trail of their own. |
+| E1 | ✅ | Sitemap route present |
+| E2 | ✅ | `/robots.txt` route present |
+| E3 | ✅ | `/ads.txt` route present |
+| E4 | ✅ | OG tags via `seo-meta` component |
+| E5 | ✅ | `gtm-head`/`gtm-body` components (tracking present, differently named than standard) |
+| E6 | ✅ | `NoIndex` middleware applied to admin/auth routes |
+| E7 | ✅ | Fixed: added `<x-consent-defaults>` (Google Consent Mode v2, default=denied, loaded before GA/AdSense scripts) + `<x-cookie-consent>` banner (accept/reject, persisted in localStorage, calls `gtag('consent','update',...)` on accept) |
+| G1 | ✅ | 47 commits, remote configured |
+| G2 | ✅ | Local `develop` branch created (not pushed to origin — pushing affects shared remote state, left for the user to do) |
+| G3 | ✅ | `public/build` in `.gitignore` |
+| G5 | ✅ | `.github/workflows/ci.yml` and `.github/dependabot.yml` both present |
+| Q1 | ✅ | `pint.json` present, `laravel/pint` installed |
+| Q2 | ✅ | `phpstan.neon` present, `larastan/larastan` installed |
+| Q3 | ✅ | Fixed: `rector/rector` installed, starter `rector.php` committed (dry-run verified — 4 files would change, none auto-applied) |
+| Q4 | ✅ | Fixed: `beyondcode/laravel-query-detector` installed |
+| S10 | — | `enlightn/laravel-security-checker` requires Laravel ^6-9 — incompatible with this project's Laravel 13. Not installable; `composer audit` (built into Composer 2.4+) already covers the same CVE-scanning need natively — confirmed working, surfaced 22 existing advisories (mostly symfony/routing, low/medium severity — see note below) |
+| B1 | ✅ | `spatie/laravel-backup` installed, `backup:run` scheduled daily, `BACKUP_ARCHIVE_PASSWORD` in `.env.example` (offsite disk not configured — local only) |
+| X1 | ✅ | Fixed: `pestphp/pest` + `pestphp/pest-plugin-laravel` installed, `tests/Pest.php` bootstrapped (extends `TestCase`, global `RefreshDatabase`). Existing PHPUnit-style tests run unchanged alongside new Pest-style tests — no migration needed, Pest supports both. |
+| X2 | ✅ | `tests/Feature/` populated (Admin, Alice, Auth subdirs) |
+| X9 | ✅ | `tests/Feature/SmokeTest.php` present |
+| X10 | ✅ | Fixed: added Feature tests for all 22 previously-uncovered Admin controllers (21 new test files, ~110 new test cases). Only gap: `ReportController`'s full render is blocked by a pre-existing `MONTH()` SQLite incompatibility (same root cause as the already-failing `Phase12FlowTest`) — auth/authorization is still tested, the data-rendering path is not. **Two real bugs found and fixed via this work**, see below. |
+| X11 | ✅ | `scripts/smoke-test.sh` present |
+| R1 | ✅ | `SubscriberConfirmationMail` implements `ShouldQueue` |
+| R3 | ✅ | Fixed: extracted `resources/views/emails/layouts/base.blade.php`; `SubscriberConfirmationMail`'s view now `@extends` it instead of duplicating the full HTML table skeleton |
+| R4 | ✅ | `MAIL_FROM_ADDRESS` set in `.env.example` |
+| R9 | ✅ | `MailTestCommand` present |
+| W6/W9/W8 | ⚠️ | No `laravel/pulse`, `spatie/laravel-health`, or `laravel/horizon` |
+| — | ✅ | Fixed: removed orphaned root `resources/views/welcome.blade.php` (default Laravel starter page, never routed) |
 
 ---
 
 ## Remediation Plan
 
-### ⚡ Quick (< 10 min)
-- [x] **B1** Install backup: `composer require spatie/laravel-backup` + publish config + add `BACKUP_ARCHIVE_PASSWORD` to `.env.example`.
-- [x] **Q1** Add `pint.json` to project root (MY Teknoloji preset).
-- [x] **G5** Add `.github/dependabot.yml` (composer + npm weekly).
-- [x] **V12** Add branded `resources/views/errors/419.blade.php` + `429.blade.php`; made 404/500/503 standalone (no `@extends`/`@vite`/DB-backed components).
-- [x] **P1** Bump `php` constraint to `^8.4` in `composer.json`.
-- [x] **E2** Add `/robots.txt` route.
-- [x] **S14** Configure `Password::defaults(fn () => Password::min(12)->uncompromised())` in `AppServiceProvider::boot`.
+### ⚡ Quick (< 10 min) — all done
+- [x] **E7** — `<x-consent-defaults>` + `<x-cookie-consent>` built and wired into `public/layout.blade.php`.
+- [x] **S4** — Accepted as-is: reCAPTCHA v3 already implemented and working; no client requirement forcing Turnstile.
+- [x] **Q3** — `rector/rector` installed, starter `rector.php` committed.
+- [x] **Q4** — `beyondcode/laravel-query-detector` installed.
+- [x] **S10** — Not installable (Laravel ^6-9 only); `composer audit` covers the same need natively on Laravel 13.
+- [x] **G2** — Local `develop` branch created.
+- [x] Cleanup — deleted unused `resources/views/welcome.blade.php` (confirmed unrouted). `layouts/app.blade.php`/`layouts/guest.blade.php` were re-verified as live (Breeze auth/dashboard layouts) and kept.
 
-### 🔧 Standard (30–60 min)
-- [x] **Q2** `composer require --dev larastan/larastan` + add `phpstan.neon` (level 5) + baseline for pre-existing errors.
-- [x] **G5** Add `.github/workflows/ci.yml` (pint --test, phpstan, pest).
-- [x] **X9 / X11** Create `tests/Feature/SmokeTest.php` (all public routes → 200) + `scripts/smoke-test.sh` (curl -I against live URL).
-- [x] **R1** Make Mailable(s) `implements ShouldQueue`.
-- [x] **V8b/V8c** Completed 11-token palette + thin brand-colored scrollbar (see results table for details).
-- [x] **E6** Add `NoIndex` middleware and apply to `/admin` + auth route groups.
-- [x] **D6** Backfill model factories (29 factories added; guarded by `ModelFactoriesTest`).
-- [x] **S5** Verified honeypot already covers both content-creating public forms (no code change needed — see results table).
-- [x] **V5** Verified branded logo + favicons already exist under a different filename (no code change needed).
+### 🔧 Standard (30–60 min) — all done
+- [x] **L2** — `SoftDeletes` added to `Node`, `Interaction`, `Stakeholder` (migration + trait). No trash/restore UI built — user chose to scope this to "stop permanent deletes" only, since no admin page in the app has restore UI today, not even for `Person`/`Post`/`Comment`.
+- [x] **V28** — Built `<x-status-message>`, centralized `<x-flash>` onto it, fixed a duplicate-banner bug in `about.blade.php` and the comment-error banner on `blog/show.blade.php`. ~7 files with badge-style status chips (not message banners) left as a follow-up — different UI shape, bigger sweep.
+- [x] **V25** — Built `<x-float-input>`; adopted on comment form + newsletter signup.
+- [x] **S5** — `x-honeypot` parameterized with a `name` prop; comment form now uses it instead of a duplicate inline field.
+- [x] **V26** — Built segmented `<x-otp-input>`; adopted on the 2FA code field.
+- [x] **V29** — Built `<x-app-dialog>` + `window.appDialog.alert/confirm/prompt`; replaced all 4 original `window.alert()`/`window.prompt()` calls.
+- [x] **R3** — Extracted `resources/views/emails/layouts/base.blade.php`; `SubscriberConfirmationMail` now extends it.
+- [x] **D9** — Reviewed: `forceDelete()` is never called anywhere, so the cascade FKs are currently dormant. No code change needed; noted for later if a permanent-delete feature is ever added.
 
-### 🏗️ Larger (own task/phase)
-- [x] **S13** Add MFA/TOTP to admin login — Fortify 2FA wired into the existing Breeze login, with enroll/confirm/recovery-codes UI on the profile page.
-- [x] **P1** Upgraded Vite 7 → 8 (Rolldown) + `laravel-vite-plugin` 2→3 + `@tailwindcss/vite` bump; production build and `npm run dev` both verified working, full test suite unaffected.
-- [x] **L9** Extended the project's existing custom `ActivityLog` system (not spatie's package — see results table) to 7 admin-CRUD models + auth events (login/logout/failed) + a read-only admin viewer.
-- [x] **D9** Audited the 4 `cascadeOnDelete` FKs (see results table) — found and fixed a real bug in the process (broken weekly `model:prune` schedule). Open question for you: whether/how to define a retention policy for Person/Post/Comment pruning — not resolved, see note above.
-- [x] **V9** Manifest completed + `sw.js` + `offline.html` — installable now. Screenshots + iOS splash screens still open (see results table — need real asset generation, e.g. via `pwa-asset-generator` against a running instance).
+### ✅ V24 follow-up (completed after being discovered mid-V29 fix)
+- [x] Extended `window.appDialog` with a `confirm()` mode + a delegated `data-confirm` form-submit handler (one listener in `app.js`, no per-form JS needed).
+- [x] Converted all 17 admin pages from `onsubmit="return confirm(...)"` to `data-confirm="..."` (import, comments, interactions, posts, adages, nodes, todo-items, expenses, stakeholders, people, dictionaries, timeline, subscribers, node-connections, incomes, media, purchase-items).
+- [x] Full test suite + Vite build verified clean after the sweep (same 6 pre-existing failures, no new ones).
+
+### ✅ X1 + X10 — completed
+- [x] Installed Pest 4 + `pest-plugin-laravel`; bootstrapped `tests/Pest.php` (existing PHPUnit tests run unchanged alongside new Pest tests — no migration needed).
+- [x] Added Feature tests for all 22 previously-uncovered Admin controllers (Person, Expense, Income, Stakeholder, Post, Comment, Node, NodeConnection, Interaction, TodoItem, PurchaseItem, Timeline, Adage, Dictionary, Subscriber, Media, Bucketlist, About, Setting, Dashboard, ActivityLog, CsvImport, Report) — 21 new test files, suite grew from 94 → 222 passing tests.
+- [x] Every resource test checks: auth required, non-admin forbidden, index renders, store validates + persists, update persists, destroy (soft- or hard-delete as appropriate).
+
+**Two real bugs found and fixed along the way** (this is exactly why X10 mattered):
+1. **Media deletion was completely broken.** `Route::resource('/media', ...)` auto-singularizes to `{medium}` (Laravel's English-inflector rule for "media"), but `MediaController::destroy(Media $media, ...)` expects `$media`. The name mismatch meant route-model-binding silently injected an empty, unbound `Media` instance — `$media->delete()` ran against a non-existent record every time, and the UI always showed "Media deleted" even though nothing was removed. Fixed with `->parameters(['media' => 'media'])` on the resource route in `routes/admin.php`.
+2. **`TimelineController::validatedPayload()` crashed with "Undefined array key"** on `color`/`tags`/`metadata` whenever those optional fields were omitted from the request — the `$payload['color'] ?: '...'` pattern still requires the key to exist even though the field is `nullable`. Fixed by adding `?? null` before each fallback check.
+
+**Also discovered (not a bug, but worth knowing):** `EnsureAdmin` treats **user ID 1 as an implicit admin** regardless of the `is_admin` flag — a bootstrap safety net. Baked into a shared `actingAsNonAdmin()` test helper (creates a throwaway user first) so future tests don't trip over it.
+
+### ✅ V30 — completed
+- [x] Added `--brand-primary`/`--brand-secondary` seeds to `@theme`; derived `--color-brand`, `--color-brand-dark`, `--color-accent`, `--color-primary`, `--color-primary-dark` from them via `oklch(from ...)`.
+- [x] Built `<x-brand-vars>` — settings-driven inline `<style>` override, wired into both public and admin layouts.
+- [x] Added a "Marka" tab (first tab) to Settings with two color pickers, server-side hex validation, and a live end-to-end test (saved setting → rendered CSS override).
+- [x] Synced `<meta name="theme-color">` to the same setting for PWA consistency.
+
+### 🏗️ Larger (own task/phase) — remaining
+- [ ] **M1** — Evaluate migrating `MediaService`/`ImageService` to `spatie/laravel-medialibrary` + `awcodes/filament-curator`; scope depends on how deeply the custom services are wired into existing models — likely a full phase.
+- [ ] **P1** (architecture) — No action required unless there's appetite to migrate this project onto Filament/Livewire; documented here as a known, accepted baseline deviation.
+
+### 📌 New finding, not yet actioned
+- [ ] **composer audit** surfaced 22 pre-existing security advisories (mostly `symfony/routing`/`symfony/polyfill-intl-idn` transitives via `laravel/framework`, low/medium severity). Several open Dependabot PRs already on the repo (`laravel/framework-13.19.0`, `13.20.0`, etc.) may already resolve these — worth reviewing and merging rather than a manual `composer update`.
 
 ---
-*Generated by /my-standards audit — MY Teknoloji Standards (graph built 2026-07-03)*
+*Generated by /my-standards audit — MY Teknoloji Standards v1.10.0*

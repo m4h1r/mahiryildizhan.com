@@ -82,7 +82,7 @@
                                             <a href="{{ route('blog.show', $post->slug) }}" target="_blank" class="admin-btn-sm admin-btn-ghost">{{ __('View') }}</a>
                                         @endif
 
-                                        <form method="POST" action="{{ route('admin.posts.destroy', $post) }}" onsubmit="return confirm('{{ __('Delete this post?') }}');">
+                                        <form method="POST" action="{{ route('admin.posts.destroy', $post) }}" data-confirm="{{ __('Delete this post?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>

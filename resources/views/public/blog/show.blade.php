@@ -45,9 +45,9 @@
             <h2 class="text-2xl font-semibold">{{ __('Comments') }} ({{ $post->comments->count() }})</h2>
 
             @if ($errors->has('comment'))
-                <p class="mt-3 rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+                <x-status-message type="danger" class="mt-3">
                     {{ $errors->first('comment') }}
-                </p>
+                </x-status-message>
             @endif
 
             <form method="POST" action="{{ route('public.comments.store') }}" class="public-card mt-6 space-y-4 p-6">
@@ -55,22 +55,11 @@
                 <input type="hidden" name="post_id" value="{{ $post->id }}">
                 <input type="hidden" name="recaptcha_token" id="recaptcha_token">
 
-                <div class="hidden" aria-hidden="true">
-                    <label>Website
-                        <input type="text" name="website" value="{{ old('website') }}" tabindex="-1" autocomplete="off">
-                    </label>
-                </div>
+                <x-honeypot name="website" />
 
                 <div class="grid gap-3 md:grid-cols-2">
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-                        <span class="mb-1 block">{{ __('Name') }}</span>
-                        <input name="guest_name" class="form-input-admin" value="{{ old('guest_name', auth()->user()?->name) }}">
-                    </label>
-
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-                        <span class="mb-1 block">{{ __('Email') }}</span>
-                        <input type="email" name="guest_email" class="form-input-admin" value="{{ old('guest_email', auth()->user()?->email) }}">
-                    </label>
+                    <x-float-input name="guest_name" label="{{ __('Name') }}" :value="auth()->user()?->name" />
+                    <x-float-input type="email" name="guest_email" label="{{ __('Email') }}" :value="auth()->user()?->email" />
                 </div>
 
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">

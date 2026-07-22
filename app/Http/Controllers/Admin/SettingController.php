@@ -12,6 +12,10 @@ use Illuminate\View\View;
 class SettingController extends Controller
 {
     private const DEFINITIONS = [
+        'brand' => [
+            ['key' => 'brand_primary', 'label' => 'Primary Color', 'type' => 'color'],
+            ['key' => 'brand_secondary', 'label' => 'Secondary Color', 'type' => 'color'],
+        ],
         'financial' => [
             ['key' => 'treasury_try', 'label' => 'Kasa (₺)'],
             ['key' => 'daily_passive_income_try', 'label' => 'Günlük Pasif Gelir (₺)'],
@@ -73,6 +77,15 @@ class SettingController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
+        $colorKeys = collect(self::DEFINITIONS)
+            ->flatten(1)
+            ->filter(fn (array $item) => ($item['type'] ?? null) === 'color')
+            ->pluck('key');
+
+        $request->validate(
+            $colorKeys->mapWithKeys(fn (string $key) => ["settings.{$key}" => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/']])->all()
+        );
+
         $payload = $request->input('settings', []);
 
         foreach (self::DEFINITIONS as $group => $items) {
@@ -108,6 +121,7 @@ class SettingController extends Controller
                     'key' => $item['key'],
                     'label' => $item['label'],
                     'is_secret' => (bool) ($item['is_secret'] ?? false),
+                    'type' => $item['type'] ?? 'text',
                     'value' => $existing?->value,
                 ];
             }, $items);

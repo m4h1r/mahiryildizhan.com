@@ -66,7 +66,7 @@
                                             </form>
                                         @endunless
 
-                                        <form method="POST" action="{{ route('admin.comments.destroy', $comment) }}" onsubmit="return confirm('{{ __('Delete this comment?') }}');">
+                                        <form method="POST" action="{{ route('admin.comments.destroy', $comment) }}" data-confirm="{{ __('Delete this comment?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>

@@ -183,9 +183,9 @@ class TimelineController extends Controller
 
         $payload['is_public'] = $request->boolean('is_public');
         $payload['order'] = (int) ($payload['order'] ?? 0);
-        $payload['color'] = $payload['color'] ?: '#3B82F6';
-        $payload['tags'] = $payload['tags'] ? array_values(array_filter(array_map('trim', explode(',', $payload['tags'])))) : null;
-        $payload['metadata'] = $payload['metadata'] ? json_decode((string) $payload['metadata'], true) : null;
+        $payload['color'] = ($payload['color'] ?? null) ?: '#3B82F6';
+        $payload['tags'] = ($payload['tags'] ?? null) ? array_values(array_filter(array_map('trim', explode(',', $payload['tags'])))) : null;
+        $payload['metadata'] = ($payload['metadata'] ?? null) ? json_decode((string) $payload['metadata'], true) : null;
 
         if ($payload['metadata'] !== null && ! is_array($payload['metadata'])) {
             abort(422, 'Metadata must be valid JSON object.');
