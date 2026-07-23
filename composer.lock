@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6802838daf2a4d4aec8235b454bb580d",
+    "content-hash": "a688027652113b39ea852ab00b01abcd",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1356,25 +1356,24 @@
         },
         {
             "name": "intervention/zodiac",
-            "version": "6.0.1",
+            "version": "7.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/zodiac.git",
-                "reference": "6690d58cf75065e3f32cdf902eb381114a25de25"
+                "reference": "930d6a9eb4328d96d477bcac8c8fa32951a0a2bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/zodiac/zipball/6690d58cf75065e3f32cdf902eb381114a25de25",
-                "reference": "6690d58cf75065e3f32cdf902eb381114a25de25",
+                "url": "https://api.github.com/repos/Intervention/zodiac/zipball/930d6a9eb4328d96d477bcac8c8fa32951a0a2bb",
+                "reference": "930d6a9eb4328d96d477bcac8c8fa32951a0a2bb",
                 "shasum": ""
             },
             "require": {
                 "illuminate/translation": "^11 || ^12 || ^13",
-                "nesbot/carbon": "^2.0 || ^3.0",
                 "php": "^8.2"
             },
             "require-dev": {
-                "phpstan/phpstan": "^2",
+                "phpstan/phpstan": "^2.1",
                 "phpunit/phpunit": "^11.0 || ^12.0",
                 "slevomat/coding-standard": "~8.0",
                 "squizlabs/php_codesniffer": "^4"
@@ -1418,7 +1417,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Intervention/zodiac/issues",
-                "source": "https://github.com/Intervention/zodiac/tree/6.0.1"
+                "source": "https://github.com/Intervention/zodiac/tree/7.0.3"
             },
             "funding": [
                 {
@@ -1434,7 +1433,7 @@
                     "type": "ko_fi"
                 }
             ],
-            "time": "2026-02-28T06:44:40+00:00"
+            "time": "2026-05-31T09:14:00+00:00"
         },
         {
             "name": "kyslik/column-sortable",
