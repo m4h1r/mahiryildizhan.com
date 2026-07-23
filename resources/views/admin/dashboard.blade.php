@@ -1,6 +1,25 @@
 @extends('admin.layout', ['title' => 'Dashboard', 'heading' => 'Dashboard'])
 
 @section('content')
+    {{-- Günün Saati — 24 saatlik renkli kadran --}}
+    <section class="card-admin mb-6 flex flex-col items-center gap-3 p-6">
+        <h2 class="text-sm font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">{{ __('Günün Saati') }}</h2>
+        <div class="relative h-48 w-48 rounded-full" style="background: conic-gradient({{ $clockRing['gradient'] }});">
+            <div
+                class="absolute inset-[14%] flex flex-col items-center justify-center rounded-full text-center shadow-inner"
+                style="background-color: {{ $clockRing['currentColor'] }};"
+            >
+                <span class="text-xs font-medium text-white/80">{{ $clockRing['currentTime'] }}</span>
+                <span class="max-w-[80%] text-sm font-bold leading-tight text-white">{{ $clockRing['currentLabel'] }}</span>
+            </div>
+            <span class="absolute left-1/2 top-1 -translate-x-1/2 text-[10px] font-medium text-gray-400 dark:text-gray-500">00</span>
+            <span class="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] font-medium text-gray-400 dark:text-gray-500">06</span>
+            <span class="absolute bottom-1 left-1/2 -translate-x-1/2 text-[10px] font-medium text-gray-400 dark:text-gray-500">12</span>
+            <span class="absolute left-1 top-1/2 -translate-y-1/2 text-[10px] font-medium text-gray-400 dark:text-gray-500">18</span>
+        </div>
+        <a href="{{ route('admin.settings', ['tab' => 'time_ranges']) }}" class="text-xs text-gray-400 hover:underline dark:text-gray-500">{{ __('Zaman aralıklarını düzenle →') }}</a>
+    </section>
+
     {{-- =====================================================
          KİŞİSEL DASHBOARD — mevcuta dokunma, bu div bağımsız
     ===================================================== --}}
@@ -216,8 +235,50 @@
 
         </section>
 
+        {{-- SATIR 4: Bugünkü Beslenme --}}
+        <section class="card-admin">
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Bugünkü Beslenme') }}</h3>
+                <a href="{{ route('admin.consumptions.index') }}" class="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">{{ __('Yönet') }}</a>
+            </div>
+            <div class="mt-3 flex items-center gap-6">
+                <div class="relative h-28 w-28 shrink-0">
+                    <canvas id="nutritionPieChart"></canvas>
+                </div>
+                <div class="space-y-1 text-sm">
+                    <p class="text-lg font-extrabold text-gray-800 dark:text-gray-100">{{ number_format($dailyCalories, 0) }} kcal</p>
+                    <p class="text-gray-600 dark:text-gray-300">{{ __('Karbonhidrat') }}: {{ number_format($dailyCarbs, 1) }} g</p>
+                    <p class="text-gray-600 dark:text-gray-300">{{ __('Yağ') }}: {{ number_format($dailyFat, 1) }} g</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ __('Şeker') }}: {{ number_format($dailySugar, 1) }} g</p>
+                </div>
+            </div>
+        </section>
+
     </div>
     {{-- / KİŞİSEL DASHBOARD --}}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('nutritionPieChart');
+            if (ctx && window.Chart) {
+                new window.Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['{{ __('Karbonhidrat') }}', '{{ __('Yağ') }}'],
+                        datasets: [{
+                            data: [{{ $dailyCarbs }}, {{ $dailyFat }}],
+                            backgroundColor: ['#3B82F6', '#F97316'],
+                            borderWidth: 0,
+                        }],
+                    },
+                    options: {
+                        plugins: { legend: { display: false } },
+                        cutout: '65%',
+                    },
+                });
+            }
+        });
+    </script>
 
     @php
         $dailyTimes = $weather['daily']['time'] ?? [];

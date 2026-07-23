@@ -1,6 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Relation ''user'' is not found in App\\Models\\ActivityLog model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/ActivityLogController.php
+
+		-
 			message: '#^Relation ''language'' is not found in App\\Models\\Adage model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
@@ -1381,6 +1387,48 @@ parameters:
 			path: app/Jobs/SendCommentNotificationJob.php
 
 		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Listeners/LogSuccessfulLogout.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$calories_per_100g\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Consumption.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$carbs_per_100g\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Consumption.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$fat_per_100g\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Consumption.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$grams_per_unit\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Consumption.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$sugar_per_100g\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Consumption.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$unit_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Consumption.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\Income\:\:\$sourceable\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1405,7 +1453,7 @@ parameters:
 			path: app/Models/Person.php
 
 		-
-			message: '#^Parameter \#1 \$date of static method Intervention\\Zodiac\\Calculator\:\:fromDate\(\) expects DateTimeInterface, string given\.$#'
+			message: '#^Parameter \#1 \$date of static method Intervention\\Zodiac\\Sign\:\:fromDate\(\) expects DateTimeInterface, string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Models/Person.php
@@ -1457,15 +1505,3 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: app/Services/MediaService.php
-
-		-
-			message: '#^Relation ''user'' is not found in App\\Models\\ActivityLog model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Http/Controllers/Admin/ActivityLogController.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: app/Listeners/LogSuccessfulLogout.php

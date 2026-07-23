@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Models\TimeRange;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -16,6 +17,7 @@ class SettingController extends Controller
             ['key' => 'brand_primary', 'label' => 'Primary Color', 'type' => 'color'],
             ['key' => 'brand_secondary', 'label' => 'Secondary Color', 'type' => 'color'],
         ],
+        'time_ranges' => [],
         'financial' => [
             ['key' => 'treasury_try', 'label' => 'Kasa (₺)'],
             ['key' => 'daily_passive_income_try', 'label' => 'Günlük Pasif Gelir (₺)'],
@@ -72,6 +74,16 @@ class SettingController extends Controller
 
         return view('admin.settings', [
             'settingsByGroup' => $this->groupedSettings($settings),
+            'timeRanges' => TimeRange::query()->orderBy('day_of_week')->orderBy('starts_at')->get()->groupBy('day_of_week'),
+            'dayLabels' => [
+                1 => 'Pazartesi',
+                2 => 'Salı',
+                3 => 'Çarşamba',
+                4 => 'Perşembe',
+                5 => 'Cuma',
+                6 => 'Cumartesi',
+                0 => 'Pazar',
+            ],
         ]);
     }
 

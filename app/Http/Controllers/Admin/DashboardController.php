@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use App\Models\Consumption;
 use App\Models\Currency;
 use App\Models\Expense;
 use App\Models\Income;
@@ -11,6 +12,7 @@ use App\Models\Person;
 use App\Models\Post;
 use App\Models\PurchaseItem;
 use App\Models\Setting;
+use App\Models\TimeRange;
 use App\Models\TodoItem;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -179,6 +181,17 @@ class DashboardController extends Controller
         $bucketlistCompleted = PurchaseItem::where('is_bucketlist', true)->where('is_completed', true)->count()
             + TodoItem::where('is_bucketlist', true)->where('is_completed', true)->count();
 
+        $clockRing = $this->buildClockRing();
+
+        $todayConsumptions = Consumption::query()
+            ->whereDate('consumed_on', now()->toDateString())
+            ->with('food')
+            ->get();
+        $dailyCalories = $todayConsumptions->sum(fn (Consumption $c) => $c->calories());
+        $dailyCarbs = $todayConsumptions->sum(fn (Consumption $c) => $c->carbs());
+        $dailyFat = $todayConsumptions->sum(fn (Consumption $c) => $c->fat());
+        $dailySugar = $todayConsumptions->sum(fn (Consumption $c) => $c->sugar());
+
         return view('admin.dashboard', [
             'publishedPosts' => $publishedPosts,
             'pendingComments' => $pendingComments,
@@ -207,6 +220,77 @@ class DashboardController extends Controller
             'dueTodosTotal' => $dueTodosTotal,
             'bucketlistTotal' => $bucketlistTotal,
             'bucketlistCompleted' => $bucketlistCompleted,
+            'clockRing' => $clockRing,
+            'dailyCalories' => $dailyCalories,
+            'dailyCarbs' => $dailyCarbs,
+            'dailyFat' => $dailyFat,
+            'dailySugar' => $dailySugar,
         ]);
+    }
+
+    /**
+     * Builds a 24h conic-gradient ring (per current day-of-week's TimeRange rows)
+     * plus the currently active range's label/color for the center dial.
+     */
+    private function buildClockRing(): array
+    {
+        $defaultColor = '#9CA3AF';
+        $minutesInDay = 1440;
+
+        $ranges = TimeRange::query()
+            ->where('day_of_week', now()->dayOfWeek)
+            ->orderBy('starts_at')
+            ->get();
+
+        $toMinutes = function (string $time): int {
+            [$hours, $minutes] = array_map('intval', explode(':', $time));
+
+            return $hours * 60 + $minutes;
+        };
+
+        $segments = [];
+        foreach ($ranges as $range) {
+            $start = $toMinutes((string) $range->starts_at);
+            $end = $toMinutes((string) $range->ends_at);
+
+            if ($end <= $start) {
+                $segments[] = ['start' => $start, 'end' => $minutesInDay, 'color' => $range->color, 'label' => $range->label];
+                $segments[] = ['start' => 0, 'end' => $end, 'color' => $range->color, 'label' => $range->label];
+
+                continue;
+            }
+
+            $segments[] = ['start' => $start, 'end' => $end, 'color' => $range->color, 'label' => $range->label];
+        }
+
+        usort($segments, fn (array $a, array $b) => $a['start'] <=> $b['start']);
+
+        $pct = fn (int $minutes): string => rtrim(rtrim(number_format($minutes / $minutesInDay * 100, 4), '0'), '.');
+
+        $stops = [];
+        $cursor = 0;
+        foreach ($segments as $segment) {
+            if ($segment['start'] > $cursor) {
+                $stops[] = sprintf('%s %s%% %s%%', $defaultColor, $pct($cursor), $pct($segment['start']));
+            }
+            $stops[] = sprintf('%s %s%% %s%%', $segment['color'], $pct($segment['start']), $pct($segment['end']));
+            $cursor = max($cursor, $segment['end']);
+        }
+        if ($cursor < $minutesInDay) {
+            $stops[] = sprintf('%s %s%% 100%%', $defaultColor, $pct($cursor));
+        }
+        if ($stops === []) {
+            $stops[] = sprintf('%s 0%% 100%%', $defaultColor);
+        }
+
+        $nowMinutes = now()->hour * 60 + now()->minute;
+        $current = collect($segments)->first(fn (array $segment) => $nowMinutes >= $segment['start'] && $nowMinutes < $segment['end']);
+
+        return [
+            'gradient' => implode(', ', $stops),
+            'currentLabel' => $current['label'] ?? __('Tanımsız'),
+            'currentColor' => $current['color'] ?? $defaultColor,
+            'currentTime' => now()->format('H:i'),
+        ];
     }
 }

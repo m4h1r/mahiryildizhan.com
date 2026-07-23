@@ -5,10 +5,12 @@ use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AdageController;
 use App\Http\Controllers\Admin\BucketlistController;
 use App\Http\Controllers\Admin\CommentController;
+use App\Http\Controllers\Admin\ConsumptionController;
 use App\Http\Controllers\Admin\CsvImportController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DictionaryController;
 use App\Http\Controllers\Admin\ExpenseController;
+use App\Http\Controllers\Admin\FoodController;
 use App\Http\Controllers\Admin\IncomeController;
 use App\Http\Controllers\Admin\InteractionController;
 use App\Http\Controllers\Admin\MediaController;
@@ -22,6 +24,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StakeholderController;
 use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\Admin\TimelineController;
+use App\Http\Controllers\Admin\TimeRangeController;
 use App\Http\Controllers\Admin\TodoItemController;
 use App\Services\CsvImportService;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +53,16 @@ Route::get('/about', [AboutController::class, 'index'])->name('admin.about');
 Route::post('/about', [AboutController::class, 'update'])->name('admin.about.update');
 Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings');
 Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
+Route::post('/settings/time-ranges/{dayOfWeek}', [TimeRangeController::class, 'sync'])
+    ->whereNumber('dayOfWeek')
+    ->name('admin.time-ranges.sync');
+
+Route::resource('/foods', FoodController::class)
+    ->except(['show'])
+    ->names('admin.foods');
+Route::resource('/consumptions', ConsumptionController::class)
+    ->except(['show'])
+    ->names('admin.consumptions');
 
 Route::get('/import', [CsvImportController::class, 'index'])->name('admin.import.index');
 Route::post('/import', [CsvImportController::class, 'import'])->name('admin.import.run');

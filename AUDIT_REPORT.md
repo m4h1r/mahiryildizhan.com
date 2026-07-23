@@ -3,13 +3,14 @@ Project: mahiryildizhan.com
 Date: 2026-07-22
 Topics: all
 
-**Status: 63 ✅ | 1 ❌ | 11 ⚠️ | remainder N/A (Filament rules).** All Quick + Standard remediation
+**Status: 64 ✅ | 1 ❌ | 11 ⚠️ | remainder N/A (Filament rules).** All Quick + Standard remediation
 items fixed (8 original + the V24 follow-up), plus X1/X10 (Pest + full admin test coverage — which
 surfaced and fixed **two real production bugs**: broken media deletion, a crash-on-missing-field in
-the timeline controller) and V30 (brand-token settings tab, end-to-end verified). Only **M1**
-(medialibrary migration) remains — a genuine scoping decision, not mechanical work — see Remediation
-Plan. Remaining ⚠️ are low-priority (S4 Turnstile-vs-reCAPTCHA, V5 logo, V8b semantic status tokens,
-etc.).
+the timeline controller), V30 (brand-token settings tab, end-to-end verified), and the Dependabot
+security sweep (22 advisories → 0, see below — which surfaced and fixed a **third real bug**: a
+zodiac-calculation crash from a major dependency bump). Only **M1** (medialibrary migration) remains
+— a genuine scoping decision, not mechanical work — see Remediation Plan. Remaining ⚠️ are
+low-priority (S4 Turnstile-vs-reCAPTCHA, V5 logo, V8b semantic status tokens, etc.).
 
 ---
 
@@ -90,7 +91,7 @@ per rule.
 | Q2 | ✅ | `phpstan.neon` present, `larastan/larastan` installed |
 | Q3 | ✅ | Fixed: `rector/rector` installed, starter `rector.php` committed (dry-run verified — 4 files would change, none auto-applied) |
 | Q4 | ✅ | Fixed: `beyondcode/laravel-query-detector` installed |
-| S10 | — | `enlightn/laravel-security-checker` requires Laravel ^6-9 — incompatible with this project's Laravel 13. Not installable; `composer audit` (built into Composer 2.4+) already covers the same CVE-scanning need natively — confirmed working, surfaced 22 existing advisories (mostly symfony/routing, low/medium severity — see note below) |
+| S10 | ✅ | `enlightn/laravel-security-checker` requires Laravel ^6-9 — incompatible with this project's Laravel 13, not installable; `composer audit` (built into Composer 2.4+) covers the same CVE-scanning need natively. **Fixed:** the 22 advisories it surfaced are now resolved — see Dependabot sweep below. `composer audit` now reports zero. |
 | B1 | ✅ | `spatie/laravel-backup` installed, `backup:run` scheduled daily, `BACKUP_ARCHIVE_PASSWORD` in `.env.example` (offsite disk not configured — local only) |
 | X1 | ✅ | Fixed: `pestphp/pest` + `pestphp/pest-plugin-laravel` installed, `tests/Pest.php` bootstrapped (extends `TestCase`, global `RefreshDatabase`). Existing PHPUnit-style tests run unchanged alongside new Pest-style tests — no migration needed, Pest supports both. |
 | X2 | ✅ | `tests/Feature/` populated (Admin, Alice, Auth subdirs) |
@@ -153,8 +154,12 @@ per rule.
 - [ ] **M1** — Evaluate migrating `MediaService`/`ImageService` to `spatie/laravel-medialibrary` + `awcodes/filament-curator`; scope depends on how deeply the custom services are wired into existing models — likely a full phase.
 - [ ] **P1** (architecture) — No action required unless there's appetite to migrate this project onto Filament/Livewire; documented here as a known, accepted baseline deviation.
 
-### 📌 New finding, not yet actioned
-- [ ] **composer audit** surfaced 22 pre-existing security advisories (mostly `symfony/routing`/`symfony/polyfill-intl-idn` transitives via `laravel/framework`, low/medium severity). Several open Dependabot PRs already on the repo (`laravel/framework-13.19.0`, `13.20.0`, etc.) may already resolve these — worth reviewing and merging rather than a manual `composer update`.
+### ✅ Dependabot security sweep (S10 follow-up) — completed
+- [x] Verified `laravel/framework` 13.0.0 → 13.21.1 (PR #20) alone would clear all 22 `composer audit` advisories by checking each affected package's bumped version (`guzzle` 7.10.0→7.15.1, `psr7` 2.9.0→2.13.0, `symfony/http-foundation`/`http-kernel`/`mailer`/`mime`/`routing`/`polyfill-intl-idn` all bumped past their CVE fix thresholds) against the actual advisory data before merging.
+- [x] Merged 13 of 14 open Dependabot PRs (#20, #19, #18, #16, #15, #14, #12, #9, #8, #7, #5, #4, #2) — `composer audit` now reports **zero advisories**, `npm audit`-equivalent reports zero. `#1` (`actions/cache` 4→6) could not be merged — the CLI's GitHub token lacks the `workflow` OAuth scope required to update `.github/workflows/*.yml`; needs a manual merge via the web UI or a token with `workflow` scope.
+- [x] Pulled the merged changes locally, ran `composer install` + `npm install`, rebuilt assets, and re-ran the full suite.
+- [x] **Found and fixed a third real bug**, surfaced by merging `intervention/zodiac` 6.0.1 → 7.0.3 (#16 — a major version bump, flagged in advance as the one PR needing individual scrutiny): the package's `Calculator::fromDate()` static factory was removed in v7; `Person::zodiacName()` crashed with "Call to undefined method" on any page rendering a person's zodiac sign. Fixed by switching to the new `Sign::fromDate($date)->localize('tr')->name()` entry point (same underlying calculation, new API surface). Verified via tinker that a birthdate still resolves to the correct Turkish zodiac name ("Koç" for March 21).
+- [x] Full suite re-verified clean afterward: 250 passing, same 6 pre-existing/unrelated failures, no regressions.
 
 ---
 *Generated by /my-standards audit — MY Teknoloji Standards v1.10.0*

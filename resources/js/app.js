@@ -394,6 +394,10 @@ const mountPeopleLiveSearch = () => {
 	input.dataset.liveSearchBound = '1';
 };
 
+window.timeRangeRepeater = (initialRows) => ({
+	rows: (initialRows && initialRows.length) ? initialRows : [],
+});
+
 const setupAppDialog = () => {
 	const dialog = document.getElementById('app-dialog');
 
