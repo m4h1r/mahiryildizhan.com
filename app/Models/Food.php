@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Food extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     // Laravel's pluralizer treats "Food" as uncountable and would guess the
     // table name "food" (singular) — same class of bug as Media/"medium".

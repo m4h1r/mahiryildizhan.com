@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Consumption extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'food_id',
@@ -26,7 +28,9 @@ class Consumption extends Model
 
     public function food(): BelongsTo
     {
-        return $this->belongsTo(Food::class);
+        // withTrashed: a soft-deleted food must still resolve here so past
+        // consumption entries keep their correct calorie/macro calculations.
+        return $this->belongsTo(Food::class)->withTrashed();
     }
 
     public function gramsConsumed(): float

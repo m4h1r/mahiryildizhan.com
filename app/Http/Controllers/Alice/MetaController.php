@@ -6,6 +6,7 @@ use App\Models\BloodType;
 use App\Models\Currency;
 use App\Models\ExpenseType;
 use App\Models\EyeColor;
+use App\Models\Food;
 use App\Models\Gender;
 use App\Models\HairColor;
 use App\Models\IncomeSource;
@@ -70,5 +71,14 @@ class MetaController extends AliceController
     public function postLanguages(): JsonResponse
     {
         return response()->json(['data' => PostLanguage::orderBy('name')->get(['id', 'name', 'code'])]);
+    }
+
+    public function vitamins(): JsonResponse
+    {
+        $data = collect(Food::VITAMINS)
+            ->map(fn (string $label, string $key) => ['key' => $key, 'label' => $label])
+            ->values();
+
+        return response()->json(['data' => $data]);
     }
 }

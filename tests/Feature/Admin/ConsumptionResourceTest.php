@@ -61,7 +61,7 @@ it('lets an admin update a consumption', function (): void {
     $this->assertDatabaseHas('consumptions', ['id' => $consumption->id, 'quantity' => 200]);
 });
 
-it('deletes a consumption', function (): void {
+it('soft deletes a consumption', function (): void {
     $admin = actingAsAdmin();
     $consumption = Consumption::factory()->create();
 
@@ -69,7 +69,7 @@ it('deletes a consumption', function (): void {
         ->delete(route('admin.consumptions.destroy', $consumption))
         ->assertRedirect(route('admin.consumptions.index'));
 
-    $this->assertDatabaseMissing('consumptions', ['id' => $consumption->id]);
+    $this->assertSoftDeleted('consumptions', ['id' => $consumption->id]);
 });
 
 it('computes calories from grams-based food correctly', function (): void {

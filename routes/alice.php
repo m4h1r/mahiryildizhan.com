@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Alice\AdageController;
+use App\Http\Controllers\Alice\ConsumptionController;
 use App\Http\Controllers\Alice\ExpenseController;
+use App\Http\Controllers\Alice\FoodController;
 use App\Http\Controllers\Alice\IncomeController;
 use App\Http\Controllers\Alice\InteractionController;
 use App\Http\Controllers\Alice\MetaController;
@@ -23,7 +25,7 @@ Route::prefix('v1/alice')
         // Health check (auth only, no audit)
         Route::get('/health', fn () => response()->json([
             'status' => 'ok',
-            'version' => '1.0.0',
+            'version' => '1.1.0',
             'timestamp' => now()->toIso8601String(),
         ]));
 
@@ -40,6 +42,7 @@ Route::prefix('v1/alice')
             Route::get('/hair-colors', [MetaController::class, 'hairColors']);
             Route::get('/post-categories', [MetaController::class, 'postCategories']);
             Route::get('/post-languages', [MetaController::class, 'postLanguages']);
+            Route::get('/vitamins', [MetaController::class, 'vitamins']);
         });
 
         // Settings
@@ -61,6 +64,10 @@ Route::prefix('v1/alice')
         // Personal management
         Route::apiResource('todo-items', TodoItemController::class)->except(['create', 'edit']);
         Route::apiResource('purchase-items', PurchaseItemController::class)->except(['create', 'edit']);
+
+        // Nutrition tracking
+        Route::apiResource('foods', FoodController::class)->except(['create', 'edit']);
+        Route::apiResource('consumptions', ConsumptionController::class)->except(['create', 'edit']);
 
         // Knowledge & Timeline
         Route::apiResource('nodes', NodeController::class)->except(['create', 'edit']);

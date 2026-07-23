@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Currency;
 use App\Models\ExpenseType;
+use App\Models\Food;
 use App\Models\IncomeSource;
 use App\Models\IncomeType;
 use App\Models\InteractionType;
@@ -89,5 +90,19 @@ class AliceLookupService
         }
 
         return InteractionType::where('name', 'like', "%{$nameOrId}%")->first();
+    }
+
+    /**
+     * Resolve a food by name or ID. No auto-create — a Food requires
+     * nutrition data (calories, macros) that can't be sensibly guessed
+     * from a name alone, unlike Stakeholder.
+     */
+    public function resolveFood(string|int $nameOrId): ?Food
+    {
+        if (is_numeric($nameOrId)) {
+            return Food::find($nameOrId);
+        }
+
+        return Food::where('name', 'like', "%{$nameOrId}%")->first();
     }
 }

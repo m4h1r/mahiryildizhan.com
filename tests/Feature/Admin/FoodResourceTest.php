@@ -85,7 +85,7 @@ it('lets an admin update a food', function (): void {
     $this->assertDatabaseHas('foods', ['id' => $food->id, 'calories_per_100g' => 250]);
 });
 
-it('deletes a food with no consumption history', function (): void {
+it('soft deletes a food on destroy', function (): void {
     $admin = actingAsAdmin();
     $food = Food::factory()->create();
 
@@ -93,17 +93,15 @@ it('deletes a food with no consumption history', function (): void {
         ->delete(route('admin.foods.destroy', $food))
         ->assertRedirect(route('admin.foods.index'));
 
-    $this->assertDatabaseMissing('foods', ['id' => $food->id]);
+    $this->assertSoftDeleted('foods', ['id' => $food->id]);
 });
 
-it('refuses to delete a food referenced by consumption records', function (): void {
+it('keeps historical consumption calorie calculations after the food is soft-deleted', function (): void {
     $admin = actingAsAdmin();
-    $food = Food::factory()->create();
-    Consumption::factory()->create(['food_id' => $food->id]);
+    $food = Food::factory()->create(['calories_per_100g' => 200]);
+    $consumption = Consumption::factory()->create(['food_id' => $food->id, 'quantity' => 100]);
 
-    $this->actingAs($admin)
-        ->delete(route('admin.foods.destroy', $food))
-        ->assertRedirect(route('admin.foods.index'));
+    $this->actingAs($admin)->delete(route('admin.foods.destroy', $food));
 
-    $this->assertDatabaseHas('foods', ['id' => $food->id]);
+    expect($consumption->fresh()->calories())->toBe(200.0);
 });

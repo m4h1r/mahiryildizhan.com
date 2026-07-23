@@ -125,6 +125,7 @@ GET /meta/blood-types
 GET /meta/hair-colors
 GET /meta/post-categories
 GET /meta/post-languages
+GET /meta/vitamins          # → [{key:"vitamin_c", label:"Vitamin C (mg)"}]
 ```
 
 **Kullanım:** Alice önce `GET /meta/currencies` çeker, `TRY` kodunu bulur, `id`sini alır ve yazma endpoint'inde `currency_id` olarak kullanır.
@@ -396,6 +397,113 @@ DELETE /purchase-items/{id}
 
 ---
 
+### 🍎 Besinler (Foods)
+
+```
+GET    /foods
+GET    /foods/{id}
+POST   /foods
+PATCH  /foods/{id}
+DELETE /foods/{id}
+```
+
+**Filtreler:** `q` (isim), `unit_type` (gram/piece)
+
+Tüm besin değerleri (kalori, karbonhidrat, şeker, yağ, vitaminler) **100 gram başına** girilir. `unit_type: "piece"` olan besinler (örn. yumurta) için `grams_per_unit` zorunludur — "1 adet kaç gram" bilgisi, tüketim kaydında adet üzerinden kalori hesaplayabilmek için gerekir.
+
+**Store payload:**
+```json
+{
+  "name": "Yulaf Ezmesi",
+  "calories_per_100g": 389,
+  "carbs_per_100g": 66,
+  "sugar_per_100g": 1,
+  "fat_per_100g": 7,
+  "unit_type": "gram",
+  "vitamins": {
+    "vitamin_b1": 0.76,
+    "iron": 4.7
+  }
+}
+```
+
+`vitamins` isteğe bağlıdır — geçerli anahtarlar `GET /meta/vitamins` ile alınır (`vitamin_a`, `vitamin_b1`, `vitamin_b2`, `vitamin_b6`, `vitamin_b12`, `vitamin_c`, `vitamin_d`, `vitamin_e`, `vitamin_k`, `folat`, `calcium`, `iron`, `magnesium`, `potassium`, `zinc`).
+
+**Adet bazlı besin örneği (yumurta):**
+```json
+{
+  "name": "Yumurta",
+  "calories_per_100g": 155,
+  "carbs_per_100g": 1.1,
+  "sugar_per_100g": 1.1,
+  "fat_per_100g": 11,
+  "unit_type": "piece",
+  "grams_per_unit": 50
+}
+```
+
+**Response:** `vitamins` her zaman obje/array olarak döner (boşsa `[]`).
+
+**Not:** Soft delete — silinen bir besin geçmiş tüketim kayıtlarının kalori hesabını bozmaz (`consumptions.food` ilişkisi `withTrashed` ile çözülür).
+
+---
+
+### 🍽️ Tüketimler (Consumption Log)
+
+```
+GET    /consumptions
+GET    /consumptions/{id}
+POST   /consumptions
+PATCH  /consumptions/{id}
+DELETE /consumptions/{id}
+```
+
+**Filtreler:** `food_id`, `from`/`to` (consumed_on)
+
+**Store payload (food_id ile):**
+```json
+{
+  "food_id": 12,
+  "consumed_on": "2026-07-23",
+  "quantity": 150
+}
+```
+
+**Store payload (isimden çözümleme ile — `food_id` yerine `food` string):**
+```json
+{
+  "food": "Yulaf Ezmesi",
+  "consumed_on": "2026-07-23",
+  "quantity": 150
+}
+```
+
+- `quantity` besinin `unit_type`'ına göre yorumlanır: `gram` ise gram, `piece` ise adet.
+- `food` string gönderilirse isimden aranır (`LIKE %isim%`); **bulunamazsa besin otomatik oluşturulmaz** (Stakeholder'dan farklı olarak) — çünkü kalori/makro verisi isimden tahmin edilemez. Bulunamazsa `404 not_found` döner, önce `POST /foods` ile besini oluşturman gerekir.
+
+**Response:**
+```json
+{
+  "data": {
+    "id": 88,
+    "food_id": 12,
+    "food": {"id": 12, "name": "Yulaf Ezmesi"},
+    "consumed_on": "2026-07-23",
+    "quantity": "150.00",
+    "unit": "gram",
+    "calories": 583.5,
+    "carbs": 99.0,
+    "sugar": 1.5,
+    "fat": 10.5,
+    "created_at": "2026-07-23T20:00:00+03:00"
+  }
+}
+```
+
+`calories`/`carbs`/`sugar`/`fat` otomatik hesaplanır (`quantity` × besinin 100g değerleri), stored değildir.
+
+---
+
 ### 🤝 Etkileşimler (Interactions)
 
 ```
@@ -615,6 +723,28 @@ curl "$BASE_URL/expenses?sort=-date&per_page=5&page=1" \
 
 ---
 
+### Senaryo 6: "150 gram yulaf ezmesi yedim"
+
+```bash
+# Adım 1: Besin var mı diye ara
+curl "$BASE_URL/foods?q=yulaf" -H "Authorization: Bearer $TOKEN"
+
+# Adım 2a: Bulunduysa food_id ile tüketim ekle
+curl -X POST "$BASE_URL/consumptions" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"food_id": 12, "consumed_on": "2026-07-23", "quantity": 150}'
+
+# Adım 2b: Bulunamadıysa önce besini oluştur (kalori/makro bilgisi olmadan tüketim eklenemez)
+curl -X POST "$BASE_URL/foods" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Yulaf Ezmesi", "calories_per_100g": 389, "carbs_per_100g": 66, "sugar_per_100g": 1, "fat_per_100g": 7, "unit_type": "gram"}'
+# → dönen id ile Adım 2a'yı tekrarla, ya da doğrudan "food": "Yulaf Ezmesi" ile gönder
+```
+
+---
+
 ## 11. Alınan Mimari Kararlar
 
 | # | Karar | Gerekçe |
@@ -630,6 +760,13 @@ curl "$BASE_URL/expenses?sort=-date&per_page=5&page=1" \
 ---
 
 ## 12. CHANGELOG
+
+### v1.1.0 — 2026-07-23
+- **Yeni:** `foods` (Besinler) ve `consumptions` (Tüketimler) resource'ları — kalori/karbonhidrat/şeker/yağ takibi, 100g bazlı besin değerleri, opsiyonel vitamin/mineral alanları, gram veya adet bazlı ölçü desteği.
+- **Yeni:** `GET /meta/vitamins` — geçerli vitamin/mineral anahtarlarını listeler.
+- `consumptions` store/update'te `food` (isim) → `food_id` çözümlemesi desteklenir; bulunamazsa (Stakeholder'dan farklı olarak) **otomatik oluşturulmaz**, `404 not_found` döner — çünkü kalori verisi isimden tahmin edilemez.
+- Her iki model de soft-delete: bir besin silinse bile geçmiş tüketim kayıtlarının kalori hesabı bozulmaz.
+- **Fix:** `AliceController::paginate()` artık `per_page<=0` gibi geçersiz değerlere karşı korumalı (`max(1, min(...))`), önceden yalnızca üst sınır (`min`) uygulanıyordu.
 
 ### v1.0.0 — 2026-06-15
 - İlk sürüm

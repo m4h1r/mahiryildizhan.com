@@ -60,10 +60,6 @@ class FoodController extends Controller
 
     public function destroy(Food $food): RedirectResponse
     {
-        if ($food->consumptions()->exists()) {
-            return to_route('admin.foods.index')->with('error', 'Bu besin tüketim kayıtlarında kullanılıyor, silinemez.');
-        }
-
         $food->delete();
 
         return to_route('admin.foods.index')->with('success', 'Besin silindi.');

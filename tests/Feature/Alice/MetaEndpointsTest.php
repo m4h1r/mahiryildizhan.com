@@ -30,4 +30,13 @@ class MetaEndpointsTest extends AliceTestCase
             ->assertStatus(200)
             ->assertJsonPath('status', 'ok');
     }
+
+    public function test_vitamins_endpoint_returns_list(): void
+    {
+        $response = $this->aliceGet('meta/vitamins');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['data' => [['key', 'label']]])
+            ->assertJsonFragment(['key' => 'vitamin_c']);
+    }
 }

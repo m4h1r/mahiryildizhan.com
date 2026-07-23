@@ -12,7 +12,7 @@ abstract class AliceController extends Controller
 {
     protected function paginate(Builder $query, Request $request, string $resourceClass): JsonResponse
     {
-        $perPage = min((int) $request->query('per_page', 50), 200);
+        $perPage = max(1, min((int) $request->query('per_page', 50), 200));
         $result = $query->paginate($perPage);
 
         return response()->json([

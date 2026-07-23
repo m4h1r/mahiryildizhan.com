@@ -589,6 +589,72 @@ parameters:
 			path: app/Http/Resources/Alice/AdageResource.php
 
 		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ConsumptionResource\:\:\$consumed_on\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ConsumptionResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ConsumptionResource\:\:\$food\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ConsumptionResource\:\:\$food_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ConsumptionResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ConsumptionResource\:\:\$quantity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ConsumptionResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\Alice\\ConsumptionResource\:\:calories\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\Alice\\ConsumptionResource\:\:carbs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\Alice\\ConsumptionResource\:\:fat\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\Alice\\ConsumptionResource\:\:sugar\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\ExpenseResource\:\:\$company_expense\.$#'
 			identifier: property.notFound
 			count: 1
@@ -659,6 +725,66 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/Alice/ExpenseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$calories_per_100g\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/FoodResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$carbs_per_100g\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/FoodResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/FoodResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$fat_per_100g\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/FoodResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$grams_per_unit\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/FoodResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/FoodResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/FoodResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$sugar_per_100g\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/FoodResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$unit_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/FoodResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/FoodResource.php
 
 		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\IncomeResource\:\:\$amount\.$#'
