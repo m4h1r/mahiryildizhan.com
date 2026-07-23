@@ -29,7 +29,7 @@
         "chart.js": "^4.5.1",
         "three": "^0.185.1",
         "three-spritetext": "^1.10.0",
-        "vis-data": "^8.0.3",
+        "vis-data": "^8.0.4",
         "vis-network": "^10.1.0"
     }
 }
