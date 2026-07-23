@@ -259,6 +259,17 @@
 		}
 	}
 
+	/* Dashboard clock dial — subtle "breathing" neon glow, colored per the current time range */
+	.clock-neon-ring {
+		animation: clock-glow-pulse 3.5s ease-in-out infinite;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.clock-neon-ring {
+			animation: none;
+		}
+	}
+
 	/* Admin numeric values — tabular alignment for financial data */
 	.admin-tabular {
 		font-variant-numeric: tabular-nums;
@@ -346,5 +357,15 @@
 	to {
 		opacity: 1;
 		transform: translateY(0);
+	}
+}
+
+@keyframes clock-glow-pulse {
+	0%,
+	100% {
+		filter: brightness(1) saturate(1);
+	}
+	50% {
+		filter: brightness(1.12) saturate(1.15);
 	}
 }

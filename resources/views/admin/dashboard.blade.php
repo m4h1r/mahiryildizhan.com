@@ -1,22 +1,49 @@
 @extends('admin.layout', ['title' => 'Dashboard', 'heading' => 'Dashboard'])
 
 @section('content')
-    {{-- Günün Saati — 24 saatlik renkli kadran --}}
-    <section class="card-admin mb-6 flex flex-col items-center gap-3 p-6">
+    {{-- Günün Saati — tek, neon parlamalı 24 saatlik kadran --}}
+    <section class="card-admin mb-6 flex flex-col items-center gap-4 p-8">
         <h2 class="text-sm font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">{{ __('Günün Saati') }}</h2>
-        <div class="relative h-48 w-48 rounded-full" style="background: conic-gradient({{ $clockRing['gradient'] }});">
+
+        <div class="relative flex h-52 w-52 items-center justify-center">
+            {{-- Alt gölge (yerde duruyormuş hissi) --}}
+            <div class="absolute bottom-1 left-1/2 h-5 w-28 -translate-x-1/2 rounded-full bg-black/25 blur-lg dark:bg-black/55" aria-hidden="true"></div>
+
+            {{-- Neon kadran halkası --}}
             <div
-                class="absolute inset-[14%] flex flex-col items-center justify-center rounded-full text-center shadow-inner"
-                style="background-color: {{ $clockRing['currentColor'] }};"
+                class="clock-neon-ring relative h-48 w-48 rounded-full"
+                style="
+                    background: conic-gradient({{ $clockRing['gradient'] }});
+                    box-shadow:
+                        0 0 14px 1px {{ $clockRing['currentColor'] }}99,
+                        0 0 34px 8px {{ $clockRing['currentColor'] }}4D;
+                "
             >
-                <span class="text-xs font-medium text-white/80">{{ $clockRing['currentTime'] }}</span>
-                <span class="max-w-[80%] text-sm font-bold leading-tight text-white">{{ $clockRing['currentLabel'] }}</span>
+                {{-- Merkez disk --}}
+                <div
+                    class="absolute inset-[15%] flex flex-col items-center justify-center rounded-full text-center"
+                    style="
+                        background:
+                            radial-gradient(circle at 32% 26%, rgb(255 255 255 / 0.35), transparent 55%),
+                            {{ $clockRing['currentColor'] }};
+                        box-shadow:
+                            inset 0 -8px 14px rgb(0 0 0 / 0.18),
+                            inset 0 2px 3px rgb(255 255 255 / 0.4);
+                        color: {{ $clockRing['currentTextColor'] }};
+                    "
+                >
+                    <span class="text-xs font-medium tracking-wide opacity-80">{{ $clockRing['currentTime'] }}</span>
+                    <span class="max-w-[75%] text-sm font-bold leading-tight [text-shadow:0_1px_1px_rgb(0_0_0/0.15)]">{{ $clockRing['currentLabel'] }}</span>
+                </div>
+
+                {{-- Saat işaretleri --}}
+                <span class="absolute left-1/2 top-2 -translate-x-1/2 text-[10px] font-semibold text-[#EEF2F9]/95 [text-shadow:0_1px_2px_rgb(0_0_0/0.18)] dark:text-slate-200/80">00</span>
+                <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#EEF2F9]/95 [text-shadow:0_1px_2px_rgb(0_0_0/0.18)] dark:text-slate-200/80">06</span>
+                <span class="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-[#EEF2F9]/95 [text-shadow:0_1px_2px_rgb(0_0_0/0.18)] dark:text-slate-200/80">12</span>
+                <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#EEF2F9]/95 [text-shadow:0_1px_2px_rgb(0_0_0/0.18)] dark:text-slate-200/80">18</span>
             </div>
-            <span class="absolute left-1/2 top-1 -translate-x-1/2 text-[10px] font-medium text-gray-400 dark:text-gray-500">00</span>
-            <span class="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] font-medium text-gray-400 dark:text-gray-500">06</span>
-            <span class="absolute bottom-1 left-1/2 -translate-x-1/2 text-[10px] font-medium text-gray-400 dark:text-gray-500">12</span>
-            <span class="absolute left-1 top-1/2 -translate-y-1/2 text-[10px] font-medium text-gray-400 dark:text-gray-500">18</span>
         </div>
+
         <a href="{{ route('admin.settings', ['tab' => 'time_ranges']) }}" class="text-xs text-gray-400 hover:underline dark:text-gray-500">{{ __('Zaman aralıklarını düzenle →') }}</a>
     </section>
 
@@ -257,7 +284,7 @@
     </div>
     {{-- / KİŞİSEL DASHBOARD --}}
 
-    <script>
+    <script nonce="{{ request()->attributes->get('csp_nonce', '') }}">
         document.addEventListener('DOMContentLoaded', () => {
             const ctx = document.getElementById('nutritionPieChart');
             if (ctx && window.Chart) {

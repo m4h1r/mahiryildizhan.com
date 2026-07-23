@@ -234,7 +234,8 @@ class DashboardController extends Controller
      */
     private function buildClockRing(): array
     {
-        $defaultColor = '#9CA3AF';
+        // Soft near-white blue-gray for hours with no defined range (was flat gray).
+        $defaultColor = '#E2E8F0';
         $minutesInDay = 1440;
 
         $ranges = TimeRange::query()
@@ -285,12 +286,30 @@ class DashboardController extends Controller
 
         $nowMinutes = now()->hour * 60 + now()->minute;
         $current = collect($segments)->first(fn (array $segment) => $nowMinutes >= $segment['start'] && $nowMinutes < $segment['end']);
+        $currentColor = $current['color'] ?? $defaultColor;
 
         return [
             'gradient' => implode(', ', $stops),
             'currentLabel' => $current['label'] ?? __('Tanımsız'),
-            'currentColor' => $current['color'] ?? $defaultColor,
+            'currentColor' => $currentColor,
+            'currentTextColor' => $this->contrastingTextColor($currentColor),
             'currentTime' => now()->format('H:i'),
         ];
+    }
+
+    /**
+     * Picks near-black or white text depending on the background's perceived
+     * luminance, since range colors (and the light default) are user-chosen
+     * and can be light enough that white text would be unreadable.
+     */
+    private function contrastingTextColor(string $hexColor): string
+    {
+        $hex = ltrim($hexColor, '#');
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+        $luminance = (0.299 * $r + 0.587 * $g + 0.114 * $b) / 255;
+
+        return $luminance > 0.6 ? '#1F2937' : '#FFFFFF';
     }
 }

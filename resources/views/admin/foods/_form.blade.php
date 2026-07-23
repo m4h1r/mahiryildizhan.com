@@ -43,7 +43,7 @@
 
         <label class="text-sm font-medium text-gray-700 dark:text-gray-200" x-show="unitType === 'piece'" x-cloak>
             <span class="mb-1 block">1 Adet Kaç Gram?</span>
-            <input type="number" step="0.1" min="0.01" name="grams_per_unit" class="form-input-admin" value="{{ old('grams_per_unit', $food->grams_per_unit ?? '') }}">
+            <input type="number" step="any" min="0.01" name="grams_per_unit" class="form-input-admin" value="{{ old('grams_per_unit', $food->grams_per_unit ?? '') }}">
             @error('grams_per_unit')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
         </label>
     </div>

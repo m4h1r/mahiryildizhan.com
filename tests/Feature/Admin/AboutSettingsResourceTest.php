@@ -44,6 +44,49 @@ it('lets an admin view the settings page', function (): void {
         ->assertViewIs('admin.settings');
 });
 
+it('never renders a form nested inside another form', function (): void {
+    // Regression: the time-ranges tab's per-day forms were once nested inside
+    // the main settings form. Browsers silently drop the inner <form> open
+    // tag and close the outer form on the first stray </form>, which broke
+    // both the "Save Settings" button (ended up outside any form) and the
+    // per-day "Kaydet" buttons (submitted to the wrong action).
+    $html = $this->actingAs(actingAsAdmin())->get(route('admin.settings'))->getContent();
+
+    $dom = new DOMDocument;
+    libxml_use_internal_errors(true);
+    $dom->loadHTML($html);
+    libxml_clear_errors();
+
+    foreach ($dom->getElementsByTagName('form') as $form) {
+        $ancestor = $form->parentNode;
+        while ($ancestor) {
+            expect($ancestor->nodeName)->not->toBe('form');
+            $ancestor = $ancestor->parentNode;
+        }
+    }
+});
+
+it('keeps the brand color input and the save button in the same settings form', function (): void {
+    $html = $this->actingAs(actingAsAdmin())->get(route('admin.settings'))->getContent();
+
+    $dom = new DOMDocument;
+    libxml_use_internal_errors(true);
+    $dom->loadHTML($html);
+    libxml_clear_errors();
+
+    $settingsForm = null;
+    foreach ($dom->getElementsByTagName('form') as $form) {
+        if (str_contains((string) $form->getAttribute('action'), route('admin.settings.update'))) {
+            $settingsForm = $form;
+        }
+    }
+
+    expect($settingsForm)->not->toBeNull();
+    $innerHtml = $dom->saveHTML($settingsForm);
+    expect($innerHtml)->toContain('brand_primary')
+        ->and(substr_count((string) $innerHtml, 'type="submit"'))->toBeGreaterThan(0);
+});
+
 it('lets an admin update settings', function (): void {
     $admin = actingAsAdmin();
 

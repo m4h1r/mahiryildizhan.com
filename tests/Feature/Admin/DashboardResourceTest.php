@@ -66,3 +66,28 @@ it('shows daily nutrition totals on the dashboard', function (): void {
         ->assertOk()
         ->assertSee('200 kcal');
 });
+
+it('gives the nutrition chart script a CSP nonce so the browser does not block it', function (): void {
+    // Regression: the inline <script> that boots the Chart.js doughnut chart
+    // was missing the nonce="" attribute required by the CSP script-src
+    // policy (no 'unsafe-inline' — see SecurityHeadersMiddleware). Without
+    // it, the browser silently drops the script and the chart never renders.
+    Http::fake([
+        'api.open-meteo.com/*' => Http::response(['daily' => []], 200),
+        'api.coingecko.com/*' => Http::response(['bitcoin' => ['usd' => 50000]], 200),
+        'api.exchangerate-api.com/*' => Http::response(['rates' => ['USD' => 1]], 200),
+    ]);
+
+    $response = $this->actingAs(actingAsAdmin())->get(route('dashboard'));
+    $response->assertOk();
+
+    $html = $response->getContent();
+    // Last occurrence of the id is inside the script's own JS (getElementById(...)),
+    // so searching backward from there finds the <script> tag that wraps it.
+    $start = strrpos($html, 'nutritionPieChart');
+    $scriptStart = strrpos(substr($html, 0, $start), '<script');
+    $scriptTag = substr($html, $scriptStart, strpos($html, '>', $scriptStart) - $scriptStart);
+
+    expect($scriptTag)->toContain('nonce="')
+        ->and($scriptTag)->not->toContain('nonce=""');
+});

@@ -1,9 +1,7 @@
 @extends('admin.layout', ['title' => 'Settings', 'heading' => 'Settings'])
 
 @section('content')
-    <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-6">
-        @csrf
-
+    <div class="space-y-6">
         @php
             $groupLabels = [
                 'brand'        => __('Marka'),
@@ -39,16 +37,85 @@
                 @endforeach
             </div>
 
-            {{-- Tab içerikleri --}}
-            @foreach ($settingsByGroup as $group => $items)
-                <section
-                    x-show="activeTab === '{{ $group }}'"
-                    x-cloak
-                    class="card-admin p-6"
-                >
-                    <h2 class="text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">{{ $groupLabels[$group] ?? ucfirst($group) }}</h2>
+            {{--
+                Saat Kadranı tab'ı burada, ana <form>'un DIŞINDA render edilir çünkü
+                kendi başına, günlere özel <form>'lara sahip (bkz. aşağı). Bir <form>'u
+                başka bir <form>'un içine koymak geçersiz HTML'dir — tarayıcı iç
+                <form> etiketini yok sayar ve ilk karşılaştığı kapanış </form>'ını dış
+                formu erken kapatmak için kullanır; bu da hem "Ayarları Kaydet"
+                butonunu (dış formun dışında kalır) hem de günlük "Kaydet"
+                butonlarını (yanlış action'a post eder) bozar.
+            --}}
+            <section
+                x-show="activeTab === 'time_ranges'"
+                x-cloak
+                class="card-admin p-6"
+            >
+                <h2 class="text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">{{ $groupLabels['time_ranges'] }}</h2>
 
-                    @if ($group === 'about')
+                <div x-data="{ day: {{ now()->dayOfWeek }} }" class="mt-4 space-y-4">
+                    <div class="flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 w-fit dark:border-gray-700 dark:bg-gray-800">
+                        @foreach ($dayLabels as $dayIndex => $dayLabel)
+                            <button type="button"
+                                @click="day = {{ $dayIndex }}"
+                                :class="day === {{ $dayIndex }} ? 'bg-white shadow dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+                                class="rounded-lg px-4 py-2 text-sm font-medium transition">
+                                {{ $dayLabel }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    @foreach ($dayLabels as $dayIndex => $dayLabel)
+                        <div x-show="day === {{ $dayIndex }}" x-cloak>
+                            <form
+                                method="POST"
+                                action="{{ route('admin.time-ranges.sync', $dayIndex) }}"
+                                x-data="timeRangeRepeater({{ Js::from(($timeRanges->get($dayIndex) ?? collect())->map(fn ($r) => [
+                                    'starts_at' => substr((string) $r->starts_at, 0, 5),
+                                    'ends_at' => substr((string) $r->ends_at, 0, 5),
+                                    'label' => $r->label,
+                                    'color' => $r->color,
+                                ])->values()) }})"
+                                class="space-y-3"
+                            >
+                                @csrf
+                                <template x-for="(row, idx) in rows" :key="idx">
+                                    <div class="flex flex-wrap items-center gap-2 rounded-lg border border-gray-200 p-2 dark:border-gray-700">
+                                        <input type="time" x-model="row.starts_at" :name="`ranges[${idx}][starts_at]`" class="form-input-admin w-28" required>
+                                        <span class="text-xs text-gray-400">–</span>
+                                        <input type="time" x-model="row.ends_at" :name="`ranges[${idx}][ends_at]`" class="form-input-admin w-28" required>
+                                        <input type="text" x-model="row.label" :name="`ranges[${idx}][label]`" placeholder="{{ __('Etiket (örn. Uyku)') }}" class="form-input-admin min-w-[8rem] flex-1" required>
+                                        <input type="color" x-model="row.color" :name="`ranges[${idx}][color]`" class="h-11 w-16 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700">
+                                        <button type="button" @click="rows.splice(idx, 1)" class="admin-btn-sm admin-btn-danger">{{ __('Sil') }}</button>
+                                    </div>
+                                </template>
+
+                                <div class="flex items-center gap-2">
+                                    <button type="button" @click="rows.push({ starts_at: '00:00', ends_at: '00:00', label: '', color: '#3B82F6' })" class="admin-btn admin-btn-ghost">
+                                        + {{ __('Aralık Ekle') }}
+                                    </button>
+                                    <button type="submit" class="admin-btn admin-btn-primary">{{ __('Kaydet') }}</button>
+                                </div>
+                            </form>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+
+            <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-6">
+                @csrf
+
+                {{-- Tab içerikleri (Saat Kadranı hariç — kendi formu yukarıda) --}}
+                @foreach ($settingsByGroup as $group => $items)
+                    @continue($group === 'time_ranges')
+                    <section
+                        x-show="activeTab === '{{ $group }}'"
+                        x-cloak
+                        class="card-admin p-6"
+                    >
+                        <h2 class="text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">{{ $groupLabels[$group] ?? ucfirst($group) }}</h2>
+
+                        @if ($group === 'about')
                         @php
                             $aboutEn = collect($items)->firstWhere('key', 'about_content_en');
                             $aboutTr = collect($items)->firstWhere('key', 'about_content_tr');
@@ -137,54 +204,6 @@
                                 </div>
                             </div>
                         </div>
-                    @elseif ($group === 'time_ranges')
-                        <div x-data="{ day: {{ now()->dayOfWeek }} }" class="mt-4 space-y-4">
-                            <div class="flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 w-fit dark:border-gray-700 dark:bg-gray-800">
-                                @foreach ($dayLabels as $dayIndex => $dayLabel)
-                                    <button type="button"
-                                        @click="day = {{ $dayIndex }}"
-                                        :class="day === {{ $dayIndex }} ? 'bg-white shadow dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
-                                        class="rounded-lg px-4 py-2 text-sm font-medium transition">
-                                        {{ $dayLabel }}
-                                    </button>
-                                @endforeach
-                            </div>
-
-                            @foreach ($dayLabels as $dayIndex => $dayLabel)
-                                <div x-show="day === {{ $dayIndex }}" x-cloak>
-                                    <form
-                                        method="POST"
-                                        action="{{ route('admin.time-ranges.sync', $dayIndex) }}"
-                                        x-data="timeRangeRepeater({{ Js::from(($timeRanges->get($dayIndex) ?? collect())->map(fn ($r) => [
-                                            'starts_at' => substr((string) $r->starts_at, 0, 5),
-                                            'ends_at' => substr((string) $r->ends_at, 0, 5),
-                                            'label' => $r->label,
-                                            'color' => $r->color,
-                                        ])->values()) }})"
-                                        class="space-y-3"
-                                    >
-                                        @csrf
-                                        <template x-for="(row, idx) in rows" :key="idx">
-                                            <div class="flex flex-wrap items-center gap-2 rounded-lg border border-gray-200 p-2 dark:border-gray-700">
-                                                <input type="time" x-model="row.starts_at" :name="`ranges[${idx}][starts_at]`" class="form-input-admin w-28" required>
-                                                <span class="text-xs text-gray-400">–</span>
-                                                <input type="time" x-model="row.ends_at" :name="`ranges[${idx}][ends_at]`" class="form-input-admin w-28" required>
-                                                <input type="text" x-model="row.label" :name="`ranges[${idx}][label]`" placeholder="{{ __('Etiket (örn. Uyku)') }}" class="form-input-admin min-w-[8rem] flex-1" required>
-                                                <input type="color" x-model="row.color" :name="`ranges[${idx}][color]`" class="h-11 w-16 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700">
-                                                <button type="button" @click="rows.splice(idx, 1)" class="admin-btn-sm admin-btn-danger">{{ __('Sil') }}</button>
-                                            </div>
-                                        </template>
-
-                                        <div class="flex items-center gap-2">
-                                            <button type="button" @click="rows.push({ starts_at: '00:00', ends_at: '00:00', label: '', color: '#3B82F6' })" class="admin-btn admin-btn-ghost">
-                                                + {{ __('Aralık Ekle') }}
-                                            </button>
-                                            <button type="submit" class="admin-btn admin-btn-primary">{{ __('Kaydet') }}</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            @endforeach
-                        </div>
                     @else
                         <div class="mt-4 grid gap-4 md:grid-cols-2">
                             @foreach ($items as $item)
@@ -224,10 +243,11 @@
                 </section>
             @endforeach
 
-        </div>
+            <div class="flex items-center gap-3">
+                <button type="submit" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900">{{ __('Save Settings') }}</button>
+            </div>
+            </form>
 
-        <div class="flex items-center gap-3">
-            <button type="submit" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900">{{ __('Save Settings') }}</button>
         </div>
-    </form>
+    </div>
 @endsection
