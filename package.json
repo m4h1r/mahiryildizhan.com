@@ -27,7 +27,7 @@
         "3d-force-graph": "^1.79.1",
         "apexcharts": "^5.10.4",
         "chart.js": "^4.5.1",
-        "three": "^0.183.2",
+        "three": "^0.185.1",
         "three-spritetext": "^1.10.0",
         "vis-data": "^8.0.3",
         "vis-network": "^10.1.0"
