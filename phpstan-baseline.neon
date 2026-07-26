@@ -649,6 +649,12 @@ parameters:
 			path: app/Http/Resources/Alice/ConsumptionResource.php
 
 		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\Alice\\ConsumptionResource\:\:protein\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Resources/Alice/ConsumptionResource.php
+
+		-
 			message: '#^Call to an undefined method App\\Http\\Resources\\Alice\\ConsumptionResource\:\:sugar\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -764,6 +770,12 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/FoodResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\FoodResource\:\:\$protein_per_100g\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/Alice/FoodResource.php
@@ -1538,6 +1550,12 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$grams_per_unit\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Consumption.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$protein_per_100g\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Models/Consumption.php

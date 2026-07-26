@@ -409,7 +409,7 @@ DELETE /foods/{id}
 
 **Filtreler:** `q` (isim), `unit_type` (gram/piece)
 
-Tüm besin değerleri (kalori, karbonhidrat, şeker, yağ, vitaminler) **100 gram başına** girilir. `unit_type: "piece"` olan besinler (örn. yumurta) için `grams_per_unit` zorunludur — "1 adet kaç gram" bilgisi, tüketim kaydında adet üzerinden kalori hesaplayabilmek için gerekir.
+Tüm besin değerleri (kalori, karbonhidrat, şeker, protein, yağ, vitaminler) **100 gram başına** girilir. `unit_type: "piece"` olan besinler (örn. yumurta) için `grams_per_unit` zorunludur — "1 adet kaç gram" bilgisi, tüketim kaydında adet üzerinden kalori hesaplayabilmek için gerekir.
 
 **Store payload:**
 ```json
@@ -418,6 +418,7 @@ Tüm besin değerleri (kalori, karbonhidrat, şeker, yağ, vitaminler) **100 gra
   "calories_per_100g": 389,
   "carbs_per_100g": 66,
   "sugar_per_100g": 1,
+  "protein_per_100g": 13,
   "fat_per_100g": 7,
   "unit_type": "gram",
   "vitamins": {
@@ -436,6 +437,7 @@ Tüm besin değerleri (kalori, karbonhidrat, şeker, yağ, vitaminler) **100 gra
   "calories_per_100g": 155,
   "carbs_per_100g": 1.1,
   "sugar_per_100g": 1.1,
+  "protein_per_100g": 13,
   "fat_per_100g": 11,
   "unit_type": "piece",
   "grams_per_unit": 50
@@ -494,13 +496,14 @@ DELETE /consumptions/{id}
     "calories": 583.5,
     "carbs": 99.0,
     "sugar": 1.5,
+    "protein": 19.5,
     "fat": 10.5,
     "created_at": "2026-07-23T20:00:00+03:00"
   }
 }
 ```
 
-`calories`/`carbs`/`sugar`/`fat` otomatik hesaplanır (`quantity` × besinin 100g değerleri), stored değildir.
+`calories`/`carbs`/`sugar`/`protein`/`fat` otomatik hesaplanır (`quantity` × besinin 100g değerleri), stored değildir.
 
 ---
 
@@ -739,7 +742,7 @@ curl -X POST "$BASE_URL/consumptions" \
 curl -X POST "$BASE_URL/foods" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"name": "Yulaf Ezmesi", "calories_per_100g": 389, "carbs_per_100g": 66, "sugar_per_100g": 1, "fat_per_100g": 7, "unit_type": "gram"}'
+  -d '{"name": "Yulaf Ezmesi", "calories_per_100g": 389, "carbs_per_100g": 66, "sugar_per_100g": 1, "protein_per_100g": 13, "fat_per_100g": 7, "unit_type": "gram"}'
 # → dönen id ile Adım 2a'yı tekrarla, ya da doğrudan "food": "Yulaf Ezmesi" ile gönder
 ```
 
@@ -760,6 +763,9 @@ curl -X POST "$BASE_URL/foods" \
 ---
 
 ## 12. CHANGELOG
+
+### v1.1.1 — 2026-07-26
+- **Yeni:** `foods`'a `protein_per_100g` alanı eklendi (100g başına gram, `required` — mevcut kayıtlar migration ile `0` olarak dolduruldu). Store/update payload'larına ve `consumptions` response'undaki hesaplanan `protein` alanına dahil edildi.
 
 ### v1.1.0 — 2026-07-23
 - **Yeni:** `foods` (Besinler) ve `consumptions` (Tüketimler) resource'ları — kalori/karbonhidrat/şeker/yağ takibi, 100g bazlı besin değerleri, opsiyonel vitamin/mineral alanları, gram veya adet bazlı ölçü desteği.

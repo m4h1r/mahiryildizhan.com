@@ -28,6 +28,7 @@ class FoodCrudTest extends AliceTestCase
             'calories_per_100g' => 389,
             'carbs_per_100g' => 66,
             'sugar_per_100g' => 1,
+            'protein_per_100g' => 13,
             'fat_per_100g' => 7,
             'unit_type' => 'gram',
             'vitamins' => ['vitamin_b1' => 0.76, 'iron' => 4.7],
@@ -47,6 +48,7 @@ class FoodCrudTest extends AliceTestCase
             'calories_per_100g' => 155,
             'carbs_per_100g' => 1.1,
             'sugar_per_100g' => 1.1,
+            'protein_per_100g' => 13,
             'fat_per_100g' => 11,
             'unit_type' => 'piece',
         ]);

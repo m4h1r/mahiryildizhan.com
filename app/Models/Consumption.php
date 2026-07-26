@@ -61,4 +61,9 @@ class Consumption extends Model
     {
         return $this->gramsConsumed() / 100 * (float) $this->food->fat_per_100g;
     }
+
+    public function protein(): float
+    {
+        return $this->gramsConsumed() / 100 * (float) $this->food->protein_per_100g;
+    }
 }

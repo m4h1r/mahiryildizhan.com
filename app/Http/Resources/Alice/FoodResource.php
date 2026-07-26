@@ -15,6 +15,7 @@ class FoodResource extends JsonResource
             'calories_per_100g' => $this->calories_per_100g,
             'carbs_per_100g' => $this->carbs_per_100g,
             'sugar_per_100g' => $this->sugar_per_100g,
+            'protein_per_100g' => $this->protein_per_100g,
             'fat_per_100g' => $this->fat_per_100g,
             'unit_type' => $this->unit_type,
             'grams_per_unit' => $this->grams_per_unit,

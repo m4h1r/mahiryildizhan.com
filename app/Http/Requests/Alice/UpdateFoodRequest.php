@@ -21,6 +21,7 @@ class UpdateFoodRequest extends FormRequest
             'calories_per_100g' => 'sometimes|integer|min:0',
             'carbs_per_100g' => 'sometimes|numeric|min:0|max:100',
             'sugar_per_100g' => 'sometimes|numeric|min:0|max:100',
+            'protein_per_100g' => 'sometimes|numeric|min:0|max:100',
             'fat_per_100g' => 'sometimes|numeric|min:0|max:100',
             'unit_type' => 'sometimes|in:gram,piece',
             'grams_per_unit' => 'nullable|numeric|min:0.01',

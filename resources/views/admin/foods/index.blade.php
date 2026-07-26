@@ -25,6 +25,7 @@
                             <th>Kalori (100g)</th>
                             <th class="hidden sm:table-cell">Karb. (g)</th>
                             <th class="hidden sm:table-cell">Şeker (g)</th>
+                            <th class="hidden sm:table-cell">Protein (g)</th>
                             <th class="hidden sm:table-cell">Yağ (g)</th>
                             <th class="hidden md:table-cell">Ölçü</th>
                             <th class="text-right">İşlemler</th>
@@ -38,6 +39,7 @@
                                 <td>{{ number_format($food->calories_per_100g) }} kcal</td>
                                 <td class="hidden sm:table-cell">{{ number_format((float) $food->carbs_per_100g, 1) }}</td>
                                 <td class="hidden sm:table-cell">{{ number_format((float) $food->sugar_per_100g, 1) }}</td>
+                                <td class="hidden sm:table-cell">{{ number_format((float) $food->protein_per_100g, 1) }}</td>
                                 <td class="hidden sm:table-cell">{{ number_format((float) $food->fat_per_100g, 1) }}</td>
                                 <td class="hidden md:table-cell">
                                     {{ $food->unit_type === 'piece' ? 'Adet ('.number_format((float) $food->grams_per_unit, 0).'g)' : 'Gram' }}
@@ -60,7 +62,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">Besin bulunamadı.</td>
+                                <td colspan="9" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">Besin bulunamadı.</td>
                             </tr>
                         @endforelse
                     </tbody>

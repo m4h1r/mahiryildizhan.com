@@ -28,6 +28,12 @@
         </label>
 
         <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
+            <span class="mb-1 block">Protein (100g başına, g)</span>
+            <input type="number" step="0.1" min="0" max="100" name="protein_per_100g" class="form-input-admin" value="{{ old('protein_per_100g', $food->protein_per_100g ?? 0) }}" required>
+            @error('protein_per_100g')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
+        </label>
+
+        <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
             <span class="mb-1 block">Yağ (100g başına, g / %)</span>
             <input type="number" step="0.1" min="0" max="100" name="fat_per_100g" class="form-input-admin" value="{{ old('fat_per_100g', $food->fat_per_100g ?? 0) }}" required>
             @error('fat_per_100g')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror

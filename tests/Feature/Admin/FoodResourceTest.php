@@ -29,6 +29,7 @@ it('lets an admin create a gram-based food', function (): void {
         'calories_per_100g' => 389,
         'carbs_per_100g' => 66,
         'sugar_per_100g' => 1,
+        'protein_per_100g' => 13,
         'fat_per_100g' => 7,
         'unit_type' => 'gram',
         'vitamins' => ['vitamin_b1' => 0.76, 'iron' => 4.7],
@@ -48,6 +49,7 @@ it('requires grams_per_unit when unit_type is piece', function (): void {
         'calories_per_100g' => 155,
         'carbs_per_100g' => 1.1,
         'sugar_per_100g' => 1.1,
+        'protein_per_100g' => 13,
         'fat_per_100g' => 11,
         'unit_type' => 'piece',
     ]);
@@ -77,6 +79,7 @@ it('lets an admin update a food', function (): void {
         'calories_per_100g' => 250,
         'carbs_per_100g' => 10,
         'sugar_per_100g' => 5,
+        'protein_per_100g' => 20,
         'fat_per_100g' => 3,
         'unit_type' => 'gram',
     ]);

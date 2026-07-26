@@ -274,9 +274,32 @@
                 </div>
                 <div class="space-y-1 text-sm">
                     <p class="text-lg font-extrabold text-gray-800 dark:text-gray-100">{{ number_format($dailyCalories, 0) }} kcal</p>
-                    <p class="text-gray-600 dark:text-gray-300">{{ __('Karbonhidrat') }}: {{ number_format($dailyCarbs, 1) }} g</p>
-                    <p class="text-gray-600 dark:text-gray-300">{{ __('Yağ') }}: {{ number_format($dailyFat, 1) }} g</p>
-                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ __('Şeker') }}: {{ number_format($dailySugar, 1) }} g</p>
+                    <p class="text-gray-600 dark:text-gray-300">{{ __('Karbonhidrat') }}: {{ number_format($dailyCarbs, 1) }} g <span class="text-xs text-gray-400 dark:text-gray-500">({{ number_format($carbsGoal, 0) }}g)</span></p>
+                    <p class="text-gray-600 dark:text-gray-300">{{ __('Protein') }}: {{ number_format($dailyProtein, 1) }} g <span class="text-xs text-gray-400 dark:text-gray-500">({{ number_format($proteinGoal, 0) }}g)</span></p>
+                    <p class="text-gray-600 dark:text-gray-300">{{ __('Yağ') }}: {{ number_format($dailyFat, 1) }} g <span class="text-xs text-gray-400 dark:text-gray-500">({{ number_format($fatGoal, 0) }}g)</span></p>
+                </div>
+            </div>
+
+            {{-- Kalori hedefi — 5/4 üzeri kırmızı, 3/4 altı sarı, aradaysa yeşil --}}
+            @php
+                $calorieBarClass = match ($calorieGoalStatus) {
+                    'danger' => 'bg-red-500',
+                    'warning' => 'bg-amber-500',
+                    default => 'bg-green-500',
+                };
+                $calorieTextClass = match ($calorieGoalStatus) {
+                    'danger' => 'text-red-600 dark:text-red-400',
+                    'warning' => 'text-amber-600 dark:text-amber-400',
+                    default => 'text-green-600 dark:text-green-400',
+                };
+            @endphp
+            <div class="mt-4 border-t border-gray-100 pt-3 dark:border-gray-800">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-medium text-gray-500 dark:text-gray-400">{{ __('Kalori Hedefi') }}</span>
+                    <span class="font-semibold {{ $calorieTextClass }}">{{ number_format($dailyCalories, 0) }} / {{ number_format($calorieGoal, 0) }} kcal</span>
+                </div>
+                <div class="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                    <div class="h-full rounded-full transition-all duration-500 {{ $calorieBarClass }}" style="width: {{ $calorieGoalPercent }}%"></div>
                 </div>
             </div>
         </section>
@@ -291,10 +314,10 @@
                 new window.Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['{{ __('Karbonhidrat') }}', '{{ __('Yağ') }}'],
+                        labels: ['{{ __('Karbonhidrat') }}', '{{ __('Yağ') }}', '{{ __('Protein') }}'],
                         datasets: [{
-                            data: [{{ $dailyCarbs }}, {{ $dailyFat }}],
-                            backgroundColor: ['#3B82F6', '#F97316'],
+                            data: [{{ $dailyCarbs }}, {{ $dailyFat }}, {{ $dailyProtein }}],
+                            backgroundColor: ['#3B82F6', '#F97316', '#8B5CF6'],
                             borderWidth: 0,
                         }],
                     },

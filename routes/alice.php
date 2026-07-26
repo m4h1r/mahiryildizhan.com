@@ -25,7 +25,7 @@ Route::prefix('v1/alice')
         // Health check (auth only, no audit)
         Route::get('/health', fn () => response()->json([
             'status' => 'ok',
-            'version' => '1.1.0',
+            'version' => '1.1.1',
             'timestamp' => now()->toIso8601String(),
         ]));
 

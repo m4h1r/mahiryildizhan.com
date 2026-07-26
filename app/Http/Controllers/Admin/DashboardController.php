@@ -21,6 +21,14 @@ use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+    private const DAILY_CALORIE_GOAL = 2500;
+
+    private const DAILY_PROTEIN_GOAL = 140;
+
+    private const DAILY_CARBS_GOAL = 350;
+
+    private const DAILY_FAT_GOAL = 70;
+
     public function index(): View
     {
         $latitude = (float) (config('weather.latitude') ?: Setting::get('weather_latitude', '40.7654'));
@@ -190,7 +198,15 @@ class DashboardController extends Controller
         $dailyCalories = $todayConsumptions->sum(fn (Consumption $c) => $c->calories());
         $dailyCarbs = $todayConsumptions->sum(fn (Consumption $c) => $c->carbs());
         $dailyFat = $todayConsumptions->sum(fn (Consumption $c) => $c->fat());
-        $dailySugar = $todayConsumptions->sum(fn (Consumption $c) => $c->sugar());
+        $dailyProtein = $todayConsumptions->sum(fn (Consumption $c) => $c->protein());
+
+        $calorieGoalRatio = $dailyCalories / self::DAILY_CALORIE_GOAL;
+        $calorieGoalPercent = min(100, round($calorieGoalRatio * 100));
+        $calorieGoalStatus = match (true) {
+            $calorieGoalRatio > 1.25 => 'danger',
+            $calorieGoalRatio < 0.75 => 'warning',
+            default => 'success',
+        };
 
         return view('admin.dashboard', [
             'publishedPosts' => $publishedPosts,
@@ -224,7 +240,13 @@ class DashboardController extends Controller
             'dailyCalories' => $dailyCalories,
             'dailyCarbs' => $dailyCarbs,
             'dailyFat' => $dailyFat,
-            'dailySugar' => $dailySugar,
+            'dailyProtein' => $dailyProtein,
+            'calorieGoal' => self::DAILY_CALORIE_GOAL,
+            'calorieGoalPercent' => $calorieGoalPercent,
+            'calorieGoalStatus' => $calorieGoalStatus,
+            'proteinGoal' => self::DAILY_PROTEIN_GOAL,
+            'carbsGoal' => self::DAILY_CARBS_GOAL,
+            'fatGoal' => self::DAILY_FAT_GOAL,
         ]);
     }
 

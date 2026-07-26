@@ -22,6 +22,7 @@ class ConsumptionResource extends JsonResource
             'calories' => round($this->calories(), 1),
             'carbs' => round($this->carbs(), 1),
             'sugar' => round($this->sugar(), 1),
+            'protein' => round($this->protein(), 1),
             'fat' => round($this->fat(), 1),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),

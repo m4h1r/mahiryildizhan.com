@@ -21,6 +21,7 @@ class StoreFoodRequest extends FormRequest
             'calories_per_100g' => 'required|integer|min:0',
             'carbs_per_100g' => 'required|numeric|min:0|max:100',
             'sugar_per_100g' => 'required|numeric|min:0|max:100',
+            'protein_per_100g' => 'required|numeric|min:0|max:100',
             'fat_per_100g' => 'required|numeric|min:0|max:100',
             'unit_type' => 'required|in:gram,piece',
             'grams_per_unit' => 'required_if:unit_type,piece|nullable|numeric|min:0.01',
