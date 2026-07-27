@@ -40,9 +40,18 @@
     <div class="space-y-6" x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 300)">
 
         {{-- =====================================================
-             1) BUGÜN — saat + hava durumu + beslenme (üst grup)
+             1) BUGÜN — tarih + saat + hava durumu + beslenme (üst grup)
         ===================================================== --}}
-        <section class="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+        <div class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ now()->translatedFormat('d F Y l') }}</h2>
+                <p class="flex items-baseline gap-2 rounded-full bg-rose-50 px-4 py-1.5 text-sm text-rose-600 dark:bg-rose-950/40 dark:text-rose-300">
+                    <span class="text-lg font-extrabold tabular-nums">{{ number_format($daysAlive) }}</span>
+                    <span>{{ __('gündür hayattasın') }}</span>
+                </p>
+            </div>
+
+            <section class="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
 
             {{-- Günün Saati — 24 saatlik neon kadran --}}
             <article class="card-admin flex flex-col items-center justify-center gap-3 p-6">
@@ -88,25 +97,19 @@
 
             {{-- Hava durumu (5 gün) + yaşam sayacı --}}
             <article class="card-admin lg:col-span-1 xl:col-span-2 border border-blue-200/80 bg-gradient-to-br from-blue-50 to-indigo-50 dark:border-blue-800 dark:from-blue-950/40 dark:to-indigo-950/40">
-                <div class="mb-4 flex items-end justify-between gap-3">
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ $weatherCityName }} {{ __('Weather') }}</h2>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">{{ __('5-day outlook') }}</p>
-                    </div>
-                    <p class="shrink-0 text-right text-xs text-rose-600 dark:text-rose-300">
-                        <span class="text-lg font-extrabold tabular-nums">{{ number_format($daysAlive) }}</span><br>
-                        {{ __('gündür hayattasın') }}
-                    </p>
+                <div class="mb-4">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ $weatherCityName }} {{ __('Weather') }}</h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">{{ __('5-day outlook') }}</p>
                 </div>
 
                 @if (!empty($dailyTimes))
-                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                    <div class="grid grid-cols-4 gap-2 sm:gap-3 lg:grid-cols-5">
                         @foreach (array_slice($dailyTimes, 0, 5) as $index => $date)
                             @php
                                 $code = (int) ($weather['daily']['weathercode'][$index] ?? -1);
                                 $icon = $weatherCodeToIcon[$code] ?? '🌤️';
                             @endphp
-                            <div class="rounded-xl border border-blue-200/70 bg-white/80 p-3 text-center shadow-sm transition hover:shadow-md dark:border-blue-800/60 dark:bg-gray-900/50">
+                            <div class="{{ $index === 4 ? 'hidden lg:block ' : '' }}rounded-xl border border-blue-200/70 bg-white/80 p-3 text-center shadow-sm transition hover:shadow-md dark:border-blue-800/60 dark:bg-gray-900/50">
                                 <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">{{ \Illuminate\Support\Carbon::parse($date)->format('D, d M') }}</p>
                                 <p class="mt-2 text-3xl">{{ $icon }}</p>
                                 <p class="mt-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
@@ -127,7 +130,6 @@
                     day: 'today',
                     nutrition: {{ Js::from($nutrition) }},
                     goals: { calorie: {{ $calorieGoal }}, carbs: {{ $carbsGoal }}, protein: {{ $proteinGoal }}, fat: {{ $fatGoal }} },
-                    chart: null,
                     get d() { return this.nutrition[this.day]; },
                     barClass() { return { danger: 'bg-red-500', warning: 'bg-amber-500', success: 'bg-green-500' }[this.d.status]; },
                     textClass() {
@@ -142,12 +144,13 @@
                         this.$nextTick(() => {
                             const ctx = this.$refs.chart;
                             if (!ctx || !window.Chart) return;
-                            this.chart = new window.Chart(ctx, {
+                            const cur = this.nutrition[this.day];
+                            ctx._chartInstance = new window.Chart(ctx, {
                                 type: 'doughnut',
                                 data: {
                                     labels: ['{{ __('Karbonhidrat') }}', '{{ __('Yağ') }}', '{{ __('Protein') }}'],
                                     datasets: [{
-                                        data: [this.d.carbs, this.d.fat, this.d.protein],
+                                        data: [cur.carbs, cur.fat, cur.protein],
                                         backgroundColor: ['#3B82F6', '#F97316', '#8B5CF6'],
                                         borderWidth: 0,
                                     }],
@@ -156,11 +159,13 @@
                             });
                         });
                     },
-                    setDay(d) {
-                        this.day = d;
-                        if (this.chart) {
-                            this.chart.data.datasets[0].data = [this.d.carbs, this.d.fat, this.d.protein];
-                            this.chart.update();
+                    setDay(day) {
+                        this.day = day;
+                        const ctx = this.$refs.chart;
+                        const cur = this.nutrition[day];
+                        if (ctx && ctx._chartInstance) {
+                            ctx._chartInstance.data.datasets[0].data = [cur.carbs, cur.fat, cur.protein];
+                            ctx._chartInstance.update();
                         }
                     },
                 }"
@@ -207,7 +212,8 @@
                     </div>
                 </div>
             </article>
-        </section>
+            </section>
+        </div>
 
         {{-- =====================================================
              3) FİNANS — tüm para tek bölümde (yıllık net TEK KEZ)
