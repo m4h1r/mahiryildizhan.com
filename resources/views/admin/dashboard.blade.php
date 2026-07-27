@@ -21,17 +21,6 @@
             ? min(100, (int) (($bucketlistCompleted / $bucketlistTotal) * 100))
             : 0;
 
-        $calorieBarClass = match ($calorieGoalStatus) {
-            'danger' => 'bg-red-500',
-            'warning' => 'bg-amber-500',
-            default => 'bg-green-500',
-        };
-        $calorieTextClass = match ($calorieGoalStatus) {
-            'danger' => 'text-red-600 dark:text-red-400',
-            'warning' => 'text-amber-600 dark:text-amber-400',
-            default => 'text-green-600 dark:text-green-400',
-        };
-
         $dailyTimes = $weather['daily']['time'] ?? [];
         $dailyMin = $weather['daily']['temperature_2m_min'] ?? [];
         $dailyMax = $weather['daily']['temperature_2m_max'] ?? [];
@@ -51,9 +40,9 @@
     <div class="space-y-6" x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 300)">
 
         {{-- =====================================================
-             1) BUGÜN — saat kadranı + hava durumu + yaşam sayacı
+             1) BUGÜN — saat + hava durumu + beslenme (üst grup)
         ===================================================== --}}
-        <section class="grid gap-4 lg:grid-cols-[minmax(0,18rem)_1fr]">
+        <section class="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
 
             {{-- Günün Saati — 24 saatlik neon kadran --}}
             <article class="card-admin flex flex-col items-center justify-center gap-3 p-6">
@@ -98,7 +87,7 @@
             </article>
 
             {{-- Hava durumu (5 gün) + yaşam sayacı --}}
-            <article class="card-admin border border-blue-200/80 bg-gradient-to-br from-blue-50 to-indigo-50 dark:border-blue-800 dark:from-blue-950/40 dark:to-indigo-950/40">
+            <article class="card-admin lg:col-span-1 xl:col-span-2 border border-blue-200/80 bg-gradient-to-br from-blue-50 to-indigo-50 dark:border-blue-800 dark:from-blue-950/40 dark:to-indigo-950/40">
                 <div class="mb-4 flex items-end justify-between gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ $weatherCityName }} {{ __('Weather') }}</h2>
@@ -130,27 +119,93 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Weather data unavailable right now.') }}</p>
                 @endif
             </article>
-        </section>
 
-        {{-- =====================================================
-             2) KPI ŞERİDİ — operasyonel özet (tek satır)
-        ===================================================== --}}
-        <section class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <article class="card-admin border-l-4 border-blue-500">
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Published Posts') }}</p>
-                <p class="mt-2 text-3xl font-extrabold text-blue-700 dark:text-blue-300">{{ number_format($publishedPosts) }}</p>
-            </article>
-            <article class="card-admin border-l-4 border-orange-500">
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Pending Comments') }}</p>
-                <p class="mt-2 text-3xl font-extrabold text-orange-700 dark:text-orange-300">{{ number_format($pendingComments) }}</p>
-            </article>
-            <article class="card-admin border-l-4 border-emerald-500">
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Monthly Net') }}</p>
-                <p class="mt-2 text-2xl font-extrabold {{ $isNetNegative ? 'text-red-700 dark:text-red-300' : 'text-emerald-700 dark:text-emerald-300' }}">{{ number_format($monthlyNet, 2) }} TRY</p>
-            </article>
-            <article class="card-admin border-l-4 border-cyan-500">
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('People') }}</p>
-                <p class="mt-2 text-3xl font-extrabold text-cyan-700 dark:text-cyan-300">{{ number_format($peopleCount) }}</p>
+            {{-- Beslenme — bugün / dün geçişli --}}
+            <article
+                class="card-admin lg:col-span-2 xl:col-span-1"
+                x-data="{
+                    day: 'today',
+                    nutrition: {{ Js::from($nutrition) }},
+                    goals: { calorie: {{ $calorieGoal }}, carbs: {{ $carbsGoal }}, protein: {{ $proteinGoal }}, fat: {{ $fatGoal }} },
+                    chart: null,
+                    get d() { return this.nutrition[this.day]; },
+                    barClass() { return { danger: 'bg-red-500', warning: 'bg-amber-500', success: 'bg-green-500' }[this.d.status]; },
+                    textClass() {
+                        return {
+                            danger: 'text-red-600 dark:text-red-400',
+                            warning: 'text-amber-600 dark:text-amber-400',
+                            success: 'text-green-600 dark:text-green-400',
+                        }[this.d.status];
+                    },
+                    fmt(v, dec = 0) { return Number(v).toLocaleString('tr-TR', { minimumFractionDigits: dec, maximumFractionDigits: dec }); },
+                    init() {
+                        this.$nextTick(() => {
+                            const ctx = this.$refs.chart;
+                            if (!ctx || !window.Chart) return;
+                            this.chart = new window.Chart(ctx, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: ['{{ __('Karbonhidrat') }}', '{{ __('Yağ') }}', '{{ __('Protein') }}'],
+                                    datasets: [{
+                                        data: [this.d.carbs, this.d.fat, this.d.protein],
+                                        backgroundColor: ['#3B82F6', '#F97316', '#8B5CF6'],
+                                        borderWidth: 0,
+                                    }],
+                                },
+                                options: { plugins: { legend: { display: false } }, cutout: '65%' },
+                            });
+                        });
+                    },
+                    setDay(d) {
+                        this.day = d;
+                        if (this.chart) {
+                            this.chart.data.datasets[0].data = [this.d.carbs, this.d.fat, this.d.protein];
+                            this.chart.update();
+                        }
+                    },
+                }"
+            >
+                <div class="flex items-center justify-between gap-2">
+                    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                        <span x-text="day === 'today' ? '{{ __('Bugünkü Beslenme') }}' : '{{ __('Dünkü Beslenme') }}'"></span>
+                    </h3>
+                    <a href="{{ route('admin.consumptions.index') }}" class="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">{{ __('Yönet') }}</a>
+                </div>
+
+                <div class="mt-3 inline-flex rounded-lg border border-gray-200 p-0.5 text-xs font-medium dark:border-gray-700">
+                    <button type="button" @click="setDay('today')"
+                        class="rounded-md px-3 py-1 transition"
+                        :class="day === 'today' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'">
+                        {{ __('Bugün') }}
+                    </button>
+                    <button type="button" @click="setDay('yesterday')"
+                        class="rounded-md px-3 py-1 transition"
+                        :class="day === 'yesterday' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'">
+                        {{ __('Dün') }}
+                    </button>
+                </div>
+
+                <div class="mt-3 flex items-center gap-4">
+                    <div class="relative h-28 w-28 shrink-0">
+                        <canvas x-ref="chart"></canvas>
+                    </div>
+                    <div class="space-y-1 text-sm">
+                        <p class="text-lg font-extrabold text-gray-800 dark:text-gray-100"><span x-text="fmt(d.calories)"></span> kcal</p>
+                        <p class="text-gray-600 dark:text-gray-300">{{ __('Karbonhidrat') }}: <span x-text="fmt(d.carbs, 1)"></span> g <span class="text-xs text-gray-400 dark:text-gray-500">(<span x-text="fmt(goals.carbs)"></span>g)</span></p>
+                        <p class="text-gray-600 dark:text-gray-300">{{ __('Protein') }}: <span x-text="fmt(d.protein, 1)"></span> g <span class="text-xs text-gray-400 dark:text-gray-500">(<span x-text="fmt(goals.protein)"></span>g)</span></p>
+                        <p class="text-gray-600 dark:text-gray-300">{{ __('Yağ') }}: <span x-text="fmt(d.fat, 1)"></span> g <span class="text-xs text-gray-400 dark:text-gray-500">(<span x-text="fmt(goals.fat)"></span>g)</span></p>
+                    </div>
+                </div>
+
+                <div class="mt-4 border-t border-gray-100 pt-3 dark:border-gray-800">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-medium text-gray-500 dark:text-gray-400">{{ __('Kalori Hedefi') }}</span>
+                        <span class="font-semibold" :class="textClass()"><span x-text="fmt(d.calories)"></span> / <span x-text="fmt(goals.calorie)"></span> kcal</span>
+                    </div>
+                    <div class="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                        <div class="h-full rounded-full transition-all duration-500" :class="barClass()" :style="`width: ${d.percent}%`"></div>
+                    </div>
+                </div>
             </article>
         </section>
 
@@ -163,8 +218,8 @@
                 <a href="{{ route('admin.reports') }}" class="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">{{ __('Open Financial Reports') }}</a>
             </div>
 
-            {{-- Kasa + yıllık gelir/gider/net tek satır --}}
-            <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {{-- Kasa + aylık net + yıllık gelir/gider/net tek satır --}}
+            <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
                 <div class="rounded-xl border border-emerald-200/70 bg-gradient-to-br from-emerald-50 to-teal-50 p-3 dark:border-emerald-800/60 dark:from-emerald-950/30 dark:to-teal-950/30">
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Kasa') }}</p>
                     <p class="mt-1 text-xl font-extrabold text-emerald-700 dark:text-emerald-300">₺{{ number_format($treasuryTry, 2) }}</p>
@@ -172,6 +227,11 @@
                         <p class="text-xs text-gray-400 dark:text-gray-500">≈ ${{ number_format($treasuryUsd, 0) }}</p>
                     @endif
                     <a href="{{ route('admin.settings') }}" class="text-xs text-gray-400 hover:underline dark:text-gray-500">{{ __('Güncelle') }} →</a>
+                </div>
+                <div class="rounded-xl border {{ $isNetNegative ? 'border-red-200/70' : 'border-emerald-200/70' }} bg-gradient-to-br from-sky-50 to-blue-50 p-3 dark:border-gray-700 dark:from-sky-950/30 dark:to-blue-950/30">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Monthly Net') }}</p>
+                    <p class="mt-1 text-xl font-extrabold {{ $isNetNegative ? 'text-red-700 dark:text-red-300' : 'text-emerald-700 dark:text-emerald-300' }}">{{ number_format($monthlyNet, 2) }}</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">TRY · {{ now()->translatedFormat('F') }}</p>
                 </div>
                 <div class="rounded-xl border border-green-200/70 bg-white/70 p-3 dark:border-green-800/50 dark:bg-gray-900/40">
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Income') }}</p>
@@ -213,15 +273,9 @@
                     <p class="mt-1 text-lg font-bold text-blue-700 dark:text-blue-300">${{ number_format($ethUsd, 2) }}</p>
                 </div>
             </div>
-        </section>
 
-        {{-- =====================================================
-             4) HEDEFLER — zenginlik seviyesi (pasif gelir içeride) + bucket list
-        ===================================================== --}}
-        <section class="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
-
-            {{-- Zenginlik Seviyesi + Günlük Pasif Gelir (birleşik) --}}
-            <article class="card-admin border border-blue-200/80 bg-gradient-to-br from-blue-50 to-indigo-50 dark:border-blue-800/60 dark:from-blue-950/30 dark:to-indigo-950/30">
+            {{-- Zenginlik Seviyesi + Günlük Pasif Gelir (tam genişlik) --}}
+            <div class="mt-4 rounded-xl border border-blue-200/80 bg-gradient-to-br from-blue-50 to-indigo-50 p-4 dark:border-blue-800/60 dark:from-blue-950/30 dark:to-indigo-950/30">
                 <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Zenginlik Seviyesi') }}</p>
@@ -290,7 +344,13 @@
                         @endfor
                     </div>
                 </div>
-            </article>
+            </div>
+        </section>
+
+        {{-- =====================================================
+             4) KİŞİSEL TAKİP — bucket list + bugün/gecikmiş (yan yana)
+        ===================================================== --}}
+        <section class="grid gap-4 xl:grid-cols-2">
 
             {{-- Bucket List --}}
             <article class="card-admin border border-purple-200/70 bg-gradient-to-br from-purple-50 to-fuchsia-50 dark:border-purple-800/60 dark:from-purple-950/30 dark:to-fuchsia-950/30">
@@ -315,12 +375,6 @@
                     </p>
                 @endif
             </article>
-        </section>
-
-        {{-- =====================================================
-             5) KİŞİSEL TAKİP — yapılacaklar + beslenme
-        ===================================================== --}}
-        <section class="grid gap-4 md:grid-cols-2">
 
             {{-- Bugün / Gecikmiş yapılacaklar (AJAX toggle) --}}
             <article
@@ -384,35 +438,6 @@
                             Bekleyen görev yok 🎉
                         </p>
                     @endif
-                </div>
-            </article>
-
-            {{-- Bugünkü Beslenme --}}
-            <article class="card-admin">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Bugünkü Beslenme') }}</h3>
-                    <a href="{{ route('admin.consumptions.index') }}" class="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">{{ __('Yönet') }}</a>
-                </div>
-                <div class="mt-3 flex items-center gap-6">
-                    <div class="relative h-28 w-28 shrink-0">
-                        <canvas id="nutritionPieChart"></canvas>
-                    </div>
-                    <div class="space-y-1 text-sm">
-                        <p class="text-lg font-extrabold text-gray-800 dark:text-gray-100">{{ number_format($dailyCalories, 0) }} kcal</p>
-                        <p class="text-gray-600 dark:text-gray-300">{{ __('Karbonhidrat') }}: {{ number_format($dailyCarbs, 1) }} g <span class="text-xs text-gray-400 dark:text-gray-500">({{ number_format($carbsGoal, 0) }}g)</span></p>
-                        <p class="text-gray-600 dark:text-gray-300">{{ __('Protein') }}: {{ number_format($dailyProtein, 1) }} g <span class="text-xs text-gray-400 dark:text-gray-500">({{ number_format($proteinGoal, 0) }}g)</span></p>
-                        <p class="text-gray-600 dark:text-gray-300">{{ __('Yağ') }}: {{ number_format($dailyFat, 1) }} g <span class="text-xs text-gray-400 dark:text-gray-500">({{ number_format($fatGoal, 0) }}g)</span></p>
-                    </div>
-                </div>
-
-                <div class="mt-4 border-t border-gray-100 pt-3 dark:border-gray-800">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="font-medium text-gray-500 dark:text-gray-400">{{ __('Kalori Hedefi') }}</span>
-                        <span class="font-semibold {{ $calorieTextClass }}">{{ number_format($dailyCalories, 0) }} / {{ number_format($calorieGoal, 0) }} kcal</span>
-                    </div>
-                    <div class="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
-                        <div class="h-full rounded-full transition-all duration-500 {{ $calorieBarClass }}" style="width: {{ $calorieGoalPercent }}%"></div>
-                    </div>
                 </div>
             </article>
         </section>
@@ -528,26 +553,4 @@
         </section>
     </div>
 
-    <script nonce="{{ request()->attributes->get('csp_nonce', '') }}">
-        document.addEventListener('DOMContentLoaded', () => {
-            const ctx = document.getElementById('nutritionPieChart');
-            if (ctx && window.Chart) {
-                new window.Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['{{ __('Karbonhidrat') }}', '{{ __('Yağ') }}', '{{ __('Protein') }}'],
-                        datasets: [{
-                            data: [{{ $dailyCarbs }}, {{ $dailyFat }}, {{ $dailyProtein }}],
-                            backgroundColor: ['#3B82F6', '#F97316', '#8B5CF6'],
-                            borderWidth: 0,
-                        }],
-                    },
-                    options: {
-                        plugins: { legend: { display: false } },
-                        cutout: '65%',
-                    },
-                });
-            }
-        });
-    </script>
 @endsection

@@ -191,22 +191,33 @@ class DashboardController extends Controller
 
         $clockRing = $this->buildClockRing();
 
-        $todayConsumptions = Consumption::query()
-            ->whereDate('consumed_on', now()->toDateString())
-            ->with('food')
-            ->get();
-        $dailyCalories = $todayConsumptions->sum(fn (Consumption $c) => $c->calories());
-        $dailyCarbs = $todayConsumptions->sum(fn (Consumption $c) => $c->carbs());
-        $dailyFat = $todayConsumptions->sum(fn (Consumption $c) => $c->fat());
-        $dailyProtein = $todayConsumptions->sum(fn (Consumption $c) => $c->protein());
+        $buildNutrition = function (string $date): array {
+            $items = Consumption::query()
+                ->whereDate('consumed_on', $date)
+                ->with('food')
+                ->get();
 
-        $calorieGoalRatio = $dailyCalories / self::DAILY_CALORIE_GOAL;
-        $calorieGoalPercent = min(100, round($calorieGoalRatio * 100));
-        $calorieGoalStatus = match (true) {
-            $calorieGoalRatio > 1.25 => 'danger',
-            $calorieGoalRatio < 0.75 => 'warning',
-            default => 'success',
+            $calories = (float) $items->sum(fn (Consumption $c) => $c->calories());
+            $ratio = $calories / self::DAILY_CALORIE_GOAL;
+
+            return [
+                'calories' => round($calories),
+                'carbs' => round((float) $items->sum(fn (Consumption $c) => $c->carbs()), 1),
+                'fat' => round((float) $items->sum(fn (Consumption $c) => $c->fat()), 1),
+                'protein' => round((float) $items->sum(fn (Consumption $c) => $c->protein()), 1),
+                'percent' => min(100, (int) round($ratio * 100)),
+                'status' => match (true) {
+                    $ratio > 1.25 => 'danger',
+                    $ratio < 0.75 => 'warning',
+                    default => 'success',
+                },
+            ];
         };
+
+        $nutrition = [
+            'today' => $buildNutrition(now()->toDateString()),
+            'yesterday' => $buildNutrition(now()->subDay()->toDateString()),
+        ];
 
         return view('admin.dashboard', [
             'publishedPosts' => $publishedPosts,
@@ -237,13 +248,8 @@ class DashboardController extends Controller
             'bucketlistTotal' => $bucketlistTotal,
             'bucketlistCompleted' => $bucketlistCompleted,
             'clockRing' => $clockRing,
-            'dailyCalories' => $dailyCalories,
-            'dailyCarbs' => $dailyCarbs,
-            'dailyFat' => $dailyFat,
-            'dailyProtein' => $dailyProtein,
+            'nutrition' => $nutrition,
             'calorieGoal' => self::DAILY_CALORIE_GOAL,
-            'calorieGoalPercent' => $calorieGoalPercent,
-            'calorieGoalStatus' => $calorieGoalStatus,
             'proteinGoal' => self::DAILY_PROTEIN_GOAL,
             'carbsGoal' => self::DAILY_CARBS_GOAL,
             'fatGoal' => self::DAILY_FAT_GOAL,
