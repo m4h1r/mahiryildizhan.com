@@ -197,6 +197,56 @@
             @endforelse
         </section>
 
+        {{-- ── Stakeholder spend analysis ── --}}
+        <section class="card-admin">
+            <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <h3 class="text-sm font-semibold">{{ __('Stakeholder Spend Analysis') }}</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Select a stakeholder to reveal spend charts') }}</p>
+                </div>
+                <label class="w-full text-xs font-medium text-gray-600 dark:text-gray-300 sm:w-72">
+                    <span class="mb-1 block">{{ __('Stakeholder') }}</span>
+                    <select id="stakeholderSelect" class="form-input-admin">
+                        <option value="">{{ __('Select a stakeholder') }}</option>
+                        @foreach ($stakeholderOptions as $option)
+                            <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+                        @endforeach
+                    </select>
+                </label>
+            </div>
+
+            <p id="stakeholderEmptyHint" class="text-sm text-gray-500 dark:text-gray-400">
+                @if (empty($stakeholderOptions))
+                    {{ __('No TRY expense data linked to stakeholders for this year.') }}
+                @else
+                    {{ __('No stakeholder selected yet.') }}
+                @endif
+            </p>
+
+            <div id="stakeholderCharts" class="mt-2 hidden">
+                <div class="grid gap-6 xl:grid-cols-3">
+                    <div class="mb-6 min-w-0 xl:col-span-2 xl:mb-0">
+                        <div class="mb-2 flex items-center justify-between gap-2">
+                            <h4 id="stakeholderMonthlyTitle" class="text-sm font-semibold">{{ __('Monthly Spend') }}</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('With trend line') }}</p>
+                        </div>
+                        <div class="h-[16rem] overflow-hidden sm:h-[22rem]">
+                            <canvas id="stakeholderMonthlyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="mb-2 flex items-center justify-between gap-2">
+                            <h4 class="text-sm font-semibold">{{ __('Category Distribution') }}</h4>
+                            <p id="stakeholderTotalLabel" class="text-xs text-gray-500 dark:text-gray-400"></p>
+                        </div>
+                        <div class="h-[16rem] overflow-hidden sm:h-[22rem]">
+                            <canvas id="stakeholderCategoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         {{-- ── Heatmaps ── --}}
         <section class="grid gap-6 xl:grid-cols-2">
 
@@ -481,6 +531,123 @@
                     plugins: { legend: { labels: { color: axisColor } } },
                 },
             });
+            // ── Stakeholder spend analysis ──
+            (function () {
+                const select = document.getElementById('stakeholderSelect');
+                if (!select) { return; }
+
+                const reports       = @json($stakeholderReports);
+                const monthsElapsed = @json($stakeholderMonthsElapsed);
+                const monthLabels   = monthly.labels;
+                const chartsWrap    = document.getElementById('stakeholderCharts');
+                const emptyHint     = document.getElementById('stakeholderEmptyHint');
+                const monthlyTitle  = document.getElementById('stakeholderMonthlyTitle');
+                const totalLabel    = document.getElementById('stakeholderTotalLabel');
+                const money         = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const pieColors     = ['#2563eb', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#14b8a6', '#f97316', '#ec4899', '#06b6d4', '#84cc16'];
+                let monthlyChart    = null;
+                let categoryChart   = null;
+
+                function trendLine(values, count) {
+                    const n = Math.max(1, Math.min(count, values.length));
+                    let sx = 0, sy = 0, sxy = 0, sxx = 0;
+                    for (let i = 0; i < n; i++) {
+                        sx += i; sy += values[i]; sxy += i * values[i]; sxx += i * i;
+                    }
+                    const denom = (n * sxx - sx * sx) || 1;
+                    const slope = (n * sxy - sx * sy) / denom;
+                    const intercept = (sy - slope * sx) / n;
+                    return values.map((_, i) => (i < n ? Math.max(0, intercept + slope * i) : null));
+                }
+
+                function render(id) {
+                    const data = reports[id];
+                    if (!data) {
+                        chartsWrap.classList.add('hidden');
+                        emptyHint.classList.remove('hidden');
+                        return;
+                    }
+
+                    emptyHint.classList.add('hidden');
+                    chartsWrap.classList.remove('hidden');
+
+                    monthlyTitle.textContent = @json(__('Monthly avg:')) + ' ₺' + money.format(data.monthly_avg);
+                    totalLabel.textContent   = @json(__('Total:')) + ' ₺' + money.format(data.total);
+
+                    const trend = trendLine(data.monthly, monthsElapsed);
+
+                    if (monthlyChart) { monthlyChart.destroy(); }
+                    monthlyChart = createChart('stakeholderMonthlyChart', {
+                        type: 'bar',
+                        data: {
+                            labels: monthLabels,
+                            datasets: [
+                                {
+                                    type: 'bar',
+                                    label: @json(__('Monthly Spend')),
+                                    data: data.monthly,
+                                    backgroundColor: 'rgba(37, 99, 235, 0.65)',
+                                    borderRadius: 6,
+                                },
+                                {
+                                    type: 'line',
+                                    label: @json(__('Trend')),
+                                    data: trend,
+                                    borderColor: '#f59e0b',
+                                    borderDash: [6, 4],
+                                    backgroundColor: 'transparent',
+                                    pointRadius: 0,
+                                    borderWidth: 2,
+                                    tension: 0,
+                                    spanGaps: true,
+                                },
+                            ],
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: { mode: 'index', intersect: false },
+                            scales: {
+                                x: { ticks: { color: axisColor }, grid: { color: gridColor } },
+                                y: { ticks: { color: axisColor }, grid: { color: gridColor } },
+                            },
+                            plugins: { legend: { labels: { color: axisColor } } },
+                        },
+                    });
+
+                    if (categoryChart) { categoryChart.destroy(); }
+                    categoryChart = createChart('stakeholderCategoryChart', {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.categories.map(function (c) { return c.name; }),
+                            datasets: [{
+                                data: data.categories.map(function (c) { return c.total; }),
+                                backgroundColor: data.categories.map(function (_, i) { return pieColors[i % pieColors.length]; }),
+                                borderWidth: 0,
+                            }],
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom', labels: { color: axisColor } },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            const row = data.categories[context.dataIndex];
+                                            return ' ' + row.name + ': ₺' + money.format(row.total) + ' (' + row.ratio.toFixed(1) + '%)';
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    });
+                }
+
+                select.addEventListener('change', function () {
+                    render(this.value);
+                });
+            }());
             // ── Category × month heatmap canvas ──
             (function () {
                 const canvas = document.getElementById('categoryHeatmapCanvas');

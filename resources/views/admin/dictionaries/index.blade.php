@@ -6,7 +6,7 @@
             <div class="mb-4 flex items-center justify-between gap-4">
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Dictionary Management') }}</p>
-                    <h2 class="text-xl font-semibold">{{ $definition['label'] }}</h2>
+                    <h2 class="text-xl font-semibold">{{ __($definition['label']) }}</h2>
                 </div>
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ $records->count() }} {{ __('records') }}</p>
             </div>

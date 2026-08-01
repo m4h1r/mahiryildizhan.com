@@ -8,6 +8,7 @@ use App\Models\Expense;
 use App\Models\ExpenseType;
 use App\Models\Income;
 use App\Models\IncomeType;
+use App\Models\Stakeholder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -343,6 +344,98 @@ class ReportController extends Controller
             $heatmapByDate[$dateStr] = ['total' => $val, 'level' => $level];
         }
 
+        // ── Stakeholder spend analysis (TRY, own expenses) ──
+        $stakeholderMonthsElapsed = $year === (int) now()->year ? (int) now()->month : 12;
+
+        $stakeholderMonthlyRows = Expense::query()
+            ->whereYear('date', $year)
+            ->where('paid_by_others', false)
+            ->whereNotNull('stakeholder_id')
+            ->when($tryCurrencyId, fn ($q) => $q->where('currency_id', $tryCurrencyId))
+            ->selectRaw('stakeholder_id, MONTH(date) as month, SUM(total) as total')
+            ->groupBy('stakeholder_id', 'month')
+            ->get();
+
+        $stakeholderCategoryRows = Expense::query()
+            ->whereYear('date', $year)
+            ->where('paid_by_others', false)
+            ->whereNotNull('stakeholder_id')
+            ->when($tryCurrencyId, fn ($q) => $q->where('currency_id', $tryCurrencyId))
+            ->selectRaw('stakeholder_id, expense_type_id, SUM(total) as total')
+            ->groupBy('stakeholder_id', 'expense_type_id')
+            ->get();
+
+        $stakeholderMonthlyMatrix = [];
+        foreach ($stakeholderMonthlyRows as $row) {
+            $sid = (int) $row->stakeholder_id;
+            if (! isset($stakeholderMonthlyMatrix[$sid])) {
+                $stakeholderMonthlyMatrix[$sid] = array_fill(0, 12, 0.0);
+            }
+            $stakeholderMonthlyMatrix[$sid][(int) $row->month - 1] = (float) $row->total;
+        }
+
+        $stakeholderCategoryMatrix = [];
+        foreach ($stakeholderCategoryRows as $row) {
+            $sid = (int) $row->stakeholder_id;
+            $stakeholderCategoryMatrix[$sid][(int) ($row->expense_type_id ?? 0)] = (float) $row->total;
+        }
+
+        $stakeholderIds = array_values(array_unique(array_merge(
+            array_keys($stakeholderMonthlyMatrix),
+            array_keys($stakeholderCategoryMatrix),
+        )));
+
+        $stakeholderNames = Stakeholder::query()
+            ->whereIn('id', $stakeholderIds)
+            ->get(['id', 'title', 'name', 'surname', 'vkn_tckn'])
+            ->mapWithKeys(function (Stakeholder $model): array {
+                $display = $model->title ?: trim(($model->name ?? '').' '.($model->surname ?? ''));
+
+                return [(int) $model->id => $display !== '' ? $display : (string) $model->vkn_tckn];
+            });
+
+        $expenseTypeNameMap = ExpenseType::query()->pluck('name', 'id');
+        $uncategorizedLabel = (string) __('Uncategorized');
+
+        $stakeholderReports = [];
+        foreach ($stakeholderIds as $sid) {
+            $months = $stakeholderMonthlyMatrix[$sid] ?? array_fill(0, 12, 0.0);
+            $total = array_sum($months);
+
+            if ($total <= 0) {
+                continue;
+            }
+
+            $categories = [];
+            foreach ($stakeholderCategoryMatrix[$sid] ?? [] as $typeId => $catTotal) {
+                if ($catTotal <= 0) {
+                    continue;
+                }
+
+                $categories[] = [
+                    'name' => $typeId > 0 ? (string) ($expenseTypeNameMap[$typeId] ?? $uncategorizedLabel) : $uncategorizedLabel,
+                    'total' => round($catTotal, 2),
+                    'ratio' => ($catTotal / $total) * 100,
+                ];
+            }
+
+            usort($categories, fn (array $a, array $b): int => $b['total'] <=> $a['total']);
+
+            $stakeholderReports[$sid] = [
+                'name' => $stakeholderNames[$sid] ?? (string) $sid,
+                'monthly' => array_map(fn (float $v): float => round($v, 2), $months),
+                'total' => round($total, 2),
+                'monthly_avg' => $stakeholderMonthsElapsed > 0 ? round($total / $stakeholderMonthsElapsed, 2) : 0.0,
+                'categories' => $categories,
+            ];
+        }
+
+        $stakeholderOptions = collect($stakeholderReports)
+            ->map(fn (array $data, int $id): array => ['id' => $id, 'name' => $data['name']])
+            ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values()
+            ->all();
+
         return view('admin.reports', [
             'year' => $year,
             'dailyRange' => $dailyRange,
@@ -364,6 +457,9 @@ class ReportController extends Controller
             'heatmapByDate' => $heatmapByDate,
             'categoryHeatmap' => $categoryHeatmap,
             'incomeCategoryHeatmap' => $incomeCategoryHeatmap,
+            'stakeholderReports' => $stakeholderReports,
+            'stakeholderOptions' => $stakeholderOptions,
+            'stakeholderMonthsElapsed' => $stakeholderMonthsElapsed,
             'insights' => [
                 'avg_monthly_income' => $avgMonthlyIncome,
                 'avg_monthly_expense' => $avgMonthlyExpense,

@@ -14,6 +14,8 @@ use App\Models\IncomeType;
 use App\Models\InteractionType;
 use App\Models\PostCategory;
 use App\Models\PostLanguage;
+use App\Models\Sector;
+use App\Models\TaxOffice;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
@@ -124,6 +126,22 @@ class DictionaryController extends Controller
         'interaction_types' => [
             'label' => 'Interaction Types',
             'model' => InteractionType::class,
+            'order_by' => 'name',
+            'fields' => [
+                'name' => ['label' => 'Name', 'required' => true, 'max' => 255, 'unique' => true],
+            ],
+        ],
+        'tax_offices' => [
+            'label' => 'Tax Offices',
+            'model' => TaxOffice::class,
+            'order_by' => 'name',
+            'fields' => [
+                'name' => ['label' => 'Name', 'required' => true, 'max' => 255, 'unique' => true],
+            ],
+        ],
+        'sectors' => [
+            'label' => 'Sectors',
+            'model' => Sector::class,
             'order_by' => 'name',
             'fields' => [
                 'name' => ['label' => 'Name', 'required' => true, 'max' => 255, 'unique' => true],

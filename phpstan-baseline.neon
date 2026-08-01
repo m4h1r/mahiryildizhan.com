@@ -273,7 +273,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\Expense\:\:\$month\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 2
 			path: app/Http/Controllers/Admin/ReportController.php
 
 		-
