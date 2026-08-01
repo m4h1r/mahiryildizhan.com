@@ -18,10 +18,11 @@ class StoreStakeholderRequest extends FormRequest
 
         return [
             'vkn_tckn' => ['required', 'string', 'max:64', Rule::unique('stakeholders', 'vkn_tckn')->ignore($stakeholderId)],
+            'tax_office_id' => ['nullable', 'integer', 'exists:tax_offices,id'],
+            'sector_id' => ['nullable', 'integer', 'exists:sectors,id'],
             'title' => ['nullable', 'string', 'max:255'],
             'name' => ['nullable', 'string', 'max:255'],
             'surname' => ['nullable', 'string', 'max:255'],
-            'tax_office_name' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'size:2'],
             'address' => ['nullable', 'string'],
@@ -29,7 +30,6 @@ class StoreStakeholderRequest extends FormRequest
             'email' => ['nullable', 'email', 'max:255'],
             'website' => ['nullable', 'url', 'max:255'],
             'company_type' => ['required', Rule::in(['Company', 'Individual'])],
-            'sector' => ['nullable', 'string', 'max:255'],
             'note' => ['nullable', 'string'],
             'status' => ['required', Rule::in(['Active', 'Passive'])],
         ];

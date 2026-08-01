@@ -94,7 +94,7 @@ class CsvImportService
         ],
         'stakeholders' => [
             'upsert' => ['vkn_tckn'],
-            'helper_columns' => ['user_email'],
+            'helper_columns' => ['user_email', 'tax_office_name', 'sector'],
             'boolean_columns' => [],
             'json_columns' => [],
         ],
@@ -545,6 +545,14 @@ class CsvImportService
     {
         if (($attributes['created_by'] ?? null) === null && ($row['user_email'] ?? null) !== null) {
             $attributes['created_by'] = $this->lookupId('users', 'email', $row['user_email'], 'created_by');
+        }
+
+        if (($attributes['tax_office_id'] ?? null) === null && trim((string) ($row['tax_office_name'] ?? '')) !== '') {
+            $attributes['tax_office_id'] = $this->findOrCreateId('tax_offices', 'name', trim((string) $row['tax_office_name']));
+        }
+
+        if (($attributes['sector_id'] ?? null) === null && trim((string) ($row['sector'] ?? '')) !== '') {
+            $attributes['sector_id'] = $this->findOrCreateId('sectors', 'name', trim((string) $row['sector']));
         }
 
         return $attributes;

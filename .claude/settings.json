@@ -1,5 +1,17 @@
 {
-  "hooks": {},
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/vexp-hint.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "Bash(php -l app/Http/Controllers/Admin/TodoItemController.php)",

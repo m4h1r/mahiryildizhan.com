@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStakeholderRequest;
+use App\Models\Sector;
 use App\Models\Stakeholder;
+use App\Models\TaxOffice;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -53,6 +55,8 @@ class StakeholderController extends Controller
         return view('admin.stakeholders.create', [
             'title' => 'New Stakeholder',
             'heading' => 'New Stakeholder',
+            'taxOffices' => TaxOffice::query()->orderBy('name')->get(),
+            'sectors' => Sector::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -72,6 +76,8 @@ class StakeholderController extends Controller
             'title' => 'Edit Stakeholder',
             'heading' => 'Edit Stakeholder',
             'stakeholder' => $stakeholder,
+            'taxOffices' => TaxOffice::query()->orderBy('name')->get(),
+            'sectors' => Sector::query()->orderBy('name')->get(),
         ]);
     }
 

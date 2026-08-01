@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Alice;
 use App\Http\Requests\Alice\StoreStakeholderRequest;
 use App\Http\Requests\Alice\UpdateStakeholderRequest;
 use App\Http\Resources\Alice\StakeholderResource;
+use App\Models\Sector;
 use App\Models\Stakeholder;
+use App\Models\TaxOffice;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -44,7 +46,7 @@ class StakeholderController extends AliceController
             }
         }
 
-        $stakeholder = Stakeholder::create($request->validated());
+        $stakeholder = Stakeholder::create($this->resolveDictionaries($request->validated()));
 
         return $this->success(new StakeholderResource($stakeholder), 201);
     }
@@ -57,7 +59,7 @@ class StakeholderController extends AliceController
         }
 
         $this->storeAuditOldData($request, $stakeholder);
-        $stakeholder->update($request->validated());
+        $stakeholder->update($this->resolveDictionaries($request->validated()));
 
         return $this->success(new StakeholderResource($stakeholder));
     }
@@ -73,5 +75,28 @@ class StakeholderController extends AliceController
         $stakeholder->delete();
 
         return response()->json(['data' => ['id' => $id, 'deleted' => true]]);
+    }
+
+    /**
+     * Resolve legacy string fields (tax_office_name, sector) into dictionary ids.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function resolveDictionaries(array $data): array
+    {
+        if (! empty($data['tax_office_name'])) {
+            $data['tax_office_id'] = TaxOffice::query()
+                ->firstOrCreate(['name' => trim((string) $data['tax_office_name'])])->id;
+        }
+
+        if (! empty($data['sector'])) {
+            $data['sector_id'] = Sector::query()
+                ->firstOrCreate(['name' => trim((string) $data['sector'])])->id;
+        }
+
+        unset($data['tax_office_name'], $data['sector']);
+
+        return $data;
     }
 }

@@ -1279,7 +1279,19 @@ parameters:
 			path: app/Http/Resources/Alice/StakeholderResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$tax_office_name\.$#'
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$tax_office_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$taxOffice\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$sector_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/Alice/StakeholderResource.php

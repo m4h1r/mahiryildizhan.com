@@ -12,6 +12,8 @@ use App\Models\IncomeType;
 use App\Models\InteractionType;
 use App\Models\PostCategory;
 use App\Models\PostLanguage;
+use App\Models\Sector;
+use App\Models\TaxOffice;
 use Illuminate\Database\Seeder;
 
 class DictionarySeeder extends Seeder
@@ -28,6 +30,8 @@ class DictionarySeeder extends Seeder
         $this->seedExpenseTypes();
         $this->seedCurrencies();
         $this->seedInteractionTypes();
+        $this->seedSectors();
+        $this->seedTaxOffices();
     }
 
     private function seedGenders(): void
@@ -128,6 +132,27 @@ class DictionarySeeder extends Seeder
     {
         foreach (['Toplanti', 'Telefon', 'E-posta', 'Diger'] as $name) {
             InteractionType::query()->updateOrCreate(['name' => $name], ['name' => $name]);
+        }
+    }
+
+    private function seedSectors(): void
+    {
+        foreach ([
+            'Akaryakit', 'Bilisim', 'Danismanlik', 'Egitim', 'Eglence', 'Gida',
+            'Insaat', 'Lojistik', 'Perakende', 'Reklam', 'Saglik', 'Tekstil',
+            'Turizm', 'Uretim', 'Diger',
+        ] as $name) {
+            Sector::query()->updateOrCreate(['name' => $name], ['name' => $name]);
+        }
+    }
+
+    private function seedTaxOffices(): void
+    {
+        foreach ([
+            'Alemdar', 'Kadikoy', 'Besiktas', 'Sisli', 'Uskudar',
+            'Bakirkoy', 'Marmara Kurumlar', 'Boğaziçi Kurumlar',
+        ] as $name) {
+            TaxOffice::query()->updateOrCreate(['name' => $name], ['name' => $name]);
         }
     }
 }

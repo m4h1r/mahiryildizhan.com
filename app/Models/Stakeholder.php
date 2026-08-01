@@ -13,10 +13,11 @@ class Stakeholder extends Model
 
     protected $fillable = [
         'vkn_tckn',
+        'tax_office_id',
+        'sector_id',
         'title',
         'name',
         'surname',
-        'tax_office_name',
         'city',
         'country',
         'address',
@@ -24,7 +25,6 @@ class Stakeholder extends Model
         'email',
         'website',
         'company_type',
-        'sector',
         'note',
         'status',
         'created_by',
@@ -34,12 +34,24 @@ class Stakeholder extends Model
     {
         return [
             'created_by' => 'integer',
+            'tax_office_id' => 'integer',
+            'sector_id' => 'integer',
         ];
     }
 
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function taxOffice()
+    {
+        return $this->belongsTo(TaxOffice::class, 'tax_office_id');
+    }
+
+    public function sector()
+    {
+        return $this->belongsTo(Sector::class, 'sector_id');
     }
 
     public function expenses()

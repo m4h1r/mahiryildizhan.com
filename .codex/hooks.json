@@ -1,0 +1,13 @@
+{
+  "UserPromptSubmit": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash \"/Users/mahiryildizhan/Documents/Code/Laravel/mahiryildizhan.com/.codex/vexp-hint.sh\"",
+          "timeout": 5
+        }
+      ]
+    }
+  ]
+}

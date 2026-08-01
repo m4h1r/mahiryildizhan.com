@@ -1,7 +1,11 @@
-## vexp <!-- vexp v2.3.1 -->
+## vexp <!-- vexp v2.4.0 -->
 
 **Call `run_pipeline` ONCE at task start for orientation - then use your normal tools.**
+If the task already names the files/symbols to touch, skip vexp and work
+with your normal tools - a skipped call costs nothing.
 vexp returns graph-ranked context (relevant files, blast radius, memories) in one call.
+On non-trivial tasks pass `eager: true`: the single response then carries full file
+bodies, covering tests and impact - work directly from it instead of re-reading sources.
 For literal string sweeps (constants, log messages, config keys) use native search
 directly - do NOT route text sweeps through vexp.
 vexp runs entirely on this machine: local daemon, local index stored inside the
