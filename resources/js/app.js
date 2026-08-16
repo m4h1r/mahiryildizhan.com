@@ -386,9 +386,18 @@ const mountPeopleLiveSearch = () => {
 	let debounceTimer = null;
 	input.addEventListener('input', () => {
 		window.clearTimeout(debounceTimer);
+
+		const length = input.value.trim().length;
+
+		// Wait for at least 2 characters before searching (except when the
+		// field is cleared back to empty, which should reset the results).
+		if (length === 1) {
+			return;
+		}
+
 		debounceTimer = window.setTimeout(() => {
 			form.submit();
-		}, 220);
+		}, 450);
 	});
 
 	input.dataset.liveSearchBound = '1';

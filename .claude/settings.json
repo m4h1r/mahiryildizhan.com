@@ -1,4 +1,12 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(php -l app/Http/Controllers/Admin/TodoItemController.php)",
+      "Bash(php -l app/Models/TodoItem.php)",
+      "Bash(node --check resources/js/app.js)",
+      "Bash(echo \"exit code: $?\")"
+    ]
+  },
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -10,12 +18,17 @@
           }
         ]
       }
-    ]
-  },
-  "permissions": {
-    "allow": [
-      "Bash(php -l app/Http/Controllers/Admin/TodoItemController.php)",
-      "Bash(php -l app/Models/TodoItem.php)"
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/vexp-restore.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }

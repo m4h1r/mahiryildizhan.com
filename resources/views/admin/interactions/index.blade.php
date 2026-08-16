@@ -42,6 +42,7 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
+                            <th class="hidden w-12 sm:table-cell"><span class="sr-only">{{ __('Photo') }}</span></th>
                             <th>{{ __('Date') }}</th>
                             <th>{{ __('Person') }}</th>
                             <th class="hidden sm:table-cell">{{ __('Type') }}</th>
@@ -53,31 +54,52 @@
                     <tbody>
                         @forelse ($interactions as $interaction)
                             <tr>
+                                <td class="hidden sm:table-cell">
+                                    <img src="{{ optional($interaction->person)->picture_url }}" alt="" loading="lazy" class="h-8 w-8 rounded-full object-cover ring-1 ring-[var(--color-admin-border)] dark:ring-[var(--color-admin-border-dark)]">
+                                </td>
                                 <td>{{ optional($interaction->date)->toDateString() }}</td>
-                                <td>{{ optional($interaction->person)->name }} {{ optional($interaction->person)->surname }}</td>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <img src="{{ optional($interaction->person)->picture_url }}" alt="" loading="lazy" class="h-7 w-7 shrink-0 rounded-full object-cover ring-1 ring-[var(--color-admin-border)] dark:ring-[var(--color-admin-border-dark)] sm:hidden">
+                                        <span>{{ optional($interaction->person)->name }} {{ optional($interaction->person)->surname }}</span>
+                                    </div>
+                                </td>
                                 <td class="hidden sm:table-cell">{{ optional($interaction->type)->name ?: '-' }}</td>
                                 <td class="hidden md:table-cell">{{ $interaction->effect ?: '-' }}</td>
                                 <td class="hidden max-w-sm text-xs lg:table-cell">{{ \Illuminate\Support\Str::limit($interaction->notes, 100) ?: '-' }}</td>
                                 <td>
                                     <div class="flex justify-end gap-1.5">
-                                        <a href="{{ route('admin.interactions.edit', $interaction) }}" class="admin-btn-sm admin-btn-ghost">{{ __('Edit') }}</a>
+                                        <a href="{{ route('admin.interactions.edit', $interaction) }}" title="{{ __('Edit') }}" aria-label="{{ __('Edit') }}" class="admin-btn-sm admin-btn-ghost w-8 p-0">
+                                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.1 2.1 0 0 1 2.97 2.97L7.5 18.79 3 20l1.21-4.5L16.862 3.487Z"/>
+                                            </svg>
+                                        </a>
 
                                         <form method="POST" action="{{ route('admin.interactions.duplicate', $interaction) }}">
                                             @csrf
-                                            <button type="submit" class="admin-btn-sm admin-btn-ghost">{{ __('Duplicate') }}</button>
+                                            <button type="submit" title="{{ __('Duplicate') }}" aria-label="{{ __('Duplicate') }}" class="admin-btn-sm admin-btn-ghost w-8 p-0">
+                                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="9" y="9" width="12" height="12" rx="2"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                                </svg>
+                                            </button>
                                         </form>
 
                                         <form method="POST" action="{{ route('admin.interactions.destroy', $interaction) }}" data-confirm="{{ __('Delete this interaction?') }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>
+                                            <button type="submit" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}" class="admin-btn-sm admin-btn-danger w-8 p-0">
+                                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M8 6V4h8v2m-8 0v14m8-14v14M5 6l1 14h12l1-14"/>
+                                                </svg>
+                                            </button>
                                         </form>
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">{{ __('No interactions found.') }}</td>
+                                <td colspan="7" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">{{ __('No interactions found.') }}</td>
                             </tr>
                         @endforelse
                     </tbody>

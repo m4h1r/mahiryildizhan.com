@@ -141,6 +141,40 @@ class Person extends Model
         return Sign::fromDate($this->birthday)->localize('tr')->name();
     }
 
+    public function zodiacSymbol(): ?string
+    {
+        if (! $this->birthday) {
+            return null;
+        }
+
+        return match (Sign::fromDate($this->birthday)::class) {
+            \Intervention\Zodiac\Western\Signs\Aries::class => '♈︎',
+            \Intervention\Zodiac\Western\Signs\Taurus::class => '♉︎',
+            \Intervention\Zodiac\Western\Signs\Gemini::class => '♊︎',
+            \Intervention\Zodiac\Western\Signs\Cancer::class => '♋︎',
+            \Intervention\Zodiac\Western\Signs\Leo::class => '♌︎',
+            \Intervention\Zodiac\Western\Signs\Virgo::class => '♍︎',
+            \Intervention\Zodiac\Western\Signs\Libra::class => '♎︎',
+            \Intervention\Zodiac\Western\Signs\Scorpio::class => '♏︎',
+            \Intervention\Zodiac\Western\Signs\Sagittarius::class => '♐︎',
+            \Intervention\Zodiac\Western\Signs\Capricorn::class => '♑︎',
+            \Intervention\Zodiac\Western\Signs\Aquarius::class => '♒︎',
+            \Intervention\Zodiac\Western\Signs\Pisces::class => '♓︎',
+            default => null,
+        };
+    }
+
+    public function genderSymbol(): string
+    {
+        $name = strtolower((string) optional($this->gender)->name);
+
+        return match (true) {
+            str_contains($name, 'erkek'), str_contains($name, 'male') => '♂',
+            str_contains($name, 'kad'), str_contains($name, 'female') => '♀',
+            default => '⚧',
+        };
+    }
+
     public function fullName(): string
     {
         return trim((string) $this->name.' '.(string) $this->surname);

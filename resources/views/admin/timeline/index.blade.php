@@ -55,11 +55,19 @@
                                 <td class="hidden lg:table-cell">{{ $event->is_public ? __('Yes') : __('No') }}</td>
                                 <td>
                                     <div class="flex justify-end gap-1.5">
-                                        <a href="{{ route('admin.timeline.edit', $event) }}" class="admin-btn-sm admin-btn-ghost">{{ __('Edit') }}</a>
+                                        <a href="{{ route('admin.timeline.edit', $event) }}" title="{{ __('Edit') }}" aria-label="{{ __('Edit') }}" class="admin-btn-sm admin-btn-ghost w-8 p-0">
+                                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.1 2.1 0 0 1 2.97 2.97L7.5 18.79 3 20l1.21-4.5L16.862 3.487Z"/>
+                                            </svg>
+                                        </a>
                                         <form method="POST" action="{{ route('admin.timeline.destroy', $event) }}" data-confirm="{{ __('Delete this event?') }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>
+                                            <button type="submit" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}" class="admin-btn-sm admin-btn-danger w-8 p-0">
+                                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M8 6V4h8v2m-8 0v14m8-14v14M5 6l1 14h12l1-14"/>
+                                                </svg>
+                                            </button>
                                         </form>
                                     </div>
                                 </td>

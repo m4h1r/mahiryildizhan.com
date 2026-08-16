@@ -55,17 +55,30 @@
                                 <td class="hidden lg:table-cell">{{ $stakeholder->email ?: '-' }}</td>
                                 <td>
                                     <div class="flex justify-end gap-1.5">
-                                        <a href="{{ route('admin.stakeholders.edit', $stakeholder) }}" class="admin-btn-sm admin-btn-ghost">{{ __('Edit') }}</a>
+                                        <a href="{{ route('admin.stakeholders.edit', $stakeholder) }}" title="{{ __('Edit') }}" aria-label="{{ __('Edit') }}" class="admin-btn-sm admin-btn-ghost w-8 p-0">
+                                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.1 2.1 0 0 1 2.97 2.97L7.5 18.79 3 20l1.21-4.5L16.862 3.487Z"/>
+                                            </svg>
+                                        </a>
 
                                         <form method="POST" action="{{ route('admin.stakeholders.duplicate', $stakeholder) }}">
                                             @csrf
-                                            <button type="submit" class="admin-btn-sm admin-btn-ghost">{{ __('Duplicate') }}</button>
+                                            <button type="submit" title="{{ __('Duplicate') }}" aria-label="{{ __('Duplicate') }}" class="admin-btn-sm admin-btn-ghost w-8 p-0">
+                                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="9" y="9" width="12" height="12" rx="2"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                                </svg>
+                                            </button>
                                         </form>
 
                                         <form method="POST" action="{{ route('admin.stakeholders.destroy', $stakeholder) }}" data-confirm="{{ __('Delete this stakeholder?') }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="admin-btn-sm admin-btn-danger">{{ __('Delete') }}</button>
+                                            <button type="submit" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}" class="admin-btn-sm admin-btn-danger w-8 p-0">
+                                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M8 6V4h8v2m-8 0v14m8-14v14M5 6l1 14h12l1-14"/>
+                                                </svg>
+                                            </button>
                                         </form>
                                     </div>
                                 </td>

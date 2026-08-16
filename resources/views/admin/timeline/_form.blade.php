@@ -15,9 +15,12 @@
         </select>
     </label>
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
+    <label class="text-sm font-medium text-gray-700 dark:text-gray-200" x-data="{ color: {{ Js::from(old('color', $event->color ?? '#3B82F6')) }} }">
         <span class="mb-1 block">{{ __('Color') }}</span>
-        <input name="color" class="form-input-admin" value="{{ old('color', $event->color ?? '#3B82F6') }}">
+        <div class="flex items-center gap-3">
+            <input type="color" x-model="color" class="h-11 w-16 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700">
+            <input type="text" name="color" x-model="color" class="form-input-admin font-mono" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+        </div>
     </label>
 
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200">

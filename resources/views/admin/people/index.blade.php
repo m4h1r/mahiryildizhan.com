@@ -70,6 +70,7 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
+                            <th class="hidden w-14 sm:table-cell"><span class="sr-only">{{ __('Photo') }}</span></th>
                             <th class="hidden xl:table-cell">
                                 <a href="{{ $sortUrl('id') }}" class="inline-flex items-center gap-1 hover:underline">ID <span>{{ $sortArrow('id') }}</span></a>
                             </th>
@@ -82,35 +83,48 @@
                             <th class="hidden xl:table-cell">
                                 <a href="{{ $sortUrl('second_surname') }}" class="inline-flex items-center gap-1 hover:underline">{{ __('Maiden Surname') }} <span>{{ $sortArrow('second_surname') }}</span></a>
                             </th>
-                            <th class="hidden md:table-cell">{{ __('Gender') }}</th>
                             <th class="hidden lg:table-cell">
                                 <a href="{{ $sortUrl('birthday') }}" class="inline-flex items-center gap-1 hover:underline">{{ __('Birthday') }} <span>{{ $sortArrow('birthday') }}</span></a>
                             </th>
-                            <th class="hidden xl:table-cell">
-                                <a href="{{ $sortUrl('deathday') }}" class="inline-flex items-center gap-1 hover:underline">{{ __('Deathday') }} <span>{{ $sortArrow('deathday') }}</span></a>
-                            </th>
                             <th class="hidden xl:table-cell">{{ __('Parents') }}</th>
-                            <th class="hidden lg:table-cell">{{ __('Zodiac') }}</th>
                             <th class="text-right">{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($people as $person)
+                            @php
+                                $genderSymbol = $person->genderSymbol();
+                                $genderColor = match ($genderSymbol) {
+                                    '♂' => 'text-sky-500 dark:text-sky-400',
+                                    '♀' => 'text-rose-500 dark:text-rose-400',
+                                    default => 'text-violet-500 dark:text-violet-400',
+                                };
+                                $zodiacSymbol = $person->zodiacSymbol();
+                            @endphp
                             <tr>
+                                <td class="hidden sm:table-cell">
+                                    <img src="{{ $person->picture_url }}" alt="" loading="lazy" class="h-9 w-9 rounded-full object-cover ring-1 ring-[var(--color-admin-border)] dark:ring-[var(--color-admin-border-dark)]">
+                                </td>
                                 <td class="hidden text-xs text-gray-500 xl:table-cell">{{ $person->id }}</td>
                                 <td>
-                                    <p class="font-medium">{{ $person->name }}</p>
+                                    <p class="flex items-center gap-2 font-medium">
+                                        <img src="{{ $person->picture_url }}" alt="" loading="lazy" class="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-[var(--color-admin-border)] dark:ring-[var(--color-admin-border-dark)] sm:hidden">
+                                        <span class="inline-flex items-center gap-1 text-sm leading-none" aria-hidden="true">
+                                            <span class="{{ $genderColor }}" title="{{ optional($person->gender)->name ?: __('Gender') }}">{{ $genderSymbol }}</span>
+                                            @if ($zodiacSymbol)
+                                                <span class="text-amber-500 dark:text-amber-400" title="{{ $person->zodiacName() }}">{{ $zodiacSymbol }}</span>
+                                            @endif
+                                        </span>
+                                        <span>{{ $person->name }}</span>
+                                    </p>
                                 </td>
                                 <td class="hidden sm:table-cell">{{ $person->surname }}</td>
                                 <td class="hidden text-xs xl:table-cell">{{ $person->second_surname ?: '-' }}</td>
-                                <td class="hidden md:table-cell">{{ optional($person->gender)->name ?: '-' }}</td>
                                 <td class="hidden text-xs lg:table-cell">{{ optional($person->birthday)->format('Y-m-d') ?: '-' }}</td>
-                                <td class="hidden text-xs xl:table-cell">{{ optional($person->deathday)->format('Y-m-d') ?: '-' }}</td>
                                 <td class="hidden text-xs xl:table-cell">
                                     {{ __('Father') }}: {{ optional($person->father)->name ? $person->father->name.' '.$person->father->surname : '-' }}<br>
                                     {{ __('Mother') }}: {{ optional($person->mother)->name ? $person->mother->name.' '.$person->mother->surname : '-' }}
                                 </td>
-                                <td class="hidden lg:table-cell">{{ $person->zodiacName() ?: '-' }}</td>
                                 <td>
                                     <div class="flex justify-end gap-1.5">
                                         <a href="{{ route('admin.people.show', $person) }}" title="{{ __('View') }}" aria-label="{{ __('View') }}" class="admin-btn-sm admin-btn-ghost w-8 p-0">
@@ -147,7 +161,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">{{ __('No people found.') }}</td>
+                                <td colspan="8" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">{{ __('No people found.') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
