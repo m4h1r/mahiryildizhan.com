@@ -30,6 +30,8 @@
                             <tr>
                                 <th class="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-300">Görev</th>
                                 <th class="hidden px-4 py-3 text-center font-medium text-gray-600 dark:text-gray-300 sm:table-cell">Tarih</th>
+                                <th class="hidden px-4 py-3 text-center font-medium text-gray-600 dark:text-gray-300 md:table-cell">Urgency</th>
+                                <th class="hidden px-4 py-3 text-center font-medium text-gray-600 dark:text-gray-300 md:table-cell">Importance</th>
                                 <th class="hidden px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-300 md:table-cell">Maliyet</th>
                                 <th class="hidden px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-300 lg:table-cell">Süre</th>
                                 <th class="px-4 py-3 text-center font-medium text-gray-600 dark:text-gray-300">Durum</th>
@@ -70,6 +72,12 @@
                                         @else
                                             <span class="text-gray-400">—</span>
                                         @endif
+                                    </td>
+                                    <td class="hidden px-4 py-3 text-right text-gray-600 dark:text-gray-300 md:table-cell">
+                                        {{ $item->urgency ?? 'NA' }}
+                                    </td>
+                                    <td class="hidden px-4 py-3 text-right text-gray-600 dark:text-gray-300 md:table-cell">
+                                        {{ $item->importance ?? 'NA' }}
                                     </td>
                                     <td class="hidden px-4 py-3 text-right text-gray-600 dark:text-gray-300 md:table-cell">
                                         {{ $item->cost_try ? '₺'.number_format((float)$item->cost_try, 2) : '—' }}

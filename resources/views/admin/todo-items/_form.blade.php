@@ -98,6 +98,32 @@
         </label>
     </div>
 
+    <div class="grid gap-4 sm:grid-cols-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            <span class="mb-1 block">Urgency (1-5)</span>
+            <select name="urgency" class="form-input-admin">
+                @php $selectedUrgency = old('urgency', $item->urgency ?? ''); @endphp
+                <option value="" {{ $selectedUrgency === '' ? 'selected' : '' }}>NA</option>
+                @for ($u = 1; $u <= 5; $u++)
+                    <option value="{{ $u }}" {{ (string) $selectedUrgency === (string) $u ? 'selected' : '' }}>{{ $u }}</option>
+                @endfor
+            </select>
+            @error('urgency')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+        </label>
+
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            <span class="mb-1 block">Importance (1-5)</span>
+            <select name="importance" class="form-input-admin">
+                @php $selectedImportance = old('importance', $item->importance ?? ''); @endphp
+                <option value="" {{ $selectedImportance === '' ? 'selected' : '' }}>NA</option>
+                @for ($i = 1; $i <= 5; $i++)
+                    <option value="{{ $i }}" {{ (string) $selectedImportance === (string) $i ? 'selected' : '' }}>{{ $i }}</option>
+                @endfor
+            </select>
+            @error('importance')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+        </label>
+    </div>
+
     <div class="flex flex-wrap gap-6">
         <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
             <input

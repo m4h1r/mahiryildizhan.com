@@ -13,6 +13,8 @@ class TodoItemFactory extends Factory
             'description' => fake()->optional()->text(200),
             'cost_try' => fake()->optional()->randomFloat(2, 10, 5000),
             'time_cost_hours' => fake()->optional()->randomFloat(2, 0.5, 40),
+            'urgency' => fake()->optional()->numberBetween(1, 5),
+            'importance' => fake()->optional()->numberBetween(1, 5),
             'due_date' => fake()->optional()->date(),
             'is_bucketlist' => false,
             'is_completed' => false,

@@ -20,6 +20,8 @@ class UpdateTodoItemRequest extends FormRequest
             'description' => 'nullable|string|max:500',
             'cost_try' => 'nullable|numeric|min:0',
             'time_cost_hours' => 'nullable|numeric|min:0',
+            'urgency' => 'nullable|integer|between:1,5',
+            'importance' => 'nullable|integer|between:1,5',
             'due_date' => 'nullable|date',
             'is_bucketlist' => 'nullable|boolean',
             'is_completed' => 'nullable|boolean',

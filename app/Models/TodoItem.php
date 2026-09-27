@@ -16,6 +16,8 @@ class TodoItem extends Model
         'image_path',
         'cost_try',
         'time_cost_hours',
+        'urgency',
+        'importance',
         'due_date',
         'is_bucketlist',
         'yearly_goal',
@@ -33,6 +35,8 @@ class TodoItem extends Model
             'completed_at' => 'datetime',
             'cost_try' => 'decimal:2',
             'time_cost_hours' => 'decimal:2',
+            'urgency' => 'integer',
+            'importance' => 'integer',
         ];
     }
 }

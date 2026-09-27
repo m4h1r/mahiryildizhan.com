@@ -18,10 +18,12 @@ class TodoItemController extends AliceController
                 ->orWhere('description', 'like', "%{$search}%"))
             ->when($request->has('is_completed'), fn ($q) => $q->where('is_completed', $request->boolean('is_completed')))
             ->when($request->has('is_bucketlist'), fn ($q) => $q->where('is_bucketlist', $request->boolean('is_bucketlist')))
+            ->when($request->filled('urgency'), fn ($q) => $q->where('urgency', (int) $request->query('urgency')))
+            ->when($request->filled('importance'), fn ($q) => $q->where('importance', (int) $request->query('importance')))
             ->when($request->query('with_trashed'), fn ($q) => $q->withTrashed());
 
         $this->applyDateRange($query, $request, 'due_date');
-        $this->applySort($query, $request, ['title', 'due_date', 'cost_try', 'created_at']);
+        $this->applySort($query, $request, ['title', 'due_date', 'cost_try', 'urgency', 'importance', 'created_at']);
 
         return $this->paginate($query, $request, TodoItemResource::class);
     }
