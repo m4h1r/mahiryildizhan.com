@@ -10,7 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
-        "intervention/image": "^3.11",
+        "intervention/image": "^4.2",
         "intervention/zodiac": "^7.0",
         "kyslik/column-sortable": "^8.0",
         "laravel/fortify": "^1.37",
