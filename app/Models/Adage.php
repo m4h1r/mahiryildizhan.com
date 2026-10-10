@@ -2,14 +2,21 @@
 
 namespace App\Models;
 
+use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Adage extends Model
 {
     use HasFactory;
+    use TracksCreatedBy;
 
-    protected $fillable = ['owner', 'adage', 'keywords', 'language_id'];
+    protected $fillable = ['owner', 'adage', 'keywords', 'language_id', 'created_by'];
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 
     public function language()
     {

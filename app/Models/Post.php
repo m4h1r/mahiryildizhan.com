@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,7 @@ class Post extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use TracksCreatedBy;
 
     protected $fillable = [
         'title',
@@ -23,6 +25,7 @@ class Post extends Model
         'category_id',
         'language_id',
         'user_id',
+        'created_by',
         'seo_title',
         'seo_description',
         'seo_keywords',
@@ -48,12 +51,18 @@ class Post extends Model
             'published' => 'boolean',
             'published_at' => 'datetime',
             'publish_date' => 'date',
+            'created_by' => 'integer',
         ];
     }
 
     protected $appends = [
         'cover_url',
     ];
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 
     public function category()
     {

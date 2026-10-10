@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PurchaseItem extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, TracksCreatedBy;
 
     protected $fillable = [
         'title',
@@ -21,6 +22,7 @@ class PurchaseItem extends Model
         'is_completed',
         'completed_at',
         'user_id',
+        'created_by',
     ];
 
     protected function casts(): array
@@ -32,6 +34,12 @@ class PurchaseItem extends Model
             'completed_at' => 'datetime',
             'cost_try' => 'decimal:2',
             'time_cost_hours' => 'decimal:2',
+            'created_by' => 'integer',
         ];
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

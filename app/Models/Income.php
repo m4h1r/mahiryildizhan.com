@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,6 +11,7 @@ class Income extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use TracksCreatedBy;
 
     protected $fillable = [
         'date',
@@ -20,6 +22,7 @@ class Income extends Model
         'hours',
         'description',
         'user_id',
+        'created_by',
         'sourceable_type',
         'sourceable_id',
     ];
@@ -30,7 +33,13 @@ class Income extends Model
             'date' => 'date',
             'amount' => 'decimal:2',
             'hours' => 'decimal:2',
+            'created_by' => 'integer',
         ];
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function hourlyRate(): ?float

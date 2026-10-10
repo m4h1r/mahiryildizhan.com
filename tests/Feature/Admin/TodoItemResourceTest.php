@@ -20,6 +20,19 @@ it('lets an admin view the todo items index', function (): void {
         ->assertViewIs('admin.todo-items.index');
 });
 
+it('can search todo items by keyword', function (): void {
+    $admin = actingAsAdmin();
+
+    TodoItem::factory()->create(['title' => 'Ship landing page update', 'description' => 'Finalize hero section']);
+    TodoItem::factory()->create(['title' => 'Plan quarterly review', 'description' => 'Define scope']);
+
+    $this->actingAs($admin)
+        ->get(route('admin.todo-items.index', ['q' => 'landing']))
+        ->assertOk()
+        ->assertSee('Ship landing page update')
+        ->assertDontSee('Plan quarterly review');
+});
+
 it('lets an admin create a todo item', function (): void {
     $admin = actingAsAdmin();
 

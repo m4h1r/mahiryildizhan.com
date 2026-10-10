@@ -16,8 +16,18 @@ class TodoItemController extends Controller
     public function index(Request $request): View
     {
         $filter = $request->input('filter', 'pending');
+        $search = trim((string) $request->input('q', ''));
 
         $query = TodoItem::query()->orderBy('due_date')->orderBy('id');
+
+        if ($search !== '') {
+            $query->where(function ($builder) use ($search): void {
+                $builder
+                    ->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('yearly_goal', 'like', "%{$search}%");
+            });
+        }
 
         $query = match ($filter) {
             'due' => $query->where('is_completed', false)
@@ -34,6 +44,7 @@ class TodoItemController extends Controller
                 ->where(fn ($q) => $q->whereNotNull('cost_try')->orWhereNotNull('time_cost_hours'))
                 ->where('yearly_goal', 'NA'),
             'yearly_goal' => $query->where('yearly_goal', '!=', 'NA'),
+            'all' => $query,
             default => $query,
         };
 

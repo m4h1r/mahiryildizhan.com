@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,11 +12,13 @@ class Consumption extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use TracksCreatedBy;
 
     protected $fillable = [
         'food_id',
         'consumed_on',
         'quantity',
+        'created_by',
     ];
 
     protected function casts(): array
@@ -23,7 +26,13 @@ class Consumption extends Model
         return [
             'consumed_on' => 'date',
             'quantity' => 'decimal:2',
+            'created_by' => 'integer',
         ];
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function food(): BelongsTo

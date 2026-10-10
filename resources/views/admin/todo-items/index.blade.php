@@ -7,7 +7,7 @@
             <div class="flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-800">
                 @foreach (['pending' => 'Bekleyen', 'due' => 'Bugün / Gecikmiş', 'completed' => 'Tamamlandı', 'archived' => 'Arşiv', 'bucketlist' => 'Bucket List', 'yearly_goal' => 'Yıllık Hedefler', 'all' => 'Tümü'] as $key => $label)
                     <a
-                        href="{{ route('admin.todo-items.index', ['filter' => $key]) }}"
+                        href="{{ route('admin.todo-items.index', ['filter' => $key, 'q' => request('q')]) }}"
                         class="rounded-lg px-3 py-1.5 text-sm font-medium transition {{ $filter === $key ? 'bg-white shadow text-gray-900 dark:bg-gray-700 dark:text-gray-100' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}"
                     >{{ $label }}</a>
                 @endforeach
@@ -16,6 +16,17 @@
             <a href="{{ route('admin.todo-items.create') }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900">
                 + Yeni Görev
             </a>
+        </div>
+
+        <div class="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+            <x-global-search
+                action="{{ route('admin.todo-items.index') }}"
+                value="{{ request('q', '') }}"
+                placeholder="{{ __('Görevlerde ara...') }}"
+                wrapper-class="flex w-full items-center gap-2"
+                input-class="w-full rounded-full border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-gray-200 dark:focus:ring-gray-800"
+                button-class="rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-black dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+            />
         </div>
 
         <div class="card-admin overflow-hidden p-0">

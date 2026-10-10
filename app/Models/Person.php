@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,7 @@ class Person extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use TracksCreatedBy;
 
     protected $fillable = [
         'name',
@@ -33,6 +35,7 @@ class Person extends Model
         'email',
         'notes',
         'address',
+        'created_by',
     ];
 
     protected function casts(): array
@@ -40,7 +43,13 @@ class Person extends Model
         return [
             'birthday' => 'date',
             'deathday' => 'date',
+            'created_by' => 'integer',
         ];
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     protected function pictureUrl(): Attribute

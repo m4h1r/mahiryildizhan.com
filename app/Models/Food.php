@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +12,7 @@ class Food extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use TracksCreatedBy;
 
     // Laravel's pluralizer treats "Food" as uncountable and would guess the
     // table name "food" (singular) — same class of bug as Media/"medium".
@@ -44,6 +46,7 @@ class Food extends Model
         'unit_type',
         'grams_per_unit',
         'vitamins',
+        'created_by',
     ];
 
     protected function casts(): array
@@ -56,7 +59,13 @@ class Food extends Model
             'fat_per_100g' => 'decimal:2',
             'grams_per_unit' => 'decimal:2',
             'vitamins' => 'array',
+            'created_by' => 'integer',
         ];
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function consumptions(): HasMany

@@ -60,6 +60,17 @@
                     <span class="public-editorial-heading hidden text-xl font-semibold tracking-tight text-[#1d1d1f] md:inline dark:text-gray-100">{{ config('app.name') }}</span>
                 </a>
 
+                <div class="hidden w-full max-w-sm xl:block">
+                    <x-global-search
+                        action="{{ route('search') }}"
+                        value="{{ request('q', '') }}"
+                        placeholder="{{ __('Search content...') }}"
+                        wrapper-class="flex w-full items-center gap-2"
+                        input-class="w-full rounded-full border border-gray-300 bg-white/80 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-900/80 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-gray-200 dark:focus:ring-gray-800"
+                        button-class="rounded-full bg-gray-900 px-3.5 py-2 text-xs font-medium text-white transition hover:bg-black dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+                    />
+                </div>
+
                 <div class="flex items-center gap-2 md:gap-3">
                     <a href="{{ route('home') }}" class="rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide {{ request()->routeIs('home') ? 'border-[#1d1d1f] bg-[#1d1d1f] text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900' : 'border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-300' }}">{{ __('Home') }}</a>
                     <a href="{{ route('blog.index') }}" class="rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide {{ request()->routeIs('blog.*') ? 'border-[#1d1d1f] bg-[#1d1d1f] text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900' : 'border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-300' }}">{{ __('Stories') }}</a>
