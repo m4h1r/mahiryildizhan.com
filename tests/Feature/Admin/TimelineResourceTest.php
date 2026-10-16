@@ -67,5 +67,6 @@ it('lets an admin destroy a timeline event', function (): void {
         ->delete(route('admin.timeline.destroy', $event))
         ->assertRedirect();
 
-    $this->assertDatabaseMissing('timeline_events', ['id' => $event->id]);
+    // SoftDeletes (L2): the row is retained with deleted_at, not removed.
+    $this->assertSoftDeleted('timeline_events', ['id' => $event->id]);
 });

@@ -36,13 +36,19 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
+      - name: Security advisories (composer audit, S10)
+        run: composer audit --no-interaction
+
       - name: Step 1 — Code style (Pint)
         run: ./vendor/bin/pint --test
 
       - name: Step 2 — Static analysis (Larastan)
         run: ./vendor/bin/phpstan analyse --error-format=github
 
-      - name: Step 3 — Tests (Pest, SQLite :memory:)
+      - name: Step 3 — Translation parity (T3)
+        run: php scripts/lang-parity.php
+
+      - name: Step 4 — Tests (Pest, SQLite :memory:)
         run: php artisan test
 
   assets:

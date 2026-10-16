@@ -55,9 +55,10 @@ class Phase12FlowTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee(__('Published Posts'))
-            ->assertSee(__('Pending Comments'))
-            ->assertSee(__('Monthly Net'));
+            ->assertSee(__('Latest Posts'))
+            ->assertSee(__('Recent Comments'))
+            ->assertSee(__('Monthly Net'))
+            ->assertSee('Published'); // the published post title appears in the widget
     }
 
     public function test_reports_support_multiple_year_filters(): void

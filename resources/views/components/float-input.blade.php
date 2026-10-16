@@ -8,6 +8,8 @@
 
 @php
     $id = $id ?? $name;
+    $hasError = $errors->has($name);
+    $errorId = $id.'-error';
 @endphp
 
 <div class="relative">
@@ -17,6 +19,7 @@
         id="{{ $id }}"
         placeholder=" "
         value="{{ old($name, $value) }}"
+        @if ($hasError) aria-invalid="true" aria-describedby="{{ $errorId }}" @endif
         {{ $attributes->merge(['class' => 'form-input-admin peer']) }}
     />
     <label
@@ -25,4 +28,10 @@
     >
         {{ $label }}
     </label>
+
+    @error($name)
+        <p id="{{ $errorId }}" class="mt-1 text-xs" style="color: var(--color-danger-text);" role="alert">
+            {{ $message }}
+        </p>
+    @enderror
 </div>

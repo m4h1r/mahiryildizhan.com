@@ -8,6 +8,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Intervention\Zodiac\Sign;
+use Intervention\Zodiac\Western\Signs\Aquarius;
+use Intervention\Zodiac\Western\Signs\Aries;
+use Intervention\Zodiac\Western\Signs\Cancer;
+use Intervention\Zodiac\Western\Signs\Capricorn;
+use Intervention\Zodiac\Western\Signs\Gemini;
+use Intervention\Zodiac\Western\Signs\Leo;
+use Intervention\Zodiac\Western\Signs\Libra;
+use Intervention\Zodiac\Western\Signs\Pisces;
+use Intervention\Zodiac\Western\Signs\Sagittarius;
+use Intervention\Zodiac\Western\Signs\Scorpio;
+use Intervention\Zodiac\Western\Signs\Taurus;
+use Intervention\Zodiac\Western\Signs\Virgo;
 
 class Person extends Model
 {
@@ -157,18 +169,18 @@ class Person extends Model
         }
 
         return match (Sign::fromDate($this->birthday)::class) {
-            \Intervention\Zodiac\Western\Signs\Aries::class => '♈︎',
-            \Intervention\Zodiac\Western\Signs\Taurus::class => '♉︎',
-            \Intervention\Zodiac\Western\Signs\Gemini::class => '♊︎',
-            \Intervention\Zodiac\Western\Signs\Cancer::class => '♋︎',
-            \Intervention\Zodiac\Western\Signs\Leo::class => '♌︎',
-            \Intervention\Zodiac\Western\Signs\Virgo::class => '♍︎',
-            \Intervention\Zodiac\Western\Signs\Libra::class => '♎︎',
-            \Intervention\Zodiac\Western\Signs\Scorpio::class => '♏︎',
-            \Intervention\Zodiac\Western\Signs\Sagittarius::class => '♐︎',
-            \Intervention\Zodiac\Western\Signs\Capricorn::class => '♑︎',
-            \Intervention\Zodiac\Western\Signs\Aquarius::class => '♒︎',
-            \Intervention\Zodiac\Western\Signs\Pisces::class => '♓︎',
+            Aries::class => '♈︎',
+            Taurus::class => '♉︎',
+            Gemini::class => '♊︎',
+            Cancer::class => '♋︎',
+            Leo::class => '♌︎',
+            Virgo::class => '♍︎',
+            Libra::class => '♎︎',
+            Scorpio::class => '♏︎',
+            Sagittarius::class => '♐︎',
+            Capricorn::class => '♑︎',
+            Aquarius::class => '♒︎',
+            Pisces::class => '♓︎',
             default => null,
         };
     }

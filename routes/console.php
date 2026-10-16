@@ -110,10 +110,10 @@ Artisan::command('media:migrate-covers {--dry-run}', function () {
 })->purpose('Migrate legacy posts.cover file paths into media records and assign cover_media_id.');
 
 Schedule::job(new GenerateSitemapJob)->daily();
-// `model:prune` for Post/Comment/Person was removed: none of these models implement
-// Prunable, so this command threw BadMethodCallException on every scheduled run
-// (see AUDIT_REPORT.md D9). Re-add only once a real retention policy + prunable()
-// scope is defined — until then there is nothing here for the scheduler to do.
+// KVKK data retention (S17) — policies in config/retention.php, enforced daily.
+Schedule::command('data:prune')->daily()->at('03:30');
+// llms.txt regeneration (E9) — generated, never hand-edited.
+Schedule::command('llms:generate')->daily()->at('03:45');
 Schedule::command('alice:prune-audit-log')->weekly();
 
 // Backups (spatie/laravel-backup) — B1

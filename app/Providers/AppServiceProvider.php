@@ -11,6 +11,7 @@ use App\Models\PurchaseItem;
 use App\Models\Setting;
 use App\Models\TodoItem;
 use App\Observers\ActivityLogObserver;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -36,6 +37,9 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Password::defaults(fn () => Password::min(12)->uncompromised());
+
+        // Pulse dashboard (W6) — admin only, in every environment.
+        Gate::define('viewPulse', fn ($user = null) => (bool) optional($user)->is_admin);
 
         try {
             if (Schema::hasTable('settings')) {

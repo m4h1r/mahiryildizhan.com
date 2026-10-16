@@ -1,0 +1,32 @@
+{
+    "name": "Mahir Yıldızhan",
+    "short_name": "MY",
+    "description": "Mahir Yıldızhan — kişisel blog ve yazılar.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#fbfbfd",
+    "theme_color": "#0071e3",
+    "lang": "tr",
+    "dir": "ltr",
+    "icons": [
+        {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/maskable-icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

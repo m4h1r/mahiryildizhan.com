@@ -64,5 +64,6 @@ it('lets an admin destroy an adage', function (): void {
         ->delete(route('admin.adages.destroy', $adage))
         ->assertRedirect();
 
-    $this->assertDatabaseMissing('adages', ['id' => $adage->id]);
+    // SoftDeletes (L2): the row is retained with deleted_at, not removed.
+    $this->assertSoftDeleted('adages', ['id' => $adage->id]);
 });

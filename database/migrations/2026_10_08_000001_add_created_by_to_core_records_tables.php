@@ -37,15 +37,19 @@ return new class extends Migration
             }
         }
 
-        User::query()->updateOrCreate(
-            ['id' => 2],
-            [
+        // Alice (AI assistant) user, pinned to id=2. `id` is not fillable, so the
+        // previous updateOrCreate(['id'=>2]) silently fell through to id=1 and
+        // collided with fixtures that hardcode id=1 — force the key explicitly.
+        if (! User::query()->whereKey(2)->exists()) {
+            $alice = new User([
                 'name' => 'Alice Hermes',
                 'email' => 'alice.hermes.__1791661575191306000@local.test',
                 'password' => bcrypt('password123'),
                 'is_admin' => false,
-            ]
-        );
+            ]);
+            $alice->id = 2;
+            $alice->save();
+        }
     }
 
     /**

@@ -38,7 +38,7 @@ class BlogSeoTest extends TestCase
             ->assertOk()
             ->assertSee('<script type="application/ld+json"', false)
             ->assertSee('<link rel="canonical" href="'.route('blog.show', $post->slug).'">', false)
-            ->assertSee('<meta property="og:title" content="SEO Title">', false);
+            ->assertSee('<meta property="og:title" content="SEO Title | MY">', false);
     }
 
     private function createPublishedPost(array $attributes = []): Post

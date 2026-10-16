@@ -2,8 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Mail\EmailChangeAlertMail;
+use App\Mail\PendingEmailVerificationMail;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
@@ -21,7 +24,7 @@ class ProfileTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_profile_information_can_be_updated(): void
+    public function test_profile_name_can_be_updated(): void
     {
         $user = User::factory()->create();
 
@@ -29,18 +32,67 @@ class ProfileTest extends TestCase
             ->actingAs($user)
             ->patch('/profile', [
                 'name' => 'Test User',
-                'email' => 'test@example.com',
+                'email' => $user->email,
             ]);
 
         $response
             ->assertSessionHasNoErrors()
             ->assertRedirect('/profile');
 
+        $this->assertSame('Test User', $user->refresh()->name);
+    }
+
+    public function test_email_change_is_parked_until_confirmed(): void
+    {
+        Mail::fake();
+
+        $user = User::factory()->create(['email' => 'old@example.com']);
+
+        $this->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => 'new@example.com',
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
         $user->refresh();
 
-        $this->assertSame('Test User', $user->name);
-        $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
+        // AC3 — users.email is NOT changed yet; the new address is parked.
+        $this->assertSame('old@example.com', $user->email);
+        $this->assertSame('new@example.com', $user->pending_email);
+        $this->assertNotNull($user->email_verified_at);
+
+        Mail::assertQueued(PendingEmailVerificationMail::class);
+        Mail::assertQueued(EmailChangeAlertMail::class);
+    }
+
+    public function test_email_change_completes_after_confirmation(): void
+    {
+        Mail::fake();
+
+        $user = User::factory()->create(['email' => 'old@example.com']);
+
+        $this->actingAs($user)->patch('/profile', [
+            'name' => $user->name,
+            'email' => 'new@example.com',
+        ]);
+
+        $token = null;
+        Mail::assertQueued(PendingEmailVerificationMail::class, function ($mail) use (&$token) {
+            preg_match('#/profile/email/verify/([^/?]+)#', $mail->verificationUrl, $m);
+            $token = $m[1] ?? null;
+
+            return $token !== null;
+        });
+
+        $this->actingAs($user->fresh())
+            ->get("/profile/email/verify/{$token}")
+            ->assertRedirect('/profile');
+
+        $user->refresh();
+        $this->assertSame('new@example.com', $user->email);
+        $this->assertNull($user->pending_email);
     }
 
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void

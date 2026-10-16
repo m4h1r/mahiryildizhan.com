@@ -236,7 +236,7 @@ class ReportController extends Controller
             ->whereYear('date', $year)
             ->where('paid_by_others', false)
             ->whereIn('expense_type_id', $topCatIdsForHeatmap)
-            ->selectRaw('expense_type_id, MONTH(date) as month, SUM(total) as total')
+            ->selectRaw("expense_type_id, {$this->monthExpr()} as month, SUM(total) as total")
             ->when($tryCurrencyId, fn ($q) => $q->where('currency_id', $tryCurrencyId))
             ->groupBy('expense_type_id', 'month')
             ->get();
@@ -287,7 +287,7 @@ class ReportController extends Controller
         $incTypeMonthlyRows = Income::query()
             ->whereYear('date', $year)
             ->whereIn('income_type_id', $topIncTypesForHeatmap)
-            ->selectRaw('income_type_id, MONTH(date) as month, SUM(amount) as total')
+            ->selectRaw("income_type_id, {$this->monthExpr()} as month, SUM(amount) as total")
             ->when($tryCurrencyId, fn ($q) => $q->where('currency_id', $tryCurrencyId))
             ->groupBy('income_type_id', 'month')
             ->get();
@@ -352,7 +352,7 @@ class ReportController extends Controller
             ->where('paid_by_others', false)
             ->whereNotNull('stakeholder_id')
             ->when($tryCurrencyId, fn ($q) => $q->where('currency_id', $tryCurrencyId))
-            ->selectRaw('stakeholder_id, MONTH(date) as month, SUM(total) as total')
+            ->selectRaw("stakeholder_id, {$this->monthExpr()} as month, SUM(total) as total")
             ->groupBy('stakeholder_id', 'month')
             ->get();
 
@@ -474,5 +474,18 @@ class ReportController extends Controller
                 ],
             ],
         ]);
+    }
+
+    /**
+     * Portable "month number from a date column" SQL expression (X3) — MySQL's
+     * MONTH() does not exist on SQLite (test DB) or PostgreSQL.
+     */
+    private function monthExpr(string $column = 'date'): string
+    {
+        return match (DB::connection()->getDriverName()) {
+            'sqlite' => "CAST(strftime('%m', {$column}) AS INTEGER)",
+            'pgsql' => "EXTRACT(MONTH FROM {$column})",
+            default => "MONTH({$column})",
+        };
     }
 }

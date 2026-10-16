@@ -20,7 +20,11 @@ class SmokeTest extends TestCase
      */
     public static function publicRoutes(): array
     {
-        return ['/', '/blog', '/timeline', '/biolink', '/search', '/sitemap.xml', '/ads.txt'];
+        return [
+            '/', '/blog', '/timeline', '/biolink', '/search', '/about',
+            '/sitemap.xml', '/ads.txt', '/robots.txt', '/llms.txt', '/en/llms.txt',
+            '/privacy-policy', '/kvkk', '/cookie-policy', '/terms',
+        ];
     }
 
     public function test_public_routes_have_no_server_error(): void

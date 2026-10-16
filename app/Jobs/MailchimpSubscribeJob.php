@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class MailchimpSubscribeJob implements ShouldQueue
 {
@@ -32,5 +33,13 @@ class MailchimpSubscribeJob implements ShouldQueue
         if (($result['success'] ?? false) && ! empty($result['member_id'])) {
             $subscriber->update(['mailchimp_id' => $result['member_id']]);
         }
+    }
+
+    public function failed(\Throwable $exception): void
+    {
+        Log::error('MailchimpSubscribeJob failed.', [
+            'subscriber_id' => $this->subscriberId,
+            'exception' => $exception->getMessage(),
+        ]);
     }
 }

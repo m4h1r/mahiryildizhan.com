@@ -4,6 +4,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <link rel="manifest" href="{{ asset('manifest.json') }}">
+        {{-- theme-color + favicons + apple-touch-icon are emitted once by <x-brand-meta /> below (V5) --}}
         <x-seo-meta
             :post="$seoPost ?? ($post ?? null)"
             :title="$title ?? null"
@@ -30,6 +32,8 @@
             })();
         </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @stack('styles')
+        <x-speculation-rules />
         <x-brand-vars />
         <x-consent-defaults />
         <x-adsense-head />
@@ -72,6 +76,7 @@
                 </div>
 
                 <div class="flex items-center gap-2 md:gap-3">
+                    <x-language-switcher />
                     <a href="{{ route('home') }}" class="rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide {{ request()->routeIs('home') ? 'border-[#1d1d1f] bg-[#1d1d1f] text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900' : 'border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-300' }}">{{ __('Home') }}</a>
                     <a href="{{ route('blog.index') }}" class="rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide {{ request()->routeIs('blog.*') ? 'border-[#1d1d1f] bg-[#1d1d1f] text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900' : 'border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-300' }}">{{ __('Stories') }}</a>
                     <a href="{{ route('about') }}" class="rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide {{ request()->routeIs('about') ? 'border-[#1d1d1f] bg-[#1d1d1f] text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900' : 'border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-300' }}">{{ __('About') }}</a>
@@ -113,6 +118,13 @@
         <footer class="public-glass border-t">
             <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-3 px-4 py-6 text-xs text-gray-500 md:flex-row md:items-center">
                 <p>© {{ now()->year }} {{ config('app.name') }}. {{ __('Designed for reading.') }}</p>
+
+                <nav class="flex flex-wrap items-center gap-x-4 gap-y-1" aria-label="{{ __('Legal') }}">
+                    <a href="{{ route('legal.privacy') }}" class="hover:text-gray-900 dark:hover:text-gray-200">{{ __('Privacy Policy') }}</a>
+                    <a href="{{ route('legal.kvkk') }}" class="hover:text-gray-900 dark:hover:text-gray-200">{{ __('KVKK Disclosure') }}</a>
+                    <a href="{{ route('legal.cookies') }}" class="hover:text-gray-900 dark:hover:text-gray-200">{{ __('Cookie Policy') }}</a>
+                    <a href="{{ route('legal.terms') }}" class="hover:text-gray-900 dark:hover:text-gray-200">{{ __('Terms of Use') }}</a>
+                </nav>
 
                 <a
                     href="{{ route('login') }}"

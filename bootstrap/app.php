@@ -5,6 +5,7 @@ use App\Http\Middleware\AliceAuthenticate;
 use App\Http\Middleware\AliceDryRun;
 use App\Http\Middleware\AliceIdempotency;
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\IndexingPolicy;
 use App\Http\Middleware\NoIndex;
 use App\Http\Middleware\SecurityHeadersMiddleware;
 use App\Http\Middleware\SetLocale;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             SetLocale::class,
             SecurityHeadersMiddleware::class,
+            IndexingPolicy::class,
         ]);
 
         $middleware->alias([

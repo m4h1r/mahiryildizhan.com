@@ -34,4 +34,12 @@ class SendCommentNotificationJob implements ShouldQueue
             'post_slug' => $comment->post?->slug,
         ]);
     }
+
+    public function failed(\Throwable $exception): void
+    {
+        Log::error('SendCommentNotificationJob failed.', [
+            'comment_id' => $this->commentId,
+            'exception' => $exception->getMessage(),
+        ]);
+    }
 }

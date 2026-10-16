@@ -53,6 +53,19 @@ class Phase11FlowTest extends TestCase
 
         $response->assertRedirect(route('home'));
 
+        // Double opt-in: the row is created as pending until the e-mail link is clicked.
+        $this->assertDatabaseHas('subscribers', [
+            'email' => 'reader@example.com',
+            'status' => 'pending',
+        ]);
+
+        $subscriber = Subscriber::query()->where('email', 'reader@example.com')->firstOrFail();
+
+        $this->get(route('public.subscribers.confirm', [
+            'subscriber' => $subscriber,
+            'token' => $subscriber->confirmation_token,
+        ]))->assertRedirect(route('home'));
+
         $this->assertDatabaseHas('subscribers', [
             'email' => 'reader@example.com',
             'status' => 'active',
@@ -62,9 +75,13 @@ class Phase11FlowTest extends TestCase
 
     public function test_subscribe_stores_mailchimp_member_id_when_api_succeeds(): void
     {
-        putenv('MAILCHIMP_API_KEY=test-key-us1');
-        putenv('MAILCHIMP_LIST_ID=list123');
-        putenv('MAILCHIMP_DATACENTER=us1');
+        // MailchimpService resolves credentials from config (loaded at boot), so
+        // putenv() after boot has no effect — set config directly.
+        config([
+            'services.mailchimp.api_key' => 'test-key-us1',
+            'services.mailchimp.list_id' => 'list123',
+            'services.mailchimp.datacenter' => 'us1',
+        ]);
 
         Http::fake([
             'https://us1.api.mailchimp.com/3.0/lists/list123/members' => Http::response([
@@ -72,14 +89,21 @@ class Phase11FlowTest extends TestCase
             ], 200),
         ]);
 
-        $response = $this->from(route('home'))->post(route('public.subscribers.store'), [
+        $this->from(route('home'))->post(route('public.subscribers.store'), [
             'email' => 'sync@example.com',
-        ]);
+        ])->assertRedirect(route('home'));
 
-        $response->assertRedirect(route('home'));
+        // Mailchimp sync happens on confirmation, not on the initial pending store.
+        $subscriber = Subscriber::query()->where('email', 'sync@example.com')->firstOrFail();
+
+        $this->get(route('public.subscribers.confirm', [
+            'subscriber' => $subscriber,
+            'token' => $subscriber->confirmation_token,
+        ]))->assertRedirect(route('home'));
 
         $this->assertDatabaseHas('subscribers', [
             'email' => 'sync@example.com',
+            'status' => 'active',
             'mailchimp_id' => 'member_abc',
         ]);
 

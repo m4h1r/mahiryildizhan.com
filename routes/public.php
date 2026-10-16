@@ -10,7 +10,9 @@ use App\Http\Controllers\PublicSite\TimelineController;
 use App\Models\Post;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     $latestPost = Post::query()
@@ -39,18 +41,50 @@ Route::get('/timeline', [TimelineController::class, 'publicTimeline'])->name('ti
 Route::get('/biolink', [LinkController::class, 'biolink'])->name('biolink');
 Route::view('/about', 'public.about')->name('about');
 Route::get('/search', [SearchController::class, 'search'])->name('search');
+
+// Legal pages (E11) — both locales via session locale. Content must be
+// reviewed/finalised by the site owner or their lawyer.
+Route::view('/privacy-policy', 'public.legal.privacy')->name('legal.privacy');
+Route::view('/kvkk', 'public.legal.kvkk')->name('legal.kvkk');
+Route::view('/cookie-policy', 'public.legal.cookies')->name('legal.cookies');
+Route::view('/terms', 'public.legal.terms')->name('legal.terms');
 Route::get('/files/{slug}', [LinkController::class, 'show'])->name('links.show');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap.xml');
 
 Route::get('/robots.txt', function () {
+    // E2: admin/auth paths are NOT listed here. A Disallow stops Googlebot from
+    // reading the noindex header (so the URL can stay indexed if linked) and
+    // publicly advertises the paths. They are protected by auth + the
+    // X-Robots-Tag: noindex header (IndexingPolicy / NoIndex), not by robots.txt.
+    //
+    // E2.1 default — allow citation, block training: AI search bots that cite
+    // sources are allowed; bots that scrape for model training are blocked.
     $lines = [
         'User-agent: *',
-        'Disallow: /admin',
-        'Disallow: /login',
-        'Disallow: /register',
-        'Disallow: /forgot-password',
-        'Disallow: /reset-password',
-        'Disallow: /profile',
+        'Allow: /',
+        '',
+        '# AI training crawlers — blocked (E2.1)',
+        'User-agent: GPTBot',
+        'Disallow: /',
+        '',
+        'User-agent: ClaudeBot',
+        'Disallow: /',
+        '',
+        'User-agent: Google-Extended',
+        'Disallow: /',
+        '',
+        'User-agent: CCBot',
+        'Disallow: /',
+        '',
+        '# AI search crawlers (citation) — allowed (E2.1)',
+        'User-agent: OAI-SearchBot',
+        'Allow: /',
+        '',
+        'User-agent: Claude-SearchBot',
+        'Allow: /',
+        '',
+        'User-agent: PerplexityBot',
+        'Allow: /',
         '',
         'Sitemap: '.route('sitemap.xml'),
     ];
@@ -74,9 +108,30 @@ Route::get('/ads.txt', function () {
         'Content-Type' => 'text/plain',
     ]);
 })->name('ads.txt');
-Route::post('/comments', [CommentController::class, 'store'])->name('public.comments.store');
-Route::post('/subscribe', [SubscriberController::class, 'store'])->name('public.subscribers.store');
+Route::post('/comments', [CommentController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('public.comments.store');
+Route::post('/subscribe', [SubscriberController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('public.subscribers.store');
 Route::get('/subscribe/confirm/{subscriber}', [SubscriberController::class, 'confirm'])->name('public.subscribers.confirm');
+
+$serveLlms = function (string $locale) {
+    $path = "llms/{$locale}.txt";
+
+    if (! Storage::disk('local')->exists($path)) {
+        Artisan::call('llms:generate');
+    }
+
+    abort_unless(Storage::disk('local')->exists($path), 404);
+
+    return response(Storage::disk('local')->get($path), 200, [
+        'Content-Type' => 'text/plain; charset=UTF-8',
+    ]);
+};
+
+Route::get('/llms.txt', fn () => $serveLlms('tr'))->name('llms.txt');
+Route::get('/en/llms.txt', fn () => $serveLlms('en'))->name('llms.txt.en');
 
 Route::get('/locale/{locale}', function (Request $request, string $locale) {
     if (! in_array($locale, ['tr', 'en'], true)) {

@@ -1,6 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:onlyTrashed\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Console/Commands/PruneRetentionData.php
+
+		-
 			message: '#^Relation ''user'' is not found in App\\Models\\ActivityLog model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
@@ -467,6 +473,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Auth/VerifyEmailController.php
+
+		-
+			message: '#^Cannot call method isFuture\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
 
 		-
 			message: '#^Relation ''author'' is not found in App\\Models\\Post model\.$#'
@@ -1267,6 +1279,12 @@ parameters:
 			path: app/Http/Resources/Alice/StakeholderResource.php
 
 		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$sector_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/StakeholderResource.php
+
+		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$status\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1279,19 +1297,13 @@ parameters:
 			path: app/Http/Resources/Alice/StakeholderResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$tax_office_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/StakeholderResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$taxOffice\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/Alice/StakeholderResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$sector_id\.$#'
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\StakeholderResource\:\:\$tax_office_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/Alice/StakeholderResource.php
@@ -1495,6 +1507,12 @@ parameters:
 			path: app/Http/Resources/Alice/TodoItemResource.php
 
 		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$importance\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$is_bucketlist\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1520,6 +1538,12 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Alice/TodoItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$urgency\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/Alice/TodoItemResource.php
@@ -1605,13 +1629,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\Person\:\:\$gender\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 3
 			path: app/Models/Person.php
 
 		-
 			message: '#^Parameter \#1 \$date of static method Intervention\\Zodiac\\Sign\:\:fromDate\(\) expects DateTimeInterface, string given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: app/Models/Person.php
 
 		-

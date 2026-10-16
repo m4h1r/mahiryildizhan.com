@@ -5,6 +5,7 @@ use App\Models\User;
 
 it('assigns created_by automatically from authenticated users and falls back to Alice Hermes', function (): void {
     $admin = actingAsAdmin();
+    test()->actingAs($admin);
     $alice = User::updateOrCreate(
         ['id' => 2],
         ['name' => 'Alice Hermes', 'email' => 'alice.hermes.__1791661575191638000@local.test', 'password' => bcrypt('password123'), 'is_admin' => false]

@@ -46,36 +46,105 @@
     $canonicalUrl = $canonical ?: ($post?->canonical_url ?: url()->current());
     $ogImageUrl = $resolveUrl($post?->og_image ?: $post?->cover_url ?: $post?->cover ?: $defaultOgImage);
     $schemaType = $post?->schema_type ?: 'WebPage';
-    $jsonLd = [
-        '@context' => 'https://schema.org',
-        '@type' => $schemaType,
-        'headline' => $post?->title ?: $pageTitle,
-        'description' => $metaDescription,
-        'url' => $canonicalUrl,
-        'publisher' => [
-            '@type' => 'Organization',
-            'name' => $siteName,
+    $home = rtrim(url('/'), '/').'/';
+    $orgId = $home.'#organization';
+    $siteId = $home.'#website';
+
+    // E10 — Organization + WebSite shipped on every page; per-type node + a
+    // BreadcrumbList describing the real path. Nothing is marked up that the
+    // page does not actually show.
+    $organization = [
+        '@type' => 'Organization',
+        '@id' => $orgId,
+        'name' => $siteName,
+        'url' => $home,
+    ];
+    $logoUrl = $resolveUrl($defaultOgImage) ?: asset('logo.png');
+    if ($logoUrl) {
+        $organization['logo'] = $logoUrl;
+    }
+
+    $website = [
+        '@type' => 'WebSite',
+        '@id' => $siteId,
+        'name' => $siteName,
+        'url' => $home,
+        'inLanguage' => str_replace('_', '-', app()->getLocale()),
+        'publisher' => ['@id' => $orgId],
+        'potentialAction' => [
+            '@type' => 'SearchAction',
+            'target' => [
+                '@type' => 'EntryPoint',
+                'urlTemplate' => route('search').'?q={search_term_string}',
+            ],
+            'query-input' => 'required name=search_term_string',
         ],
     ];
 
+    $pageNode = [
+        '@type' => $schemaType,
+        '@id' => $canonicalUrl.'#'.($post ? 'article' : 'webpage'),
+        'headline' => $post?->title ?: $pageTitle,
+        'name' => $pageTitle,
+        'description' => $metaDescription,
+        'url' => $canonicalUrl,
+        'isPartOf' => ['@id' => $siteId],
+        'inLanguage' => str_replace('_', '-', app()->getLocale()),
+    ];
+
     if ($ogImageUrl) {
-        $jsonLd['image'] = [$ogImageUrl];
+        $pageNode['image'] = [$ogImageUrl];
     }
-
     if ($post?->published_at) {
-        $jsonLd['datePublished'] = $post->published_at->toAtomString();
+        $pageNode['datePublished'] = $post->published_at->toAtomString();
     }
-
     if ($post?->updated_at) {
-        $jsonLd['dateModified'] = $post->updated_at->toAtomString();
+        $pageNode['dateModified'] = $post->updated_at->toAtomString();
+    }
+    if ($post?->author?->name) {
+        $pageNode['author'] = ['@type' => 'Person', 'name' => $post->author->name];
     }
 
-    if ($post?->author?->name) {
-        $jsonLd['author'] = [
-            '@type' => 'Person',
-            'name' => $post->author->name,
-        ];
+    // BreadcrumbList — Home, then the current section/post.
+    $crumbs = [[
+        '@type' => 'ListItem',
+        'position' => 1,
+        'name' => $siteName,
+        'item' => $home,
+    ]];
+    if (! $isHomeRoute) {
+        if ($isBlogPostRoute) {
+            $crumbs[] = [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => __('Stories'),
+                'item' => route('blog.index'),
+            ];
+            $crumbs[] = [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $postTitle ?: $pageTitle,
+                'item' => $canonicalUrl,
+            ];
+        } else {
+            $crumbs[] = [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => $pageTitle,
+                'item' => $canonicalUrl,
+            ];
+        }
     }
+    $breadcrumb = [
+        '@type' => 'BreadcrumbList',
+        '@id' => $canonicalUrl.'#breadcrumb',
+        'itemListElement' => $crumbs,
+    ];
+
+    $jsonLd = [
+        '@context' => 'https://schema.org',
+        '@graph' => [$organization, $website, $pageNode, $breadcrumb],
+    ];
 @endphp
 
 <title>{{ $pageTitle }}</title>

@@ -57,6 +57,37 @@
 		--color-warning: #d97706;
 		--color-danger: #dc2626;
 		--color-info: #0284c7;
+
+		/* Status 3-token recipe (V28) — bg + text + border for each of the 4
+		   roles. Status colour never lives inline in a view; <x-status-message>
+		   and these tokens are the only source. Never a 5th role. */
+		--color-success-bg: #f0fdf4;
+		--color-success-text: #166534;
+		--color-success-border: #bbf7d0;
+		--color-warning-bg: #fffbeb;
+		--color-warning-text: #92400e;
+		--color-warning-border: #fde68a;
+		--color-danger-bg: #fef2f2;
+		--color-danger-text: #991b1b;
+		--color-danger-border: #fecaca;
+		--color-info-bg: #eff6ff;
+		--color-info-text: #075985;
+		--color-info-border: #bae6fd;
+	}
+
+	:where(.dark) {
+		--color-success-bg: oklch(from #16a34a 0.23 c h);
+		--color-success-text: #86efac;
+		--color-success-border: oklch(from #16a34a 0.35 c h);
+		--color-warning-bg: oklch(from #d97706 0.24 c h);
+		--color-warning-text: #fcd34d;
+		--color-warning-border: oklch(from #d97706 0.38 c h);
+		--color-danger-bg: oklch(from #dc2626 0.24 c h);
+		--color-danger-text: #fca5a5;
+		--color-danger-border: oklch(from #dc2626 0.38 c h);
+		--color-info-bg: oklch(from #0284c7 0.24 c h);
+		--color-info-text: #7dd3fc;
+		--color-info-border: oklch(from #0284c7 0.38 c h);
 	}
 
 	html {

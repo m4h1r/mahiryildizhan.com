@@ -4,7 +4,7 @@
       "type": "stdio",
       "command": "/opt/homebrew/bin/node",
       "args": [
-        "/Users/mahiryildizhan/.vscode/extensions/vexp.vexp-vscode-3.1.1-darwin-arm64/dist/mcp-server.cjs"
+        "/Users/mahiryildizhan/.vscode/extensions/vexp.vexp-vscode-3.2.5-darwin-arm64/dist/mcp-server.cjs"
       ],
       "env": {
         "VEXP_WORKSPACE": "/Users/mahiryildizhan/Documents/Code/Laravel/mahiryildizhan.com"
