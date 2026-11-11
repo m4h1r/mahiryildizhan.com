@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Alice;
 
+use App\Support\Crm\CrmRules;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -34,6 +35,9 @@ class StorePersonRequest extends FormRequest
             'father_id' => 'nullable|exists:people,id',
             'mother_id' => 'nullable|exists:people,id',
             'partner_id' => 'nullable|exists:people,id',
+
+            // Person card (CRM) fields — same template as the admin form.
+            ...CrmRules::person(null),
         ];
     }
 

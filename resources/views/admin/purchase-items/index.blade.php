@@ -5,16 +5,16 @@
 
         <div class="flex flex-wrap items-center justify-between gap-3">
             {{-- Filtreler --}}
-            <div class="flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-800">
+            <div class="flex flex-wrap gap-1 rounded-xl glass-well p-1 dark:border-white/10 dark:bg-white/[0.06]">
                 @foreach (['all' => 'Tümü', 'pending' => 'Bekleyen', 'completed' => 'Satın Alındı', 'grocery' => 'Market', 'bucketlist' => 'Bucket List'] as $key => $label)
                     <a
                         href="{{ route('admin.purchase-items.index', ['filter' => $key]) }}"
-                        class="rounded-lg px-3 py-1.5 text-sm font-medium transition {{ $filter === $key ? 'bg-white shadow text-gray-900 dark:bg-gray-700 dark:text-gray-100' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}"
+                        class="rounded-lg px-3 py-1.5 text-sm font-medium transition {{ $filter === $key ? 'bg-[var(--glass-strong)] shadow-sm text-ink' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}"
                     >{{ $label }}</a>
                 @endforeach
             </div>
 
-            <a href="{{ route('admin.purchase-items.create') }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900">
+            <a href="{{ route('admin.purchase-items.create') }}" class="admin-btn admin-btn-primary">
                 + Yeni Alım
             </a>
         </div>
@@ -27,7 +27,7 @@
             @else
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="border-b border-gray-200 bg-gray-50/80 dark:border-gray-700 dark:bg-gray-900/40">
+                        <thead class="border-b border-glass bg-[var(--glass-hover)]">
                             <tr>
                                 <th class="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-300">Başlık</th>
                                 <th class="hidden px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-300 sm:table-cell">Maliyet</th>
@@ -36,9 +36,9 @@
                                 <th class="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-300"></th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                        <tbody class="divide-y divide-[var(--glass-line)]">
                             @foreach ($items as $item)
-                                <tr class="transition hover:bg-gray-50/60 dark:hover:bg-gray-900/30">
+                                <tr class="transition hover:bg-[var(--glass-hover)] dark:hover:bg-white/5">
                                     <td class="px-4 py-3">
                                         <div class="flex items-center gap-2">
                                             @if ($item->is_bucketlist)
@@ -67,7 +67,7 @@
                                             @method('PATCH')
                                             <button
                                                 type="submit"
-                                                class="inline-flex h-6 w-6 items-center justify-center rounded-full border-2 transition {{ $item->is_completed ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-gray-300 hover:border-emerald-400 dark:border-gray-600' }}"
+                                                class="inline-flex h-6 w-6 items-center justify-center rounded-full border-2 transition {{ $item->is_completed ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-[var(--field-line)] hover:border-emerald-400 dark:border-white/10' }}"
                                                 title="{{ $item->is_completed ? 'Geri al' : 'Tamamlandı işaretle' }}"
                                             >
                                                 @if ($item->is_completed)
@@ -86,7 +86,7 @@
                 </div>
 
                 @if ($items->hasPages())
-                    <div class="border-t border-gray-100 px-4 py-3 dark:border-gray-800">
+                    <div class="border-t border-glass px-4 py-3 dark:border-white/10">
                         {{ $items->links() }}
                     </div>
                 @endif

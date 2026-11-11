@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Alice;
 
+use App\Support\Crm\CrmRules;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -31,6 +32,9 @@ class UpdatePersonRequest extends FormRequest
             'eye_color_id' => 'nullable|exists:eye_colors,id',
             'blood_type_id' => 'nullable|exists:blood_types,id',
             'hair_color_id' => 'nullable|exists:hair_colors,id',
+
+            // Person card (CRM) fields — same template as the admin form.
+            ...CrmRules::person((int) $this->route('person') ?: null),
         ];
     }
 

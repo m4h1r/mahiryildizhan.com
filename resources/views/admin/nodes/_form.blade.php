@@ -23,11 +23,11 @@
 </div>
 
 <div class="mt-6 flex items-center gap-3">
-    <button class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900" type="submit">
+    <button class="admin-btn admin-btn-primary" type="submit">
         {{ $isEdit ? __('Update Node') : __('Create Node') }}
     </button>
 
-    <a href="{{ route('admin.nodes.index') }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium dark:border-gray-700">
+    <a href="{{ route('admin.nodes.index') }}" class="admin-btn admin-btn-ghost">
         {{ __('Cancel') }}
     </a>
 </div>

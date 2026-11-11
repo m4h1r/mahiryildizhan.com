@@ -14,6 +14,7 @@ use App\Models\IncomeType;
 use App\Models\InteractionType;
 use App\Models\PostCategory;
 use App\Models\PostLanguage;
+use App\Support\Crm\PersonCardSchema;
 use Illuminate\Http\JsonResponse;
 
 class MetaController extends AliceController
@@ -80,5 +81,13 @@ class MetaController extends AliceController
             ->values();
 
         return response()->json(['data' => $data]);
+    }
+
+    /**
+     * JSON Schema of the person card template (config/crm.php).
+     */
+    public function personCardSchema(): JsonResponse
+    {
+        return response()->json(PersonCardSchema::build());
     }
 }

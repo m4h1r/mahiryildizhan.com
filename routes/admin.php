@@ -16,7 +16,9 @@ use App\Http\Controllers\Admin\InteractionController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\NodeConnectionController;
 use App\Http\Controllers\Admin\NodeController;
+use App\Http\Controllers\Admin\PersonAssessmentController;
 use App\Http\Controllers\Admin\PersonController;
+use App\Http\Controllers\Admin\PersonFaceController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PurchaseItemController;
 use App\Http\Controllers\Admin\ReportController;
@@ -129,6 +131,15 @@ Route::delete('/subscribers/{subscriber}', [SubscriberController::class, 'destro
 Route::get('/people/search', [PersonController::class, 'search'])->name('admin.people.search');
 Route::get('/people/{person}', [PersonController::class, 'show'])->whereNumber('person')->name('admin.people.show');
 Route::get('/people/{person}/graph', [PersonController::class, 'showGraph'])->name('admin.people.graph');
+Route::scopeBindings()->group(function (): void {
+    Route::get('/people/{person}/faces/{face}/image', [PersonFaceController::class, 'image'])->name('admin.people.faces.image');
+    Route::post('/people/{person}/faces', [PersonFaceController::class, 'store'])->name('admin.people.faces.store');
+    Route::post('/people/{person}/faces/{face}/primary', [PersonFaceController::class, 'primary'])->name('admin.people.faces.primary');
+    Route::delete('/people/{person}/faces/{face}', [PersonFaceController::class, 'destroy'])->name('admin.people.faces.destroy');
+    Route::resource('/people/{person}/assessments', PersonAssessmentController::class)
+        ->except(['index', 'show'])
+        ->names('admin.people.assessments');
+});
 Route::resource('/people', PersonController::class)
     ->except(['show'])
     ->names('admin.people');

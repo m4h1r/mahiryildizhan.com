@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        <div id="node-graph" class="h-[75vh] min-h-[32rem] w-full rounded-xl border border-gray-200 bg-black dark:border-gray-800"></div>
+        <div id="node-graph" class="h-[75vh] min-h-[32rem] w-full rounded-xl border border-glass bg-black dark:border-white/10"></div>
     </section>
 
     <script nonce="{{ request()->attributes->get('csp_nonce', '') }}">

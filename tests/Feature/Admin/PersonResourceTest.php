@@ -31,7 +31,8 @@ it('lets an admin create a person', function (): void {
         'gender_id' => $gender->id,
     ]);
 
-    $response->assertRedirect(route('admin.people.index'));
+    $person = Person::query()->where('name', 'Ada')->firstOrFail();
+    $response->assertRedirect(route('admin.people.show', $person));
     $this->assertDatabaseHas('people', ['name' => 'Ada', 'surname' => 'Lovelace']);
 });
 
@@ -55,7 +56,7 @@ it('lets an admin update a person', function (): void {
         'surname' => $person->surname,
     ]);
 
-    $response->assertRedirect(route('admin.people.index'));
+    $response->assertRedirect(route('admin.people.show', $person));
     $this->assertDatabaseHas('people', ['id' => $person->id, 'name' => 'New Name']);
 });
 

@@ -8,7 +8,10 @@ use App\Http\Controllers\Alice\IncomeController;
 use App\Http\Controllers\Alice\InteractionController;
 use App\Http\Controllers\Alice\MetaController;
 use App\Http\Controllers\Alice\NodeController;
+use App\Http\Controllers\Alice\PersonAssessmentController;
+use App\Http\Controllers\Alice\PersonChannelController;
 use App\Http\Controllers\Alice\PersonController;
+use App\Http\Controllers\Alice\PersonFaceController;
 use App\Http\Controllers\Alice\PostController;
 use App\Http\Controllers\Alice\PurchaseItemController;
 use App\Http\Controllers\Alice\SettingController;
@@ -25,7 +28,7 @@ Route::prefix('v1/alice')
         // Health check (auth only, no audit)
         Route::get('/health', fn () => response()->json([
             'status' => 'ok',
-            'version' => '1.1.1',
+            'version' => '1.2.0',
             'timestamp' => now()->toIso8601String(),
         ]));
 
@@ -43,6 +46,7 @@ Route::prefix('v1/alice')
             Route::get('/post-categories', [MetaController::class, 'postCategories']);
             Route::get('/post-languages', [MetaController::class, 'postLanguages']);
             Route::get('/vitamins', [MetaController::class, 'vitamins']);
+            Route::get('/person-card-schema', [MetaController::class, 'personCardSchema']);
         });
 
         // Settings
@@ -55,6 +59,27 @@ Route::prefix('v1/alice')
 
         // People
         Route::apiResource('people', PersonController::class)->except(['create', 'edit']);
+
+        // Person card (CRM): channels, assessments (personality inventory), faces
+        Route::get('people/{person}/card', [PersonController::class, 'card'])->whereNumber('person');
+        Route::prefix('people/{person}')->whereNumber('person')->group(function () {
+            Route::get('channels', [PersonChannelController::class, 'index']);
+            Route::post('channels', [PersonChannelController::class, 'store']);
+            Route::match(['put', 'patch'], 'channels/{channel}', [PersonChannelController::class, 'update'])->whereNumber('channel');
+            Route::delete('channels/{channel}', [PersonChannelController::class, 'destroy'])->whereNumber('channel');
+
+            Route::get('assessments', [PersonAssessmentController::class, 'index']);
+            Route::post('assessments', [PersonAssessmentController::class, 'store']);
+            Route::get('assessments/{assessment}', [PersonAssessmentController::class, 'show'])->whereNumber('assessment');
+            Route::match(['put', 'patch'], 'assessments/{assessment}', [PersonAssessmentController::class, 'update'])->whereNumber('assessment');
+            Route::delete('assessments/{assessment}', [PersonAssessmentController::class, 'destroy'])->whereNumber('assessment');
+
+            Route::get('faces', [PersonFaceController::class, 'index']);
+            Route::post('faces', [PersonFaceController::class, 'store']);
+            Route::get('faces/{face}', [PersonFaceController::class, 'show'])->whereNumber('face');
+            Route::get('faces/{face}/image', [PersonFaceController::class, 'image'])->whereNumber('face');
+            Route::delete('faces/{face}', [PersonFaceController::class, 'destroy'])->whereNumber('face');
+        });
         Route::apiResource('stakeholders', StakeholderController::class)->except(['create', 'edit']);
         Route::apiResource('interactions', InteractionController::class)->except(['create', 'edit']);
 

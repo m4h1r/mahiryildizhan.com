@@ -181,12 +181,6 @@ parameters:
 			path: app/Http/Controllers/Admin/PersonController.php
 
 		-
-			message: '#^Cannot call method format\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Admin/PersonController.php
-
-		-
 			message: '#^Method App\\Http\\Controllers\\Admin\\PersonController\:\:addPersonNode\(\) is unused\.$#'
 			identifier: method.unused
 			count: 1
@@ -417,17 +411,11 @@ parameters:
 		-
 			message: '#^Relation ''bloodType'' is not found in App\\Models\\Person model\.$#'
 			identifier: larastan.relationExistence
-			count: 2
+			count: 1
 			path: app/Http/Controllers/Alice/PersonController.php
 
 		-
 			message: '#^Relation ''eyeColor'' is not found in App\\Models\\Person model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Http/Controllers/Alice/PersonController.php
-
-		-
-			message: '#^Relation ''father'' is not found in App\\Models\\Person model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
 			path: app/Http/Controllers/Alice/PersonController.php
@@ -435,23 +423,11 @@ parameters:
 		-
 			message: '#^Relation ''gender'' is not found in App\\Models\\Person model\.$#'
 			identifier: larastan.relationExistence
-			count: 2
-			path: app/Http/Controllers/Alice/PersonController.php
-
-		-
-			message: '#^Relation ''hairColor'' is not found in App\\Models\\Person model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Http/Controllers/Alice/PersonController.php
-
-		-
-			message: '#^Relation ''mother'' is not found in App\\Models\\Person model\.$#'
-			identifier: larastan.relationExistence
 			count: 1
 			path: app/Http/Controllers/Alice/PersonController.php
 
 		-
-			message: '#^Relation ''partner'' is not found in App\\Models\\Person model\.$#'
+			message: '#^Relation ''hairColor'' is not found in App\\Models\\Person model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
 			path: app/Http/Controllers/Alice/PersonController.php
@@ -949,48 +925,6 @@ parameters:
 			path: app/Http/Resources/Alice/NodeResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$address\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$birth_place\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$birthday\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$death_place\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$deathday\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$eyeColor\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1009,56 +943,8 @@ parameters:
 			path: app/Http/Resources/Alice/PersonResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$mobile\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$notes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$pictureUrl\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$second_surname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$surname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\PersonResource\:\:\$updated_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/PersonResource.php
-
-		-
-			message: '#^Call to an undefined method App\\Http\\Resources\\Alice\\PersonResource\:\:fullName\(\)\.$#'
-			identifier: method.notFound
 			count: 1
 			path: app/Http/Resources/Alice/PersonResource.php
 
@@ -1630,12 +1516,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\Person\:\:\$gender\.$#'
 			identifier: property.notFound
 			count: 3
-			path: app/Models/Person.php
-
-		-
-			message: '#^Parameter \#1 \$date of static method Intervention\\Zodiac\\Sign\:\:fromDate\(\) expects DateTimeInterface, string given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Models/Person.php
 
 		-

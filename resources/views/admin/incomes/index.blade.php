@@ -147,7 +147,7 @@
                                         {{-- Düzenle --}}
                                         <a href="{{ route('admin.incomes.edit', $income) }}"
                                            title="Düzenle"
-                                           class="inline-flex items-center justify-center rounded-lg border border-gray-200 p-1.5 text-gray-600 transition hover:border-blue-300 hover:text-blue-700 dark:border-gray-700 dark:text-gray-300 dark:hover:border-blue-700 dark:hover:text-blue-400">
+                                           class="inline-flex items-center justify-center rounded-lg border border-glass p-1.5 text-gray-600 transition hover:border-blue-300 hover:text-blue-700 dark:border-white/10 dark:text-gray-300 dark:hover:border-blue-700 dark:hover:text-blue-400">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                             </svg>
@@ -158,7 +158,7 @@
                                             @csrf
                                             <button type="submit"
                                                     title="Çoğalt"
-                                                    class="inline-flex items-center justify-center rounded-lg border border-gray-200 p-1.5 text-gray-600 transition hover:border-gray-400 hover:text-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:text-gray-100">
+                                                    class="inline-flex items-center justify-center rounded-lg border border-glass p-1.5 text-gray-600 transition hover:border-gray-400 hover:text-gray-800 dark:border-white/10 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:text-gray-100">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                                     <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z"/>
                                                     <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z"/>

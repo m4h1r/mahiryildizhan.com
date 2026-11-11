@@ -130,7 +130,7 @@
                 type="checkbox"
                 name="is_bucketlist"
                 value="1"
-                class="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                class="h-4 w-4 rounded border-[var(--field-line)] text-purple-600 focus:ring-purple-500"
                 {{ old('is_bucketlist', $item->is_bucketlist ?? false) ? 'checked' : '' }}
                 @change="isBucketlist = $event.target.checked"
             >
@@ -142,7 +142,7 @@
                 type="checkbox"
                 name="is_completed"
                 value="1"
-                class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                class="h-4 w-4 rounded border-[var(--field-line)] text-emerald-600 focus:ring-emerald-500"
                 {{ old('is_completed', $item->is_completed ?? false) ? 'checked' : '' }}
             >
             <span>Tamamlandı</span>
@@ -160,7 +160,7 @@
                 <div class="space-y-1.5">
                     <p class="text-xs text-gray-500 dark:text-gray-400">Mevcut fotoğraf</p>
                     <label class="flex cursor-pointer items-center gap-2 text-xs text-red-500">
-                        <input type="checkbox" name="remove_image" value="1" class="h-3.5 w-3.5 rounded border-gray-300 text-red-500">
+                        <input type="checkbox" name="remove_image" value="1" class="h-3.5 w-3.5 rounded border-[var(--field-line)] text-red-500">
                         Fotoğrafı sil
                     </label>
                 </div>

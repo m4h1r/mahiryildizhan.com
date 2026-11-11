@@ -31,11 +31,11 @@
     </div>
 
     <div class="flex items-center gap-3">
-        <button class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900" type="submit">
+        <button class="admin-btn admin-btn-primary" type="submit">
             {{ $isEdit ? 'Güncelle' : 'Oluştur' }}
         </button>
 
-        <a href="{{ route('admin.consumptions.index') }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium dark:border-gray-700">
+        <a href="{{ route('admin.consumptions.index') }}" class="admin-btn admin-btn-ghost">
             İptal
         </a>
     </div>

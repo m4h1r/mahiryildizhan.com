@@ -14,7 +14,7 @@
         }
     }
 </style>
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4 transition-colors duration-200">
+<div class="min-h-screen py-8 px-2 sm:px-4">
     <div class="max-w-7xl mx-auto">
         {{-- Header --}}
         <div class="mb-8 text-center">
@@ -52,7 +52,7 @@
                 <div class="flex items-center">
                     {{-- Paternal Grandfather --}}
                     @if($person->father->father)
-                    <a href="{{ route('admin.people.graph', $person->father->father->id) }}" class="block w-48 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-700 rounded-xl shadow-lg p-3 border border-blue-200 dark:border-blue-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
+                    <a href="{{ route('admin.people.graph', $person->father->father->id) }}" class="block w-48 bg-gradient-to-br from-blue-50/75 to-blue-100/55 dark:from-blue-500/20 dark:to-blue-500/10 backdrop-blur-md rounded-xl shadow-lg p-3 border border-blue-200 dark:border-blue-400/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
                         
                         {{-- Death Ribbon --}}
                         @if($person->father->father->deathday)
@@ -87,7 +87,7 @@
 
                     {{-- Paternal Grandmother --}}
                     @if($person->father->mother)
-                    <a href="{{ route('admin.people.graph', $person->father->mother->id) }}" class="block w-48 bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-800 dark:to-pink-700 rounded-xl shadow-lg p-3 border border-pink-200 dark:border-pink-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
+                    <a href="{{ route('admin.people.graph', $person->father->mother->id) }}" class="block w-48 bg-gradient-to-br from-pink-50/75 to-pink-100/55 dark:from-pink-500/20 dark:to-pink-500/10 backdrop-blur-md rounded-xl shadow-lg p-3 border border-pink-200 dark:border-pink-400/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
                         
                         {{-- Death Ribbon --}}
                         @if($person->father->mother->deathday)
@@ -122,7 +122,7 @@
                 <div class="flex items-center">
                     {{-- Maternal Grandfather --}}
                     @if($person->mother->father)
-                    <a href="{{ route('admin.people.graph', $person->mother->father->id) }}" class="block w-48 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-700 rounded-xl shadow-lg p-3 border border-blue-200 dark:border-blue-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
+                    <a href="{{ route('admin.people.graph', $person->mother->father->id) }}" class="block w-48 bg-gradient-to-br from-blue-50/75 to-blue-100/55 dark:from-blue-500/20 dark:to-blue-500/10 backdrop-blur-md rounded-xl shadow-lg p-3 border border-blue-200 dark:border-blue-400/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
                         
                         {{-- Death Ribbon --}}
                         @if($person->mother->father->deathday)
@@ -157,7 +157,7 @@
 
                     {{-- Maternal Grandmother --}}
                     @if($person->mother->mother)
-                    <a href="{{ route('admin.people.graph', $person->mother->mother->id) }}" class="block w-48 bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-800 dark:to-pink-700 rounded-xl shadow-lg p-3 border border-pink-200 dark:border-pink-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
+                    <a href="{{ route('admin.people.graph', $person->mother->mother->id) }}" class="block w-48 bg-gradient-to-br from-pink-50/75 to-pink-100/55 dark:from-pink-500/20 dark:to-pink-500/10 backdrop-blur-md rounded-xl shadow-lg p-3 border border-pink-200 dark:border-pink-400/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
                         
                         {{-- Death Ribbon --}}
                         @if($person->mother->mother->deathday)
@@ -207,7 +207,7 @@
                     @endif
                     
                     <div class="text-center">
-                        <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-4 border-blue-300 dark:border-blue-600 shadow-lg">
+                        <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-4 border-blue-300 dark:border-blue-400/30 shadow-lg">
                             <img src="{{ $person->father->picture_url }}" 
                                  alt="{{ $person->father->fullName() }}"
                                  class="w-full h-full object-cover">
@@ -245,7 +245,7 @@
                     @endif
                     
                     <div class="text-center">
-                        <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-4 border-pink-300 dark:border-pink-600 shadow-lg">
+                        <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden border-4 border-pink-300 dark:border-pink-400/30 shadow-lg">
                             <img src="{{ $person->mother->picture_url }}" 
                                  alt="{{ $person->mother->fullName() }}"
                                  class="w-full h-full object-cover">
@@ -293,7 +293,7 @@
                 @if($siblings->count() > 0)
                 <div class="flex flex-row gap-8 flex-nowrap">
                     @foreach($siblings->where('birthday', '<', $person->birthday ?? '9999-12-31') as $sibling)
-                    <a href="{{ route('admin.people.graph', $sibling->id) }}" class="block w-48 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-800 dark:to-indigo-700 rounded-xl shadow-lg p-3 border border-indigo-200 dark:border-indigo-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
+                    <a href="{{ route('admin.people.graph', $sibling->id) }}" class="block w-48 bg-gradient-to-br from-indigo-50/75 to-indigo-100/55 dark:from-indigo-500/20 dark:to-indigo-500/10 backdrop-blur-md rounded-xl shadow-lg p-3 border border-indigo-200 dark:border-indigo-400/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
                         
                         {{-- Death Ribbon --}}
                         @if($sibling->deathday)
@@ -329,15 +329,15 @@
                         // Determine center person card colors based on gender
                         if ($person->gender_id == 1) {
                             $centerCardBg = 'bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 dark:from-blue-900 dark:via-blue-800 dark:to-blue-700';
-                            $centerCardBorder = 'border-blue-400 dark:border-blue-600';
+                            $centerCardBorder = 'border-blue-400 dark:border-blue-400/30';
                             $centerPhotoRing = 'ring-blue-300 dark:ring-blue-700';
                         } elseif ($person->gender_id == 2) {
                             $centerCardBg = 'bg-gradient-to-br from-pink-100 via-pink-200 to-pink-300 dark:from-pink-900 dark:via-pink-800 dark:to-pink-700';
-                            $centerCardBorder = 'border-pink-400 dark:border-pink-600';
+                            $centerCardBorder = 'border-pink-400 dark:border-pink-400/30';
                             $centerPhotoRing = 'ring-pink-300 dark:ring-pink-700';
                         } else {
                             $centerCardBg = 'bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700';
-                            $centerCardBorder = 'border-gray-400 dark:border-gray-600';
+                            $centerCardBorder = 'border-gray-400 dark:border-gray-400/30';
                             $centerPhotoRing = 'ring-gray-300 dark:ring-gray-700';
                         }
                     @endphp
@@ -349,7 +349,7 @@
                         @endif
                         
                         <div class="relative text-center">
-                            <div class="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden border-4 border-yellow-400 dark:border-yellow-600 shadow-2xl ring-4 {{ $centerPhotoRing }}">
+                            <div class="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden border-4 border-yellow-400 dark:border-yellow-400/30 shadow-2xl ring-4 {{ $centerPhotoRing }}">
                                 <img src="{{ $person->picture_url }}" 
                                      alt="{{ $person->fullName() }}"
                                      class="w-full h-full object-cover">
@@ -386,22 +386,22 @@
                             // Determine spouse card colors based on gender
                             if ($person->partner->gender_id == 1) {
                                 $spouseCardBg = 'bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 dark:from-blue-900 dark:via-blue-800 dark:to-blue-700';
-                                $spouseCardBorder = 'border-blue-400 dark:border-blue-600';
-                                $spousePhotoBorder = 'border-blue-400 dark:border-blue-600';
+                                $spouseCardBorder = 'border-blue-400 dark:border-blue-400/30';
+                                $spousePhotoBorder = 'border-blue-400 dark:border-blue-400/30';
                                 $spousePhotoRing = 'ring-blue-300 dark:ring-blue-700';
                                 $spouseDecoTop = 'from-blue-200 to-blue-400 dark:from-blue-600 dark:to-blue-800';
                                 $spouseDecoBottom = 'from-blue-200 to-blue-400 dark:from-blue-600 dark:to-blue-800';
                             } elseif ($person->partner->gender_id == 2) {
                                 $spouseCardBg = 'bg-gradient-to-br from-pink-100 via-pink-200 to-pink-300 dark:from-pink-900 dark:via-pink-800 dark:to-pink-700';
-                                $spouseCardBorder = 'border-pink-400 dark:border-pink-600';
-                                $spousePhotoBorder = 'border-pink-400 dark:border-pink-600';
+                                $spouseCardBorder = 'border-pink-400 dark:border-pink-400/30';
+                                $spousePhotoBorder = 'border-pink-400 dark:border-pink-400/30';
                                 $spousePhotoRing = 'ring-pink-300 dark:ring-pink-700';
                                 $spouseDecoTop = 'from-pink-200 to-pink-400 dark:from-pink-600 dark:to-pink-800';
                                 $spouseDecoBottom = 'from-pink-200 to-pink-400 dark:from-pink-600 dark:to-pink-800';
                             } else {
                                 $spouseCardBg = 'bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700';
-                                $spouseCardBorder = 'border-gray-400 dark:border-gray-600';
-                                $spousePhotoBorder = 'border-gray-400 dark:border-gray-600';
+                                $spouseCardBorder = 'border-gray-400 dark:border-gray-400/30';
+                                $spousePhotoBorder = 'border-gray-400 dark:border-gray-400/30';
                                 $spousePhotoRing = 'ring-gray-300 dark:ring-gray-700';
                                 $spouseDecoTop = 'from-gray-200 to-gray-400 dark:from-gray-600 dark:to-gray-800';
                                 $spouseDecoBottom = 'from-gray-200 to-gray-400 dark:from-gray-600 dark:to-gray-800';
@@ -445,7 +445,7 @@
                 @if($siblings->count() > 0)
                 <div class="flex flex-row gap-8 flex-nowrap">
                     @foreach($siblings->where('birthday', '>=', $person->birthday ?? '0000-01-01') as $sibling)
-                    <a href="{{ route('admin.people.graph', $sibling->id) }}" class="block w-48 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-800 dark:to-indigo-700 rounded-xl shadow-lg p-3 border border-indigo-200 dark:border-indigo-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
+                    <a href="{{ route('admin.people.graph', $sibling->id) }}" class="block w-48 bg-gradient-to-br from-indigo-50/75 to-indigo-100/55 dark:from-indigo-500/20 dark:to-indigo-500/10 backdrop-blur-md rounded-xl shadow-lg p-3 border border-indigo-200 dark:border-indigo-400/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer relative">
                         
                         {{-- Death Ribbon --}}
                         @if($sibling->deathday)
@@ -492,15 +492,15 @@
                         // Determine child card colors based on gender
                         if ($child->gender_id == 1) {
                             $childCardBg = 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-700';
-                            $childCardBorder = 'border-blue-200 dark:border-blue-600';
+                            $childCardBorder = 'border-blue-200 dark:border-blue-400/30';
                             $childPhotoBorder = 'border-blue-200 dark:border-blue-500';
                         } elseif ($child->gender_id == 2) {
                             $childCardBg = 'bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-800 dark:to-pink-700';
-                            $childCardBorder = 'border-pink-200 dark:border-pink-600';
+                            $childCardBorder = 'border-pink-200 dark:border-pink-400/30';
                             $childPhotoBorder = 'border-pink-200 dark:border-pink-500';
                         } else {
                             $childCardBg = 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700';
-                            $childCardBorder = 'border-gray-200 dark:border-gray-600';
+                            $childCardBorder = 'border-gray-200 dark:border-gray-400/30';
                             $childPhotoBorder = 'border-gray-200 dark:border-gray-500';
                         }
                     @endphp
@@ -541,15 +541,15 @@
                         // Determine child's spouse card colors based on gender
                         if ($child->partner->gender_id == 1) {
                             $childSpouseBg = 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-700';
-                            $childSpouseBorder = 'border-blue-200 dark:border-blue-600';
+                            $childSpouseBorder = 'border-blue-200 dark:border-blue-400/30';
                             $childSpousePhotoBorder = 'border-blue-200 dark:border-blue-500';
                         } elseif ($child->partner->gender_id == 2) {
                             $childSpouseBg = 'bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-800 dark:to-pink-700';
-                            $childSpouseBorder = 'border-pink-200 dark:border-pink-600';
+                            $childSpouseBorder = 'border-pink-200 dark:border-pink-400/30';
                             $childSpousePhotoBorder = 'border-pink-200 dark:border-pink-500';
                         } else {
                             $childSpouseBg = 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700';
-                            $childSpouseBorder = 'border-gray-200 dark:border-gray-600';
+                            $childSpouseBorder = 'border-gray-200 dark:border-gray-400/30';
                             $childSpousePhotoBorder = 'border-gray-200 dark:border-gray-500';
                         }
                     @endphp
@@ -599,15 +599,15 @@
                                 // Determine grandchild card colors based on gender
                                 if ($grandchild->gender_id == 1) {
                                     $grandchildCardBg = 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-700';
-                                    $grandchildCardBorder = 'border-blue-200 dark:border-blue-600';
+                                    $grandchildCardBorder = 'border-blue-200 dark:border-blue-400/30';
                                     $grandchildPhotoBorder = 'border-blue-200 dark:border-blue-500';
                                 } elseif ($grandchild->gender_id == 2) {
                                     $grandchildCardBg = 'bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-800 dark:to-pink-700';
-                                    $grandchildCardBorder = 'border-pink-200 dark:border-pink-600';
+                                    $grandchildCardBorder = 'border-pink-200 dark:border-pink-400/30';
                                     $grandchildPhotoBorder = 'border-pink-200 dark:border-pink-500';
                                 } else {
                                     $grandchildCardBg = 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700';
-                                    $grandchildCardBorder = 'border-gray-200 dark:border-gray-600';
+                                    $grandchildCardBorder = 'border-gray-200 dark:border-gray-400/30';
                                     $grandchildPhotoBorder = 'border-gray-200 dark:border-gray-500';
                                 }
                             @endphp
@@ -648,15 +648,15 @@
                                 // Determine grandchild's spouse card colors based on gender
                                 if ($grandchild->partner->gender_id == 1) {
                                     $grandchildSpouseBg = 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-700';
-                                    $grandchildSpouseBorder = 'border-blue-200 dark:border-blue-600';
+                                    $grandchildSpouseBorder = 'border-blue-200 dark:border-blue-400/30';
                                     $grandchildSpousePhotoBorder = 'border-blue-200 dark:border-blue-500';
                                 } elseif ($grandchild->partner->gender_id == 2) {
                                     $grandchildSpouseBg = 'bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-800 dark:to-pink-700';
-                                    $grandchildSpouseBorder = 'border-pink-200 dark:border-pink-600';
+                                    $grandchildSpouseBorder = 'border-pink-200 dark:border-pink-400/30';
                                     $grandchildSpousePhotoBorder = 'border-pink-200 dark:border-pink-500';
                                 } else {
                                     $grandchildSpouseBg = 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700';
-                                    $grandchildSpouseBorder = 'border-gray-200 dark:border-gray-600';
+                                    $grandchildSpouseBorder = 'border-gray-200 dark:border-gray-400/30';
                                     $grandchildSpousePhotoBorder = 'border-gray-200 dark:border-gray-500';
                                 }
                             @endphp

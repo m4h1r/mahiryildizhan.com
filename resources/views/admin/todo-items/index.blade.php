@@ -4,28 +4,28 @@
     <div class="space-y-5">
 
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <div class="flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-800">
+            <div class="flex flex-wrap gap-1 rounded-xl glass-well p-1 dark:border-white/10 dark:bg-white/[0.06]">
                 @foreach (['pending' => 'Bekleyen', 'due' => 'Bugün / Gecikmiş', 'completed' => 'Tamamlandı', 'archived' => 'Arşiv', 'bucketlist' => 'Bucket List', 'yearly_goal' => 'Yıllık Hedefler', 'all' => 'Tümü'] as $key => $label)
                     <a
                         href="{{ route('admin.todo-items.index', ['filter' => $key, 'q' => request('q')]) }}"
-                        class="rounded-lg px-3 py-1.5 text-sm font-medium transition {{ $filter === $key ? 'bg-white shadow text-gray-900 dark:bg-gray-700 dark:text-gray-100' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}"
+                        class="rounded-lg px-3 py-1.5 text-sm font-medium transition {{ $filter === $key ? 'bg-[var(--glass-strong)] shadow-sm text-ink' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}"
                     >{{ $label }}</a>
                 @endforeach
             </div>
 
-            <a href="{{ route('admin.todo-items.create') }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900">
+            <a href="{{ route('admin.todo-items.create') }}" class="admin-btn admin-btn-primary">
                 + Yeni Görev
             </a>
         </div>
 
-        <div class="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <div class="rounded-2xl glass-well p-3">
             <x-global-search
                 action="{{ route('admin.todo-items.index') }}"
                 value="{{ request('q', '') }}"
                 placeholder="{{ __('Görevlerde ara...') }}"
                 wrapper-class="flex w-full items-center gap-2"
-                input-class="w-full rounded-full border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-gray-200 dark:focus:ring-gray-800"
-                button-class="rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-black dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+                input-class="w-full rounded-full border border-glass bg-[var(--glass-hover)] px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:border-white/10 dark:bg-black/20 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-gray-200 dark:focus:ring-gray-800"
+                button-class="admin-btn admin-btn-primary rounded-full"
             />
         </div>
 
@@ -37,7 +37,7 @@
             @else
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="border-b border-gray-200 bg-gray-50/80 dark:border-gray-700 dark:bg-gray-900/40">
+                        <thead class="border-b border-glass bg-[var(--glass-hover)]">
                             <tr>
                                 <th class="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-300">Görev</th>
                                 <th class="hidden px-4 py-3 text-center font-medium text-gray-600 dark:text-gray-300 sm:table-cell">Tarih</th>
@@ -49,17 +49,17 @@
                                 <th class="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-300"></th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                        <tbody class="divide-y divide-[var(--glass-line)]">
                             @foreach ($items as $item)
                                 @php
                                     $isOverdue = $item->due_date && !$item->is_completed && $item->due_date->isPast();
                                     $isToday   = $item->due_date && $item->due_date->isToday();
                                     $ageDays   = (int) $item->created_at->diffInDays(now());
                                 @endphp
-                                <tr class="transition {{ !$item->is_completed && $ageDays >= 100 ? 'bg-red-50/70 dark:bg-red-900/10 hover:bg-red-50 dark:hover:bg-red-900/20' : (!$item->is_completed && $ageDays >= 50 ? 'bg-yellow-50/70 dark:bg-yellow-900/10 hover:bg-yellow-50 dark:hover:bg-yellow-900/20' : 'hover:bg-gray-50/60 dark:hover:bg-gray-900/30') }}">
+                                <tr class="transition {{ !$item->is_completed && $ageDays >= 100 ? 'bg-red-50/70 dark:bg-red-900/10 hover:bg-red-50 dark:hover:bg-red-900/20' : (!$item->is_completed && $ageDays >= 50 ? 'bg-yellow-50/70 dark:bg-yellow-900/10 hover:bg-yellow-50 dark:hover:bg-yellow-900/20' : 'hover:bg-[var(--glass-hover)] dark:hover:bg-white/5') }}">
                                     <td class="px-4 py-3">
                                         <div class="flex items-center gap-2">
-                                            <span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums {{ $ageDays >= 100 ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' : ($ageDays >= 50 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400') }}">{{ $ageDays }}g</span>
+                                            <span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums {{ $ageDays >= 100 ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' : ($ageDays >= 50 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300' : 'bg-gray-100 text-gray-500 dark:bg-white/[0.06] dark:text-gray-400') }}">{{ $ageDays }}g</span>
                                             @if ($item->is_bucketlist)
                                                 <span class="shrink-0 rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">★ BL</span>
                                             @endif
@@ -77,7 +77,7 @@
                                     <td class="hidden px-4 py-3 text-center sm:table-cell">
                                         @if ($item->due_date)
                                             <span class="rounded-full px-2 py-0.5 text-xs font-medium
-                                                {{ $isToday ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300' : ($isOverdue ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300') }}">
+                                                {{ $isToday ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300' : ($isOverdue ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' : 'bg-gray-100 text-gray-600 dark:bg-white/[0.06] dark:text-gray-300') }}">
                                                 {{ $item->due_date->format('d M Y') }}
                                             </span>
                                         @else
@@ -102,7 +102,7 @@
                                             @method('PATCH')
                                             <button
                                                 type="submit"
-                                                class="inline-flex h-6 w-6 items-center justify-center rounded-full border-2 transition {{ $item->is_completed ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-gray-300 hover:border-emerald-400 dark:border-gray-600' }}"
+                                                class="inline-flex h-6 w-6 items-center justify-center rounded-full border-2 transition {{ $item->is_completed ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-[var(--field-line)] hover:border-emerald-400 dark:border-white/10' }}"
                                                 title="{{ $item->is_completed ? 'Geri al' : 'Tamamlandı işaretle' }}"
                                             >
                                                 @if ($item->is_completed)
@@ -121,7 +121,7 @@
                 </div>
 
                 @if ($items->hasPages())
-                    <div class="border-t border-gray-100 px-4 py-3 dark:border-gray-800">
+                    <div class="border-t border-glass px-4 py-3 dark:border-white/10">
                         {{ $items->links() }}
                     </div>
                 @endif

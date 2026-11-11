@@ -63,7 +63,7 @@
     <div class="space-y-6">
 
         {{-- ── Hero header ── --}}
-        <section class="relative overflow-hidden rounded-3xl border border-gray-200 bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 px-6 py-6 text-white shadow-xl md:px-8 md:py-8">
+        <section class="relative overflow-hidden rounded-3xl border border-glass bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 px-6 py-6 text-white shadow-xl md:px-8 md:py-8">
             <div class="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-cyan-300/15 blur-2xl"></div>
             <div class="absolute -bottom-16 left-24 h-48 w-48 rounded-full bg-indigo-300/15 blur-2xl"></div>
 
@@ -186,7 +186,7 @@
         {{-- ── Top-5 spend cards ── --}}
         <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
             @forelse ($topRows as $row)
-                <article class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900/50">
+                <article class="rounded-2xl glass-well p-4">
                     <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">{{ $row['name'] }}</p>
                     <p class="mt-1 text-lg font-semibold text-rose-700 dark:text-rose-300">{{ number_format($row['total'], 2) }} TRY</p>
                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Daily:') }} {{ number_format($row['daily_avg'], 2) }}</p>
@@ -334,8 +334,8 @@
         {{-- ── Type analysis table ── --}}
         <section class="card-admin overflow-x-auto">
             <h3 class="px-4 pt-4 text-sm font-semibold">{{ __('Expense Type Analysis Table') }}</h3>
-            <table class="mt-3 min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-800">
-                <thead class="bg-gray-50 dark:bg-gray-900/60">
+            <table class="mt-3 min-w-full divide-y divide-[var(--glass-line)] text-sm">
+                <thead class="bg-[var(--glass-hover)] dark:bg-white/[0.04]">
                     <tr>
                         <th class="px-3 py-2 text-left font-medium">{{ __('Type') }}</th>
                         <th class="px-3 py-2 text-left font-medium">{{ __('Total') }}</th>
@@ -343,7 +343,7 @@
                         <th class="px-3 py-2 text-left font-medium">{{ __('Monthly Avg') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                <tbody class="divide-y divide-[var(--glass-line)]">
                     @forelse ($expenseTypeRows as $row)
                         <tr>
                             <td class="px-3 py-2">{{ $row['name'] }}</td>

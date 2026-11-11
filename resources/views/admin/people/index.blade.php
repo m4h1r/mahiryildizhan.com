@@ -27,12 +27,13 @@
     @endphp
 
     <div class="space-y-6">
-        <section class="card-admin p-4 md:p-6">
-            <form id="people-filter-form" method="GET" class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <section class="card-admin">
+            <form id="people-filter-form" method="GET" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
                 <input
                     id="people-live-search"
+                    type="search"
                     name="q"
-                    class="form-input-admin"
+                    class="form-input-admin sm:col-span-2 lg:col-span-1 xl:col-span-2"
                     placeholder="{{ __('Search name, surname, maiden surname...') }}"
                     value="{{ $filters['q'] ?? '' }}"
                     autocomplete="off"
@@ -53,6 +54,18 @@
                     <option value="0" @selected(($filters['alive'] ?? '') === '0')>{{ __('Deceased') }}</option>
                 </select>
 
+                <select name="scope" class="form-input-admin">
+                    <option value="">{{ __('All relationships') }}</option>
+                    @foreach (config('crm.relationship_scopes') as $key => $label)
+                        <option value="{{ $key }}" @selected(($filters['scope'] ?? '') === $key)>{{ __($label) }}</option>
+                    @endforeach
+                </select>
+
+                <label class="glass-well flex min-h-11 items-center gap-2 px-3 text-sm text-ink-soft">
+                    <input type="checkbox" name="missing_assessment" value="1" class="h-4 w-4 accent-[var(--color-brand)]" @checked(! empty($filters['missing_assessment']))>
+                    {{ __('Only people without analysis') }}
+                </label>
+
                 <div class="flex gap-2 sm:col-span-2 lg:col-span-2">
                     <button type="submit" class="admin-btn admin-btn-primary flex-1">{{ __('Filter') }}</button>
                     <a href="{{ route('admin.people.index') }}" class="admin-btn admin-btn-ghost flex-1">{{ __('Reset') }}</a>
@@ -60,12 +73,49 @@
             </form>
         </section>
 
-        <section class="admin-table-shell">
-            <div class="flex items-center justify-between border-b border-[var(--color-admin-border)] px-4 py-3 dark:border-[var(--color-admin-border-dark)]">
-                <h2 class="text-sm font-semibold">{{ __('People List') }}</h2>
+        <div x-data="{ view: (() => { try { return localStorage.getItem('people_view') || 'cards'; } catch (e) { return 'cards'; } })(), set(v) { this.view = v; try { localStorage.setItem('people_view', v); } catch (e) {} } }" class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-ink-muted">{{ trans_choice(':count person|:count people', $people->total(), ['count' => $people->total()]) }}</p>
+            <div class="flex items-center gap-2">
+                <div class="glass-well inline-flex gap-1 p-1" role="group" aria-label="{{ __('View') }}">
+                    <button type="button" @click="set('cards')" :aria-pressed="(view === 'cards').toString()" class="rounded-[10px] px-3 py-1.5 text-sm font-medium" :class="view === 'cards' ? 'bg-[var(--glass-strong)] text-ink shadow-sm' : 'text-ink-muted'">{{ __('Cards') }}</button>
+                    <button type="button" @click="set('table')" :aria-pressed="(view === 'table').toString()" class="rounded-[10px] px-3 py-1.5 text-sm font-medium" :class="view === 'table' ? 'bg-[var(--glass-strong)] text-ink shadow-sm' : 'text-ink-muted'">{{ __('Table') }}</button>
+                </div>
                 <a href="{{ route('admin.people.create') }}" class="admin-btn admin-btn-primary">{{ __('New Person') }}</a>
             </div>
+        </div>
 
+        {{-- Card grid --}}
+        <div x-show="view === 'cards'" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            @forelse ($people as $person)
+                @php
+                    $latest = $person->latestAssessment;
+                @endphp
+                <a href="{{ route('admin.people.show', $person) }}" class="card-admin group flex min-w-0 items-center gap-3 !p-3.5 transition-shadow hover:shadow-[var(--glass-shadow-lift)]">
+                    <img src="{{ $person->avatarUrl() }}" alt="" loading="lazy" class="h-14 w-14 shrink-0 rounded-[18px] border border-[var(--glass-edge)] object-cover">
+                    <span class="min-w-0 flex-1">
+                        <span class="block truncate font-semibold text-ink group-hover:text-[var(--brand-ink)]">{{ $person->fullName() }}</span>
+                        <span class="block truncate text-xs text-ink-muted">
+                            {{ $person->relationship_label ?: ($person->scopeLabel() ?: ($person->birthLabel() ?: '—')) }}
+                        </span>
+                        <span class="mt-1.5 flex flex-wrap gap-1">
+                            @if ($person->scopeLabel())
+                                <span class="chip min-h-5 px-2 text-[10.5px]">{{ $person->scopeLabel() }}</span>
+                            @endif
+                            @if ($latest)
+                                <span class="chip chip-brand min-h-5 px-2 text-[10.5px]">{{ __('Analysis') }} {{ $latest->overall_confidence !== null ? '%'.(int) round($latest->overall_confidence * 100) : '' }}</span>
+                            @else
+                                <span class="chip min-h-5 px-2 text-[10.5px] text-ink-muted">{{ __('No analysis') }}</span>
+                            @endif
+                        </span>
+                    </span>
+                </a>
+            @empty
+                <div class="card-admin text-sm text-ink-muted sm:col-span-2 xl:col-span-3">{{ __('No people found.') }}</div>
+            @endforelse
+        </div>
+
+        <section class="admin-table-shell" x-show="view === 'table'" x-cloak>
             <div class="overflow-x-auto overscroll-x-contain">
                 <table class="admin-table">
                     <thead>
@@ -103,12 +153,12 @@
                             @endphp
                             <tr>
                                 <td class="hidden sm:table-cell">
-                                    <img src="{{ $person->picture_url }}" alt="" loading="lazy" class="h-9 w-9 rounded-full object-cover ring-1 ring-[var(--color-admin-border)] dark:ring-[var(--color-admin-border-dark)]">
+                                    <img src="{{ $person->avatarUrl() }}" alt="" loading="lazy" class="h-9 w-9 rounded-full object-cover ring-1 ring-[var(--color-admin-border)] dark:ring-[var(--color-admin-border-dark)]">
                                 </td>
                                 <td class="hidden text-xs text-gray-500 xl:table-cell">{{ $person->id }}</td>
                                 <td>
                                     <p class="flex items-center gap-2 font-medium">
-                                        <img src="{{ $person->picture_url }}" alt="" loading="lazy" class="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-[var(--color-admin-border)] dark:ring-[var(--color-admin-border-dark)] sm:hidden">
+                                        <img src="{{ $person->avatarUrl() }}" alt="" loading="lazy" class="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-[var(--color-admin-border)] dark:ring-[var(--color-admin-border-dark)] sm:hidden">
                                         <span class="inline-flex items-center gap-1 text-sm leading-none" aria-hidden="true">
                                             <span class="{{ $genderColor }}" title="{{ optional($person->gender)->name ?: __('Gender') }}">{{ $genderSymbol }}</span>
                                             @if ($zodiacSymbol)
@@ -120,7 +170,7 @@
                                 </td>
                                 <td class="hidden sm:table-cell">{{ $person->surname }}</td>
                                 <td class="hidden text-xs xl:table-cell">{{ $person->second_surname ?: '-' }}</td>
-                                <td class="hidden text-xs lg:table-cell">{{ optional($person->birthday)->format('Y-m-d') ?: '-' }}</td>
+                                <td class="hidden text-xs lg:table-cell">{{ $person->birthLabel() ?: '—' }}</td>
                                 <td class="hidden text-xs xl:table-cell">
                                     {{ __('Father') }}: {{ optional($person->father)->name ? $person->father->name.' '.$person->father->surname : '-' }}<br>
                                     {{ __('Mother') }}: {{ optional($person->mother)->name ? $person->mother->name.' '.$person->mother->surname : '-' }}
@@ -168,10 +218,12 @@
                 </table>
             </div>
 
-            <div class="border-t border-[var(--color-admin-border)] px-4 py-3 dark:border-[var(--color-admin-border-dark)]">
-                {{ $people->links() }}
-            </div>
         </section>
+
+        <div class="px-1">
+            {{ $people->links() }}
+        </div>
+        </div>
     </div>
 
 @endsection

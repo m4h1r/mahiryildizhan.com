@@ -41,6 +41,8 @@ class AliceAudit
             $tableName = prev($segments);
         }
         $tableName = str_replace('-', '_', $tableName);
+        // Nested routes (people/{id}/assessments/...) name their table explicitly.
+        $tableName = $request->attributes->get('audit_table', $tableName);
 
         $body = json_decode($response->getContent(), true) ?? [];
         $recordId = $body['data']['id'] ?? null;

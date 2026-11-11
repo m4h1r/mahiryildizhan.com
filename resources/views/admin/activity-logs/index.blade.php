@@ -57,7 +57,7 @@
                                     @if (! empty($log->changes))
                                         <details>
                                             <summary class="cursor-pointer text-xs text-gray-500 dark:text-gray-400">{{ __('View') }}</summary>
-                                            <pre class="mt-1 max-w-md overflow-x-auto rounded bg-gray-50 p-2 text-[11px] dark:bg-gray-800">{{ json_encode($log->changes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                                            <pre class="mt-1 max-w-md overflow-x-auto rounded bg-[var(--glass-hover)] p-2 text-[11px] dark:bg-white/[0.06]">{{ json_encode($log->changes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
                                         </details>
                                     @else
                                         -

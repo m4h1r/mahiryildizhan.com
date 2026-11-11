@@ -1,7 +1,7 @@
 @extends('admin.layout', ['title' => 'New Person', 'heading' => 'New Person'])
 
 @section('content')
-    <section class="card-admin p-6">
+    <section class="card-admin">
         <form method="POST" action="{{ route('admin.people.store') }}" enctype="multipart/form-data">
             @csrf
             @include('admin.people._form')

@@ -1,302 +1,299 @@
-@php($isEdit = isset($person))
+@php
+    /** @var \App\Models\Person|null $person */
+    $person = $person ?? null;
+    $months = collect(range(1, 12))->mapWithKeys(fn ($m) => [$m => \Illuminate\Support\Carbon::create(2000, $m, 1)->translatedFormat('F')]);
+    $scopes = config('crm.relationship_scopes');
+    $bases = config('crm.relationship_bases');
+    $channelTypes = collect(config('crm.channel_types'))->map(fn ($label) => __($label));
+    $selectedBases = old('relationship_bases', $person?->relationship_bases ?? []);
+    $channelRows = old('channels', $person
+        ? $person->channels->map(fn ($c) => ['id' => $c->id, 'type' => $c->type, 'value' => $c->value, 'label' => $c->label, 'is_primary' => $c->is_primary])->all()
+        : []);
+    $labelClass = 'mb-1 block text-sm font-medium text-ink-soft';
+@endphp
 
-<div class="grid gap-4 md:grid-cols-2">
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Name') }}</span>
-        <input name="name" class="form-input-admin" value="{{ old('name', $person->name ?? '') }}" required>
-        @error('name')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
-    </label>
+@if ($errors->any())
+    <x-status-message type="danger" class="mb-6">
+        {{ __('Some fields need attention. They are marked below.') }}
+    </x-status-message>
+@endif
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Surname') }}</span>
-        <input name="surname" class="form-input-admin" value="{{ old('surname', $person->surname ?? '') }}" required>
-        @error('surname')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
-    </label>
+<div class="space-y-10">
+    {{-- ============ Identity ============ --}}
+    <fieldset class="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
+        <legend class="mb-4 text-base font-semibold text-ink">{{ __('Identity') }}</legend>
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Second Surname') }}</span>
-        <input name="second_surname" class="form-input-admin" value="{{ old('second_surname', $person->second_surname ?? '') }}">
-    </label>
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Name') }} <span class="text-[var(--color-danger)]" aria-hidden="true">*</span></span>
+            <input name="name" class="form-input-admin" value="{{ old('name', $person?->name) }}" required autocomplete="off">
+            @error('name') <span class="mt-1 block text-xs text-[var(--color-danger-text)]">{{ $message }}</span> @enderror
+        </label>
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Surname') }} <span class="text-[var(--color-danger)]" aria-hidden="true">*</span></span>
+            <input name="surname" class="form-input-admin" value="{{ old('surname', $person?->surname) }}" required autocomplete="off">
+            @error('surname') <span class="mt-1 block text-xs text-[var(--color-danger-text)]">{{ $message }}</span> @enderror
+        </label>
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Maiden name') }}</span>
+            <input name="second_surname" class="form-input-admin" value="{{ old('second_surname', $person?->second_surname) }}" autocomplete="off">
+        </label>
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Nickname') }}</span>
+            <input name="nickname" class="form-input-admin" value="{{ old('nickname', $person?->nickname) }}" autocomplete="off">
+        </label>
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Gender') }}</span>
+            <select name="gender_id" class="form-input-admin">
+                <option value="">{{ __('Not set') }}</option>
+                @foreach ($genders as $gender)
+                    <option value="{{ $gender->id }}" @selected((string) old('gender_id', $person?->gender_id) === (string) $gender->id)>{{ __($gender->name) }}</option>
+                @endforeach
+            </select>
+        </label>
+        <div class="md:row-span-2">
+            @include('admin.people._picture')
+        </div>
+    </fieldset>
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Gender') }}</span>
-        <select name="gender_id" class="form-input-admin">
-            <option value="">{{ __('Unknown') }}</option>
-            @foreach ($genders as $gender)
-                <option value="{{ $gender->id }}" @selected((string) old('gender_id', $person->gender_id ?? '') === (string) $gender->id)>{{ $gender->name }}</option>
-            @endforeach
-        </select>
-    </label>
+    {{-- ============ Birth & life ============ --}}
+    <fieldset class="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
+        <legend class="mb-1 text-base font-semibold text-ink">{{ __('Birth and life') }}</legend>
+        <p class="-mt-1 mb-2 text-sm text-ink-muted md:col-span-2">{{ __('Fill in only what you know — a day and month without a year is fine.') }}</p>
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Birthday') }}</span>
-        <input type="date" name="birthday" class="form-input-admin" value="{{ old('birthday', optional($person->birthday ?? null)->toDateString()) }}">
-    </label>
+        <div class="md:col-span-2">
+            <span class="{{ $labelClass }}" id="birth-label">{{ __('Date of birth') }}</span>
+            <div class="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)_minmax(0,1fr)] gap-2" role="group" aria-labelledby="birth-label">
+                <select name="birth_day" class="form-input-admin" aria-label="{{ __('Day') }}">
+                    <option value="">{{ __('Day') }}</option>
+                    @foreach (range(1, 31) as $d)
+                        <option value="{{ $d }}" @selected((string) old('birth_day', $person?->birth_day) === (string) $d)>{{ $d }}</option>
+                    @endforeach
+                </select>
+                <select name="birth_month" class="form-input-admin" aria-label="{{ __('Month') }}">
+                    <option value="">{{ __('Month') }}</option>
+                    @foreach ($months as $m => $monthName)
+                        <option value="{{ $m }}" @selected((string) old('birth_month', $person?->birth_month) === (string) $m)>{{ $monthName }}</option>
+                    @endforeach
+                </select>
+                <input name="birth_year" type="number" inputmode="numeric" min="1850" max="{{ now()->year + 1 }}" class="form-input-admin" placeholder="{{ __('Year') }}" aria-label="{{ __('Year') }}" value="{{ old('birth_year', $person?->birth_year) }}">
+            </div>
+            @error('birth_day') <span class="mt-1 block text-xs text-[var(--color-danger-text)]">{{ $message }}</span> @enderror
+            @error('birth_year') <span class="mt-1 block text-xs text-[var(--color-danger-text)]">{{ $message }}</span> @enderror
+        </div>
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Deathday') }}</span>
-        <input type="date" name="deathday" class="form-input-admin" value="{{ old('deathday', optional($person->deathday ?? null)->toDateString()) }}">
-    </label>
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Birth Place') }}</span>
+            <input name="birth_place" class="form-input-admin" value="{{ old('birth_place', $person?->birth_place) }}">
+        </label>
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Date of death') }}</span>
+            <input name="deathday" type="date" class="form-input-admin" value="{{ old('deathday', $person?->deathday?->format('Y-m-d')) }}">
+            @error('deathday') <span class="mt-1 block text-xs text-[var(--color-danger-text)]">{{ $message }}</span> @enderror
+        </label>
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Death Place') }}</span>
+            <input name="death_place" class="form-input-admin" value="{{ old('death_place', $person?->death_place) }}">
+        </label>
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Birth Place') }}</span>
-        <input name="birth_place" class="form-input-admin" value="{{ old('birth_place', $person->birth_place ?? '') }}">
-    </label>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 md:col-span-2">
+            <label>
+                <span class="{{ $labelClass }}">{{ __('Eye Color') }}</span>
+                <select name="eye_color_id" class="form-input-admin">
+                    <option value="">{{ __('Not set') }}</option>
+                    @foreach ($eyeColors as $item)
+                        <option value="{{ $item->id }}" @selected((string) old('eye_color_id', $person?->eye_color_id) === (string) $item->id)>{{ __($item->name) }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label>
+                <span class="{{ $labelClass }}">{{ __('Hair Color') }}</span>
+                <select name="hair_color_id" class="form-input-admin">
+                    <option value="">{{ __('Not set') }}</option>
+                    @foreach ($hairColors as $item)
+                        <option value="{{ $item->id }}" @selected((string) old('hair_color_id', $person?->hair_color_id) === (string) $item->id)>{{ __($item->name) }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label>
+                <span class="{{ $labelClass }}">{{ __('Blood Type') }}</span>
+                <select name="blood_type_id" class="form-input-admin">
+                    <option value="">{{ __('Not set') }}</option>
+                    @foreach ($bloodTypes as $item)
+                        <option value="{{ $item->id }}" @selected((string) old('blood_type_id', $person?->blood_type_id) === (string) $item->id)>{{ $item->name }}</option>
+                    @endforeach
+                </select>
+            </label>
+        </div>
+    </fieldset>
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Death Place') }}</span>
-        <input name="death_place" class="form-input-admin" value="{{ old('death_place', $person->death_place ?? '') }}">
-    </label>
+    {{-- ============ Relationship ============ --}}
+    <fieldset class="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
+        <legend class="mb-1 text-base font-semibold text-ink">{{ __('Relationship') }}</legend>
+        <p class="-mt-1 mb-2 text-sm text-ink-muted md:col-span-2">{{ __('How you know this person. A relationship can be personal, professional, or both.') }}</p>
 
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Father') }}</span>
-        <select name="father_id" class="form-input-admin">
-            <option value="">{{ __('Unknown') }}</option>
-            @foreach ($peopleOptions as $candidate)
-                <option value="{{ $candidate->id }}" @selected((string) old('father_id', $person->father_id ?? '') === (string) $candidate->id)>
-                    {{ $candidate->name }} {{ $candidate->surname }} {{ optional($candidate->birthday)->format('Y') ? '('.optional($candidate->birthday)->format('Y').')' : '' }}
-                </option>
-            @endforeach
-        </select>
-    </label>
-
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Mother') }}</span>
-        <select name="mother_id" class="form-input-admin">
-            <option value="">{{ __('Unknown') }}</option>
-            @foreach ($peopleOptions as $candidate)
-                <option value="{{ $candidate->id }}" @selected((string) old('mother_id', $person->mother_id ?? '') === (string) $candidate->id)>
-                    {{ $candidate->name }} {{ $candidate->surname }} {{ optional($candidate->birthday)->format('Y') ? '('.optional($candidate->birthday)->format('Y').')' : '' }}
-                </option>
-            @endforeach
-        </select>
-    </label>
-
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Partner') }}</span>
-        <select name="partner_id" class="form-input-admin">
-            <option value="">{{ __('None') }}</option>
-            @foreach ($peopleOptions as $candidate)
-                <option value="{{ $candidate->id }}" @selected((string) old('partner_id', $person->partner_id ?? '') === (string) $candidate->id)>
-                    {{ $candidate->name }} {{ $candidate->surname }}
-                </option>
-            @endforeach
-        </select>
-    </label>
-
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Eye Color') }}</span>
-        <select name="eye_color_id" class="form-input-admin">
-            <option value="">{{ __('Unknown') }}</option>
-            @foreach ($eyeColors as $eyeColor)
-                <option value="{{ $eyeColor->id }}" @selected((string) old('eye_color_id', $person->eye_color_id ?? '') === (string) $eyeColor->id)>{{ $eyeColor->name }}</option>
-            @endforeach
-        </select>
-    </label>
-
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Blood Type') }}</span>
-        <select name="blood_type_id" class="form-input-admin">
-            <option value="">{{ __('Unknown') }}</option>
-            @foreach ($bloodTypes as $bloodType)
-                <option value="{{ $bloodType->id }}" @selected((string) old('blood_type_id', $person->blood_type_id ?? '') === (string) $bloodType->id)>{{ $bloodType->name }}</option>
-            @endforeach
-        </select>
-    </label>
-
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Hair Color') }}</span>
-        <select name="hair_color_id" class="form-input-admin">
-            <option value="">{{ __('Unknown') }}</option>
-            @foreach ($hairColors as $hairColor)
-                <option value="{{ $hairColor->id }}" @selected((string) old('hair_color_id', $person->hair_color_id ?? '') === (string) $hairColor->id)>{{ $hairColor->name }}</option>
-            @endforeach
-        </select>
-    </label>
-
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Phone') }}</span>
-        <input name="mobile" class="form-input-admin" value="{{ old('mobile', $person->mobile ?? '') }}">
-    </label>
-
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Email') }}</span>
-        <input name="email" type="email" class="form-input-admin" value="{{ old('email', $person->email ?? '') }}">
-    </label>
-
-    <div
-        class="md:col-span-2"
-        x-data="{
-            picture: {{ Js::from(old('picture', isset($person) && $person->picture ? $person->pictureUrl : '')) }},
-            tab: 'library',
-            showPicker: false,
-            mediaItems: [],
-            libraryMeta: { page: 1, last_page: 1 },
-            loadingLibrary: false,
-            libraryQuery: '',
-            libraryType: '1',
-            searchDebounceTimer: null,
-            localPreview: null,
-            mediaLibraryUrl: '{{ route('admin.media.library') }}',
-            async openPicker() {
-                this.showPicker = true;
-                if (this.mediaItems.length === 0) {
-                    await this.fetchLibrary(1);
-                }
-            },
-            debouncedSearch() {
-                window.clearTimeout(this.searchDebounceTimer);
-                this.searchDebounceTimer = window.setTimeout(() => { this.fetchLibrary(1); }, 250);
-            },
-            async fetchLibrary(page = 1) {
-                this.loadingLibrary = true;
-                try {
-                    const resp = await window.axios.get(this.mediaLibraryUrl, {
-                        params: { q: this.libraryQuery || undefined, type: this.libraryType || undefined, page, per_page: 24 }
-                    });
-                    this.mediaItems = resp?.data?.data ?? [];
-                    this.libraryMeta = resp?.data?.meta ?? this.libraryMeta;
-                } catch (e) {
-                    await window.appDialog.alert(e?.response?.data?.message ?? 'Media library could not be loaded.');
-                } finally {
-                    this.loadingLibrary = false;
-                }
-            },
-            selectMedia(item) {
-                this.picture = item.original_url || item.url || '';
-                this.localPreview = null;
-                this.$refs.fileInput.value = '';
-                this.showPicker = false;
-            },
-            handleFileSelect(event) {
-                const file = event.target.files?.[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (e) => { this.localPreview = e.target.result; this.picture = ''; };
-                reader.readAsDataURL(file);
-            },
-            clearImage() {
-                this.picture = '';
-                this.localPreview = null;
-                this.$refs.fileInput.value = '';
-            },
-            get previewSrc() {
-                return this.localPreview || this.picture || null;
-            }
-        }"
-    >
-        <p class="mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">{{ __('Picture') }}</p>
-
-        {{-- Hidden input submitted with the form --}}
-        <input type="hidden" name="picture" :value="picture">
-
-        {{-- File input (always in DOM for form submission) --}}
-        <input
-            type="file"
-            name="picture_file"
-            accept="image/*"
-            x-ref="fileInput"
-            @change="handleFileSelect($event)"
-            class="sr-only"
-        >
-
-        {{-- Current preview + clear --}}
-        <div class="mb-2 flex items-center gap-3">
-            <template x-if="previewSrc">
-                <div class="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-                    <img :src="previewSrc" class="h-full w-full object-cover">
-                    <button
-                        type="button"
-                        @click="clearImage()"
-                        class="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded bg-black/60 text-white hover:bg-black/80"
-                        title="Remove"
-                    >&times;</button>
-                </div>
-            </template>
-            <template x-if="!previewSrc">
-                <div class="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg border border-dashed border-gray-300 text-gray-400 dark:border-gray-600">
-                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                </div>
-            </template>
-            <div class="flex flex-col gap-1.5">
-                <div class="flex gap-1">
-                    <button
-                        type="button"
-                        @click="tab = 'library'; openPicker()"
-                        :class="tab === 'library' ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'border border-gray-300 dark:border-gray-700'"
-                        class="rounded-md px-3 py-1.5 text-xs font-medium"
-                    >{{ __('Media Library') }}</button>
-                    <button
-                        type="button"
-                        @click="tab = 'upload'; $refs.fileInput.click()"
-                        :class="tab === 'upload' ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'border border-gray-300 dark:border-gray-700'"
-                        class="rounded-md px-3 py-1.5 text-xs font-medium"
-                    >{{ __('Upload from Computer') }}</button>
-                </div>
-                <p x-show="localPreview" class="text-[11px] text-emerald-600 dark:text-emerald-400">{{ __('File selected — will upload on save.') }}</p>
+        <div class="md:col-span-2">
+            <span class="{{ $labelClass }}" id="scope-label">{{ __('Relationship type') }}</span>
+            <div class="glass-well inline-flex flex-wrap gap-1 p-1" role="radiogroup" aria-labelledby="scope-label">
+                <label class="cursor-pointer">
+                    <input type="radio" name="relationship_scope" value="" class="peer sr-only" @checked(old('relationship_scope', $person?->relationship_scope) === null || old('relationship_scope', $person?->relationship_scope) === '')>
+                    <span class="block rounded-[10px] px-3 py-1.5 text-sm font-medium text-ink-muted peer-checked:bg-[var(--glass-strong)] peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:outline-2 peer-focus-visible:outline-[var(--color-brand)]">{{ __('Not set') }}</span>
+                </label>
+                @foreach ($scopes as $key => $label)
+                    <label class="cursor-pointer">
+                        <input type="radio" name="relationship_scope" value="{{ $key }}" class="peer sr-only" @checked(old('relationship_scope', $person?->relationship_scope) === $key)>
+                        <span class="block rounded-[10px] px-3 py-1.5 text-sm font-medium text-ink-muted peer-checked:bg-[var(--glass-strong)] peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:outline-2 peer-focus-visible:outline-[var(--color-brand)]">{{ __($label) }}</span>
+                    </label>
+                @endforeach
             </div>
         </div>
 
-        {{-- Media library panel --}}
-        <div x-show="showPicker" x-cloak class="rounded-lg border border-gray-300 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
-            <div class="mb-2 flex items-center justify-between">
-                <p class="text-xs font-semibold">{{ __('Select from media library') }}</p>
-                <button type="button" @click="showPicker = false" class="text-xs text-gray-500">{{ __('Close') }}</button>
+        <div class="md:col-span-2">
+            <span class="{{ $labelClass }}" id="bases-label">{{ __('Relationship bases') }}</span>
+            <div class="flex flex-wrap gap-2" role="group" aria-labelledby="bases-label">
+                @foreach ($bases as $key => $label)
+                    <label class="cursor-pointer">
+                        <input type="checkbox" name="relationship_bases[]" value="{{ $key }}" class="peer sr-only" @checked(in_array($key, (array) $selectedBases, true))>
+                        <span class="chip peer-checked:border-[oklch(from_var(--brand-primary)_l_c_h_/_0.35)] peer-checked:bg-[var(--brand-wash)] peer-checked:text-[var(--brand-ink)] peer-focus-visible:outline-2 peer-focus-visible:outline-[var(--color-brand)]">{{ __($label) }}</span>
+                    </label>
+                @endforeach
             </div>
-            <div class="mb-3 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
-                <input
-                    type="text"
-                    x-model="libraryQuery"
-                    @input="debouncedSearch()"
-                    class="form-input-admin"
-                    placeholder="{{ __('Search by filename, alt or caption...') }}"
-                >
-                <select x-model="libraryType" @change="fetchLibrary(1)" class="form-input-admin">
-                    <option value="1">{{ __('Images') }}</option>
-                    <option value="2">{{ __('Documents') }}</option>
-                    <option value="">{{ __('All') }}</option>
-                </select>
-                <button type="button" @click="fetchLibrary(1)" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700">{{ __('Refresh') }}</button>
+        </div>
+
+        <label>
+            <span class="{{ $labelClass }}">{{ __('In a few words') }}</span>
+            <input name="relationship_label" class="form-input-admin" value="{{ old('relationship_label', $person?->relationship_label) }}" placeholder="{{ __('e.g. closest friend, tango partner') }}">
+        </label>
+        <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] gap-2">
+            <label>
+                <span class="{{ $labelClass }}">{{ __('Met on') }}</span>
+                <input name="met_at" type="date" class="form-input-admin" value="{{ old('met_at', $person?->met_at?->format('Y-m-d')) }}">
+            </label>
+            <label>
+                <span class="{{ $labelClass }}">{{ __('Where or how') }}</span>
+                <input name="met_how" class="form-input-admin" value="{{ old('met_how', $person?->met_how) }}">
+            </label>
+        </div>
+
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Company') }}</span>
+            <input name="company" class="form-input-admin" value="{{ old('company', $person?->company) }}" autocomplete="off">
+        </label>
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Job title') }}</span>
+            <input name="job_title" class="form-input-admin" value="{{ old('job_title', $person?->job_title) }}" autocomplete="off">
+        </label>
+        <label class="md:col-span-2">
+            <span class="{{ $labelClass }}">{{ __('Linked business record') }}</span>
+            <select name="stakeholder_id" class="form-input-admin">
+                <option value="">{{ __('None') }}</option>
+                @foreach ($stakeholders as $stakeholder)
+                    <option value="{{ $stakeholder->id }}" @selected((string) old('stakeholder_id', $person?->stakeholder_id) === (string) $stakeholder->id)>
+                        {{ $stakeholder->title ?: trim($stakeholder->name.' '.$stakeholder->surname) }}
+                    </option>
+                @endforeach
+            </select>
+        </label>
+
+        <div class="grid gap-4 md:col-span-2 md:grid-cols-3">
+            @include('admin.people._person-picker', ['field' => 'father_id', 'label' => __('Father'), 'current' => $person?->father, 'excludeId' => $excludeId])
+            @include('admin.people._person-picker', ['field' => 'mother_id', 'label' => __('Mother'), 'current' => $person?->mother, 'excludeId' => $excludeId])
+            @include('admin.people._person-picker', ['field' => 'partner_id', 'label' => __('Partner'), 'current' => $person?->partner, 'excludeId' => $excludeId])
+        </div>
+        @foreach (['father_id', 'mother_id', 'partner_id'] as $relationField)
+            @error($relationField) <span class="block text-xs text-[var(--color-danger-text)] md:col-span-2">{{ $message }}</span> @enderror
+        @endforeach
+    </fieldset>
+
+    {{-- ============ Contact ============ --}}
+    <fieldset class="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
+        <legend class="mb-4 text-base font-semibold text-ink">{{ __('Contact and social media') }}</legend>
+
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Phone') }}</span>
+            <input name="mobile" type="tel" class="form-input-admin" value="{{ old('mobile', $person?->mobile) }}" autocomplete="off">
+        </label>
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Email') }}</span>
+            <input name="email" type="email" class="form-input-admin" value="{{ old('email', $person?->email) }}" autocomplete="off">
+            @error('email') <span class="mt-1 block text-xs text-[var(--color-danger-text)]">{{ $message }}</span> @enderror
+        </label>
+        <label class="md:col-span-2">
+            <span class="{{ $labelClass }}">{{ __('Address') }}</span>
+            <textarea name="address" class="form-input-admin min-h-20" rows="2">{{ old('address', $person?->address) }}</textarea>
+        </label>
+
+        <div class="md:col-span-2" x-data="channelRepeater(@js(array_values($channelRows)))">
+            <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+                <span class="text-sm font-medium text-ink-soft">{{ __('Other channels') }}</span>
+                <div class="flex flex-wrap gap-1.5">
+                    <button type="button" class="admin-btn-sm admin-btn-ghost" @click="add('instagram')">+ Instagram</button>
+                    <button type="button" class="admin-btn-sm admin-btn-ghost" @click="add('linkedin')">+ LinkedIn</button>
+                    <button type="button" class="admin-btn-sm admin-btn-ghost" @click="add('phone')">+ {{ __('Phone') }}</button>
+                    <button type="button" class="admin-btn-sm admin-btn-ghost" @click="add('other')">+ {{ __('Other') }}</button>
+                </div>
             </div>
-            <p x-show="loadingLibrary" class="text-xs text-gray-500">{{ __('Loading media...') }}</p>
-            <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                <template x-for="item in mediaItems" :key="item.id">
-                    <button
-                        type="button"
-                        @click="selectMedia(item)"
-                        class="rounded-md border border-gray-200 p-2 text-left transition-colors hover:border-blue-400 dark:border-gray-700"
-                    >
-                        <img :src="item.thumbnail_url" :alt="item.alt || item.filename" class="aspect-video w-full rounded object-cover">
-                        <span class="mt-1 block truncate text-xs" x-text="item.filename"></span>
-                        <span class="block text-[10px] text-gray-500" x-text="(item.width && item.height) ? `${item.width}×${item.height}` : (item.mime_type || '')"></span>
-                    </button>
+            <p x-show="!rows.length" class="glass-well px-4 py-3 text-sm text-ink-muted">{{ __('No extra channels yet. Add social profiles, a second phone or a work e-mail.') }}</p>
+            <div class="space-y-2">
+                <template x-for="(row, index) in rows" :key="row.key">
+                    <div class="glass-well grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 p-2 sm:grid-cols-[9.5rem_minmax(0,1fr)_minmax(0,0.7fr)_auto_auto]">
+                        <input type="hidden" :name="`channels[${index}][id]`" :value="row.id ?? ''">
+                        <select :name="`channels[${index}][type]`" x-model="row.type" class="form-input-admin" aria-label="{{ __('Channel type') }}">
+                            @foreach ($channelTypes as $key => $label)
+                                <option value="{{ $key }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        <button type="button" class="admin-btn-sm admin-btn-danger h-11 w-11 p-0 sm:hidden" @click="remove(index)" aria-label="{{ __('Remove channel') }}">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>
+                        </button>
+                        <input :name="`channels[${index}][value]`" x-model="row.value" data-channel-value class="form-input-admin col-span-2 sm:col-span-1" placeholder="{{ __('@handle, number or link') }}" aria-label="{{ __('Value') }}" required>
+                        <input :name="`channels[${index}][label]`" x-model="row.label" class="form-input-admin col-span-2 sm:col-span-1" placeholder="{{ __('Label (optional)') }}" aria-label="{{ __('Label') }}">
+                        <label class="col-span-2 flex items-center gap-2 px-1 text-xs text-ink-soft sm:col-span-1">
+                            <input type="checkbox" :name="`channels[${index}][is_primary]`" value="1" x-model="row.is_primary" class="h-4 w-4 accent-[var(--color-brand)]">
+                            {{ __('Primary') }}
+                        </label>
+                        <button type="button" class="admin-btn-sm admin-btn-danger hidden h-11 w-11 p-0 sm:inline-flex" @click="remove(index)" aria-label="{{ __('Remove channel') }}">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>
+                        </button>
+                    </div>
                 </template>
             </div>
-            <div class="mt-3 flex items-center justify-between text-xs text-gray-500" x-show="libraryMeta.last_page > 1">
-                <button type="button" @click="fetchLibrary(libraryMeta.page - 1)" :disabled="libraryMeta.page <= 1" class="rounded-md border border-gray-300 px-2 py-1 disabled:opacity-50 dark:border-gray-700">{{ __('Prev') }}</button>
-                <span x-text="`Page ${libraryMeta.page} / ${libraryMeta.last_page}`"></span>
-                <button type="button" @click="fetchLibrary(libraryMeta.page + 1)" :disabled="libraryMeta.page >= libraryMeta.last_page" class="rounded-md border border-gray-300 px-2 py-1 disabled:opacity-50 dark:border-gray-700">{{ __('Next') }}</button>
-            </div>
+            @error('channels.*') <span class="mt-1 block text-xs text-[var(--color-danger-text)]">{{ $message }}</span> @enderror
         </div>
-    </div>
+    </fieldset>
 
-    <label class="md:col-span-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Address') }}</span>
-        <textarea name="address" class="form-input-admin min-h-20" rows="3">{{ old('address', $person->address ?? '') }}</textarea>
-    </label>
+    {{-- ============ Character & interests ============ --}}
+    <fieldset class="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
+        <legend class="mb-1 text-base font-semibold text-ink">{{ __('Character and interests') }}</legend>
+        <p class="-mt-1 mb-2 text-sm text-ink-muted md:col-span-2">{{ __('Your own observations. The detailed personality analysis lives in the Analysis tab of the person card.') }}</p>
 
-    <label class="md:col-span-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span class="mb-1 block">{{ __('Notes') }}</span>
-        <textarea name="notes" class="form-input-admin min-h-28">{{ old('notes', $person->notes ?? '') }}</textarea>
-    </label>
+        <label class="md:col-span-2">
+            <span class="{{ $labelClass }}">{{ __('Character') }}</span>
+            <textarea name="character_summary" rows="4" class="form-input-admin min-h-28" placeholder="{{ __('Temperament, how they communicate, what matters to them') }}">{{ old('character_summary', $person?->character_summary) }}</textarea>
+        </label>
+        <div class="md:col-span-2">
+            @include('admin.people._chips', ['field' => 'interests', 'label' => __('Curiosities and interests'), 'values' => $person?->interests ?? []])
+        </div>
+        @include('admin.people._chips', ['field' => 'hobbies', 'label' => __('Hobbies'), 'values' => $person?->hobbies ?? []])
+        @include('admin.people._chips', ['field' => 'tendencies', 'label' => __('Tendencies'), 'values' => $person?->tendencies ?? []])
+    </fieldset>
+
+    {{-- ============ Notes ============ --}}
+    <fieldset class="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
+        <legend class="mb-4 text-base font-semibold text-ink">{{ __('Notes') }}</legend>
+        <label class="md:col-span-2">
+            <span class="sr-only">{{ __('Notes') }}</span>
+            <textarea name="notes" rows="4" class="form-input-admin min-h-28">{{ old('notes', $person?->notes) }}</textarea>
+        </label>
+        <label>
+            <span class="{{ $labelClass }}">{{ __('Alice key') }}</span>
+            <input name="alice_slug" class="form-input-admin font-mono" value="{{ old('alice_slug', $person?->alice_slug) }}" placeholder="eray-civelek" autocomplete="off" spellcheck="false">
+            <span class="mt-1 block text-xs text-ink-muted">{{ __('Matches this card with the person record in Alice. Filled in automatically on import.') }}</span>
+            @error('alice_slug') <span class="mt-1 block text-xs text-[var(--color-danger-text)]">{{ $message }}</span> @enderror
+        </label>
+    </fieldset>
 </div>
 
-<div class="mt-6 flex items-center gap-3">
-    <button class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900" type="submit">
-        {{ $isEdit ? __('Update Person') : __('Create Person') }}
-    </button>
-
-    <a href="{{ route('admin.people.index') }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium dark:border-gray-700">
-        {{ __('Cancel') }}
-    </a>
+<div class="glass-strong sticky bottom-[calc(var(--admin-bottom-nav-height)+env(safe-area-inset-bottom,0px)+1.5rem)] z-20 mt-8 flex items-center justify-end gap-2 rounded-2xl p-2 md:bottom-3">
+    <a href="{{ $person ? route('admin.people.show', $person) : route('admin.people.index') }}" class="admin-btn admin-btn-ghost">{{ __('Cancel') }}</a>
+    <button type="submit" class="admin-btn admin-btn-primary">{{ $person ? __('Save changes') : __('Create person') }}</button>
 </div>

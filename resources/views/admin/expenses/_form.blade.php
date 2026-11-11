@@ -94,13 +94,13 @@
     aria-modal="true"
     aria-labelledby="quick-stakeholder-title"
 >
-    <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+    <div class="w-full max-w-lg rounded-2xl glass-strong p-6">
         <div class="flex items-start justify-between gap-4">
             <div>
                 <h2 id="quick-stakeholder-title" class="text-lg font-semibold">Paydaş oluştur</h2>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Yeni bir paydaş oluşturun ve bu gidere bağlayın.</p>
             </div>
-            <button type="button" @click="closeQuickCreateModal()" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700" aria-label="{{ __('Close quick create modal') }}">Kapat</button>
+            <button type="button" @click="closeQuickCreateModal()" class="admin-btn-sm admin-btn-ghost" aria-label="{{ __('Close quick create modal') }}">Kapat</button>
         </div>
 
         <div class="mt-4 grid gap-4 md:grid-cols-2">
@@ -128,18 +128,18 @@
         <p x-show="quickError" x-text="quickError" class="mt-3 text-sm text-red-600"></p>
 
         <div class="mt-6 flex items-center justify-end gap-3">
-            <button type="button" @click="closeQuickCreateModal()" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium dark:border-gray-700">İptal</button>
-            <button type="button" @click="createQuickStakeholder()" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900">Oluştur ve bağla</button>
+            <button type="button" @click="closeQuickCreateModal()" class="admin-btn admin-btn-ghost">İptal</button>
+            <button type="button" @click="createQuickStakeholder()" class="admin-btn admin-btn-primary">Oluştur ve bağla</button>
         </div>
     </div>
 </div>
 
 <div class="mt-6 flex items-center gap-3">
-    <button class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900" type="submit">
+    <button class="admin-btn admin-btn-primary" type="submit">
         {{ $isEdit ? 'Güncelle' : 'Oluştur' }}
     </button>
 
-    <a href="{{ route('admin.expenses.index') }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium dark:border-gray-700">
+    <a href="{{ route('admin.expenses.index') }}" class="admin-btn admin-btn-ghost">
         İptal
     </a>
 </div>

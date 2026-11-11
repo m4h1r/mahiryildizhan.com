@@ -7,16 +7,16 @@
         <div x-data="{ tab: 'en' }" class="space-y-6">
 
             {{-- Tab switcher --}}
-            <div class="flex gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 w-fit dark:border-gray-700 dark:bg-gray-800">
+            <div class="flex gap-1 rounded-xl glass-well p-1 w-fit dark:border-white/10 dark:bg-white/[0.06]">
                 <button type="button"
                     @click="tab = 'en'"
-                    :class="tab === 'en' ? 'bg-white shadow dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+                    :class="tab === 'en' ? 'bg-[var(--glass-strong)] shadow-sm text-ink' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
                     class="rounded-lg px-5 py-2 text-sm font-medium transition">
                     🇬🇧 English
                 </button>
                 <button type="button"
                     @click="tab = 'tr'"
-                    :class="tab === 'tr' ? 'bg-white shadow dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+                    :class="tab === 'tr' ? 'bg-[var(--glass-strong)] shadow-sm text-ink' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
                     class="rounded-lg px-5 py-2 text-sm font-medium transition">
                     🇹🇷 Türkçe
                 </button>
@@ -32,26 +32,26 @@
                 >
                     <div class="flex flex-wrap items-center gap-2">
                         <button type="button" @click="editor?.chain().focus().toggleBold().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Bold') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">{{ __('Bold') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleItalic().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Italic') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">{{ __('Italic') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">H2</button>
+                            class="admin-btn-sm admin-btn-ghost">H2</button>
                         <button type="button" @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">H3</button>
+                            class="admin-btn-sm admin-btn-ghost">H3</button>
                         <button type="button" @click="editor?.chain().focus().toggleBulletList().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">• {{ __('List') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">• {{ __('List') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleOrderedList().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">1. {{ __('List') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">1. {{ __('List') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleBlockquote().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Quote') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">{{ __('Quote') }}</button>
                         <button type="button" @click="editor?.chain().focus().undo().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↩ {{ __('Undo') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">↩ {{ __('Undo') }}</button>
                         <button type="button" @click="editor?.chain().focus().redo().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↪ {{ __('Redo') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">↪ {{ __('Redo') }}</button>
                     </div>
                     <div x-ref="editor"
-                        class="prose prose-sm min-h-64 max-w-none rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
+                        class="prose prose-sm min-h-64 max-w-none rounded-lg border border-[var(--field-line)] bg-[var(--field)] px-4 py-3 text-sm text-ink">
                     </div>
                     <textarea name="content_en" x-model="content" class="form-input-admin hidden"></textarea>
                 </div>
@@ -67,26 +67,26 @@
                 >
                     <div class="flex flex-wrap items-center gap-2">
                         <button type="button" @click="editor?.chain().focus().toggleBold().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Bold') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">{{ __('Bold') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleItalic().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Italic') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">{{ __('Italic') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">H2</button>
+                            class="admin-btn-sm admin-btn-ghost">H2</button>
                         <button type="button" @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">H3</button>
+                            class="admin-btn-sm admin-btn-ghost">H3</button>
                         <button type="button" @click="editor?.chain().focus().toggleBulletList().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">• {{ __('List') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">• {{ __('List') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleOrderedList().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">1. {{ __('List') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">1. {{ __('List') }}</button>
                         <button type="button" @click="editor?.chain().focus().toggleBlockquote().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">{{ __('Quote') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">{{ __('Quote') }}</button>
                         <button type="button" @click="editor?.chain().focus().undo().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↩ {{ __('Undo') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">↩ {{ __('Undo') }}</button>
                         <button type="button" @click="editor?.chain().focus().redo().run()"
-                            class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold dark:border-gray-700">↪ {{ __('Redo') }}</button>
+                            class="admin-btn-sm admin-btn-ghost">↪ {{ __('Redo') }}</button>
                     </div>
                     <div x-ref="editor"
-                        class="prose prose-sm min-h-64 max-w-none rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
+                        class="prose prose-sm min-h-64 max-w-none rounded-lg border border-[var(--field-line)] bg-[var(--field)] px-4 py-3 text-sm text-ink">
                     </div>
                     <textarea name="content_tr" x-model="content" class="form-input-admin hidden"></textarea>
                 </div>
@@ -96,7 +96,7 @@
 
         <div class="flex items-center gap-4">
             <button type="submit"
-                class="rounded-md bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white dark:bg-white dark:text-gray-900">
+                class="admin-btn admin-btn-primary px-6">
                 {{ __('Save Changes') }}
             </button>
             <a href="{{ url('/about') }}" target="_blank"

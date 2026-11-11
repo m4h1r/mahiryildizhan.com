@@ -7,10 +7,10 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Hierarchical View') }}</p>
                 <h2 class="text-xl font-semibold">{{ $person->name }} {{ $person->surname }}</h2>
             </div>
-            <a href="{{ route('admin.people.index') }}" class="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium dark:border-gray-700">{{ __('Back') }}</a>
+            <a href="{{ route('admin.people.index') }}" class="admin-btn admin-btn-ghost">{{ __('Back') }}</a>
         </div>
 
-        <div id="tree-network" class="h-[640px] w-full rounded-lg border border-gray-200 dark:border-gray-700"></div>
+        <div id="tree-network" class="h-[640px] w-full rounded-lg border border-glass dark:border-white/10"></div>
     </section>
 
     <script src="https://unpkg.com/vis-network@10.0.2/standalone/umd/vis-network.min.js"></script>

@@ -96,7 +96,7 @@
             </article>
 
             {{-- Hava durumu (5 gün) + yaşam sayacı --}}
-            <article class="card-admin lg:col-span-1 xl:col-span-2 border border-blue-200/80 bg-gradient-to-br from-blue-50 to-indigo-50 dark:border-blue-800 dark:from-blue-950/40 dark:to-indigo-950/40">
+            <article class="card-admin lg:col-span-1 xl:col-span-2 border border-blue-200/80 bg-gradient-to-br from-blue-50/55 to-indigo-50/35 dark:border-blue-800 dark:from-blue-500/10 dark:to-indigo-500/5">
                 <div class="mb-4">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ $weatherCityName }} {{ __('Weather') }}</h2>
                     <p class="text-sm text-gray-600 dark:text-gray-300">{{ __('5-day outlook') }}</p>
@@ -109,7 +109,7 @@
                                 $code = (int) ($weather['daily']['weathercode'][$index] ?? -1);
                                 $icon = $weatherCodeToIcon[$code] ?? '🌤️';
                             @endphp
-                            <div class="{{ $index === 4 ? 'hidden lg:block ' : '' }}rounded-xl border border-blue-200/70 bg-white/80 p-3 text-center shadow-sm transition hover:shadow-md dark:border-blue-800/60 dark:bg-gray-900/50">
+                            <div class="{{ $index === 4 ? 'hidden lg:block ' : '' }}rounded-xl border border-blue-200/70 bg-[var(--glass-hover)] p-3 text-center shadow-sm transition hover:shadow-md dark:border-blue-800/60 dark:bg-white/[0.04]">
                                 <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">{{ \Illuminate\Support\Carbon::parse($date)->format('D, d M') }}</p>
                                 <p class="mt-2 text-3xl">{{ $icon }}</p>
                                 <p class="mt-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
@@ -151,7 +151,7 @@
                                     labels: ['{{ __('Karbonhidrat') }}', '{{ __('Yağ') }}', '{{ __('Protein') }}'],
                                     datasets: [{
                                         data: [cur.carbs, cur.fat, cur.protein],
-                                        backgroundColor: ['#3B82F6', '#F97316', '#8B5CF6'],
+                                        backgroundColor: (() => { const css = getComputedStyle(document.documentElement); return [css.getPropertyValue('--brand-primary').trim() || '#3B82F6', css.getPropertyValue('--brand-secondary').trim() || '#F97316', '#8B5CF6']; })(),
                                         borderWidth: 0,
                                     }],
                                 },
@@ -177,7 +177,7 @@
                     <a href="{{ route('admin.consumptions.index') }}" class="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">{{ __('Yönet') }}</a>
                 </div>
 
-                <div class="mt-3 inline-flex rounded-lg border border-gray-200 p-0.5 text-xs font-medium dark:border-gray-700">
+                <div class="mt-3 inline-flex rounded-lg border border-glass p-0.5 text-xs font-medium dark:border-white/10">
                     <button type="button" @click="setDay('today')"
                         class="rounded-md px-3 py-1 transition"
                         :class="day === 'today' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'">
@@ -202,12 +202,12 @@
                     </div>
                 </div>
 
-                <div class="mt-4 border-t border-gray-100 pt-3 dark:border-gray-800">
+                <div class="mt-4 border-t border-glass pt-3 dark:border-white/10">
                     <div class="flex items-center justify-between text-xs">
                         <span class="font-medium text-gray-500 dark:text-gray-400">{{ __('Kalori Hedefi') }}</span>
                         <span class="font-semibold" :class="textClass()"><span x-text="fmt(d.calories)"></span> / <span x-text="fmt(goals.calorie)"></span> kcal</span>
                     </div>
-                    <div class="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                    <div class="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.06]">
                         <div class="h-full rounded-full transition-all duration-500" :class="barClass()" :style="`width: ${d.percent}%`"></div>
                     </div>
                 </div>
@@ -226,7 +226,7 @@
 
             {{-- Kasa + aylık net + yıllık gelir/gider/net tek satır --}}
             <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-                <div class="rounded-xl border border-emerald-200/70 bg-gradient-to-br from-emerald-50 to-teal-50 p-3 dark:border-emerald-800/60 dark:from-emerald-950/30 dark:to-teal-950/30">
+                <div class="rounded-xl border border-emerald-200/70 bg-gradient-to-br from-emerald-50/55 to-teal-50/35 p-3 dark:border-emerald-800/60 dark:from-emerald-500/10 dark:to-teal-500/5">
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Kasa') }}</p>
                     <p class="mt-1 text-xl font-extrabold text-emerald-700 dark:text-emerald-300">₺{{ number_format($treasuryTry, 2) }}</p>
                     @if ($treasuryUsd !== null)
@@ -234,22 +234,22 @@
                     @endif
                     <a href="{{ route('admin.settings') }}" class="text-xs text-gray-400 hover:underline dark:text-gray-500">{{ __('Güncelle') }} →</a>
                 </div>
-                <div class="rounded-xl border {{ $isNetNegative ? 'border-red-200/70' : 'border-emerald-200/70' }} bg-gradient-to-br from-sky-50 to-blue-50 p-3 dark:border-gray-700 dark:from-sky-950/30 dark:to-blue-950/30">
+                <div class="rounded-xl border {{ $isNetNegative ? 'border-red-200/70' : 'border-emerald-200/70' }} bg-gradient-to-br from-sky-50/55 to-blue-50/35 p-3 dark:border-white/10 dark:from-sky-500/10 dark:to-blue-500/5">
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Monthly Net') }}</p>
                     <p class="mt-1 text-xl font-extrabold {{ $isNetNegative ? 'text-red-700 dark:text-red-300' : 'text-emerald-700 dark:text-emerald-300' }}">{{ number_format($monthlyNet, 2) }}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500">TRY · {{ now()->translatedFormat('F') }}</p>
                 </div>
-                <div class="rounded-xl border border-green-200/70 bg-white/70 p-3 dark:border-green-800/50 dark:bg-gray-900/40">
+                <div class="rounded-xl border border-green-200/70 bg-[var(--glass-hover)] p-3 dark:border-green-800/50 dark:bg-white/[0.04]">
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Income') }}</p>
                     <p class="mt-1 text-xl font-extrabold text-green-700 dark:text-green-300">{{ number_format($annualIncome, 2) }}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500">TRY</p>
                 </div>
-                <div class="rounded-xl border border-red-200/70 bg-white/70 p-3 dark:border-red-800/50 dark:bg-gray-900/40">
+                <div class="rounded-xl border border-red-200/70 bg-[var(--glass-hover)] p-3 dark:border-red-800/50 dark:bg-white/[0.04]">
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Expense') }}</p>
                     <p class="mt-1 text-xl font-extrabold text-red-700 dark:text-red-300">{{ number_format($annualExpense, 2) }}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500">TRY</p>
                 </div>
-                <div class="rounded-xl border {{ $isAnnualNetNegative ? 'border-red-200/70' : 'border-emerald-200/70' }} bg-white/70 p-3 dark:bg-gray-900/40 dark:border-gray-700">
+                <div class="rounded-xl border {{ $isAnnualNetNegative ? 'border-red-200/70' : 'border-emerald-200/70' }} bg-[var(--glass-hover)] p-3 dark:bg-white/[0.04] dark:border-white/10">
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Net') }}</p>
                     <p class="mt-1 text-xl font-extrabold {{ $isAnnualNetNegative ? 'text-red-700 dark:text-red-300' : 'text-emerald-700 dark:text-emerald-300' }}">{{ number_format($annualNet, 2) }}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500">TRY</p>
@@ -257,31 +257,31 @@
             </div>
 
             {{-- FX / Kripto şeridi --}}
-            <div class="mt-4 grid grid-cols-2 gap-3 border-t border-gray-100 pt-4 sm:grid-cols-3 lg:grid-cols-5 dark:border-gray-800">
-                <div class="rounded-lg border border-green-200 bg-gradient-to-br from-green-50 to-green-100 p-3 dark:border-green-800 dark:from-green-950/40 dark:to-green-900/40">
+            <div class="mt-4 grid grid-cols-2 gap-3 border-t border-glass pt-4 sm:grid-cols-3 lg:grid-cols-5 dark:border-white/10">
+                <div class="rounded-lg border border-green-200 bg-gradient-to-br from-green-50/55 to-green-100/35 p-3 dark:border-green-800 dark:from-green-500/10 dark:to-green-500/5">
                     <p class="text-xs text-gray-600 dark:text-gray-300">USD/TRY</p>
                     <p class="mt-1 text-lg font-bold text-green-700 dark:text-green-300">{{ $fxUsdTry ? number_format($fxUsdTry, 4) : '-' }}</p>
                 </div>
-                <div class="rounded-lg border border-indigo-200 bg-gradient-to-br from-indigo-50 to-indigo-100 p-3 dark:border-indigo-800 dark:from-indigo-950/40 dark:to-indigo-900/40">
+                <div class="rounded-lg border border-indigo-200 bg-gradient-to-br from-indigo-50/55 to-indigo-100/35 p-3 dark:border-indigo-800 dark:from-indigo-500/10 dark:to-indigo-500/5">
                     <p class="text-xs text-gray-600 dark:text-gray-300">EUR/TRY</p>
                     <p class="mt-1 text-lg font-bold text-indigo-700 dark:text-indigo-300">{{ $fxEurTry ? number_format($fxEurTry, 4) : '-' }}</p>
                 </div>
-                <div class="hidden rounded-lg border border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100 p-3 md:block dark:border-violet-800 dark:from-violet-950/40 dark:to-violet-900/40">
+                <div class="hidden rounded-lg border border-violet-200 bg-gradient-to-br from-violet-50/55 to-violet-100/35 p-3 md:block dark:border-violet-800 dark:from-violet-500/10 dark:to-violet-500/5">
                     <p class="text-xs text-gray-600 dark:text-gray-300">GBP/TRY</p>
                     <p class="mt-1 text-lg font-bold text-violet-700 dark:text-violet-300">{{ $fxGbpTry ? number_format($fxGbpTry, 4) : '-' }}</p>
                 </div>
-                <div class="rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100 p-3 dark:border-amber-800 dark:from-amber-950/40 dark:to-amber-900/40">
+                <div class="rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50/55 to-amber-100/35 p-3 dark:border-amber-800 dark:from-amber-500/10 dark:to-amber-500/5">
                     <p class="text-xs text-gray-600 dark:text-gray-300">BTC/USD</p>
                     <p class="mt-1 text-lg font-bold text-amber-700 dark:text-amber-300">${{ number_format($btcUsd, 2) }}</p>
                 </div>
-                <div class="rounded-lg border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 p-3 dark:border-blue-800 dark:from-blue-950/40 dark:to-blue-900/40">
+                <div class="rounded-lg border border-blue-200 bg-gradient-to-br from-blue-50/55 to-blue-100/35 p-3 dark:border-blue-800 dark:from-blue-500/10 dark:to-blue-500/5">
                     <p class="text-xs text-gray-600 dark:text-gray-300">ETH/USD</p>
                     <p class="mt-1 text-lg font-bold text-blue-700 dark:text-blue-300">${{ number_format($ethUsd, 2) }}</p>
                 </div>
             </div>
 
             {{-- Zenginlik Seviyesi + Günlük Pasif Gelir (tam genişlik) --}}
-            <div class="mt-4 rounded-xl border border-blue-200/80 bg-gradient-to-br from-blue-50 to-indigo-50 p-4 dark:border-blue-800/60 dark:from-blue-950/30 dark:to-indigo-950/30">
+            <div class="mt-4 rounded-xl border border-blue-200/80 bg-gradient-to-br from-blue-50/55 to-indigo-50/35 p-4 dark:border-blue-800/60 dark:from-blue-500/10 dark:to-indigo-500/5">
                 <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Zenginlik Seviyesi') }}</p>
@@ -302,7 +302,7 @@
                     </div>
 
                     {{-- Günlük pasif gelir — kademeyi besleyen değer --}}
-                    <div class="rounded-lg bg-white/70 px-3 py-2 text-right dark:bg-gray-900/50">
+                    <div class="rounded-lg bg-[var(--glass-hover)] px-3 py-2 text-right dark:bg-white/[0.04]">
                         <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Günlük Pasif Gelir') }}</p>
                         <p class="text-lg font-extrabold text-sky-700 dark:text-sky-300">₺{{ number_format($dailyPassiveIncomeTry, 2) }}<span class="text-xs font-normal text-gray-500 dark:text-gray-400">/gün</span></p>
                         <p class="text-[11px] text-gray-400 dark:text-gray-500">
@@ -359,7 +359,7 @@
         <section class="grid gap-4 xl:grid-cols-2">
 
             {{-- Bucket List --}}
-            <article class="card-admin border border-purple-200/70 bg-gradient-to-br from-purple-50 to-fuchsia-50 dark:border-purple-800/60 dark:from-purple-950/30 dark:to-fuchsia-950/30">
+            <article class="card-admin border border-purple-200/70 bg-gradient-to-br from-purple-50/55 to-fuchsia-50/35 dark:border-purple-800/60 dark:from-purple-500/10 dark:to-fuchsia-500/5">
                 <div class="flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Bucket List') }}</h3>
                     <a href="{{ route('admin.bucketlist') }}" class="text-xs font-medium text-purple-600 hover:underline dark:text-purple-400">{{ __('Görüntüle') }}</a>
@@ -415,7 +415,7 @@
                 <div class="mt-3 space-y-2">
                     <template x-for="todo in todos" :key="todo.id">
                         <div
-                            class="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2 transition dark:border-gray-700"
+                            class="flex items-center gap-3 rounded-lg border border-glass px-3 py-2 transition dark:border-white/10"
                             :class="todo.completed ? 'opacity-50' : ''"
                         >
                             <button
@@ -424,7 +424,7 @@
                                 class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition"
                                 :class="todo.completed
                                     ? 'border-emerald-500 bg-emerald-500 text-white'
-                                    : 'border-gray-300 hover:border-emerald-400 dark:border-gray-600'"
+                                    : 'border-[var(--field-line)] hover:border-emerald-400 dark:border-white/10'"
                             >
                                 <svg x-show="todo.completed" class="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2 6l3 3 5-5"/>
@@ -440,7 +440,7 @@
                     </template>
 
                     @if ($dueTodos->isEmpty())
-                        <p class="rounded-lg border border-dashed border-gray-300 p-4 text-center text-sm text-gray-400 dark:border-gray-700">
+                        <p class="rounded-lg border border-dashed border-[var(--field-line)] p-4 text-center text-sm text-gray-400 dark:border-white/10">
                             Bekleyen görev yok 🎉
                         </p>
                     @endif
@@ -461,7 +461,7 @@
                 </div>
                 <div class="mt-3 space-y-2">
                     @forelse ($recentPosts as $post)
-                        <a href="{{ route('admin.posts.edit', $post->id) }}" class="block rounded-lg border border-gray-200 px-3 py-2 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-900/60">
+                        <a href="{{ route('admin.posts.edit', $post->id) }}" class="block rounded-lg border border-glass px-3 py-2 hover:bg-[var(--glass-hover)] dark:border-white/10 dark:hover:bg-white/5">
                             <p class="line-clamp-1 text-sm font-medium text-gray-800 dark:text-gray-100">{{ $post->title }}</p>
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 {{ __('Status') }}: {{ ucfirst((string) $post->status) }}
@@ -470,7 +470,7 @@
                             </p>
                         </a>
                     @empty
-                        <p class="rounded-lg border border-dashed border-gray-300 p-4 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">{{ __('No posts yet.') }}</p>
+                        <p class="rounded-lg border border-dashed border-[var(--field-line)] p-4 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">{{ __('No posts yet.') }}</p>
                     @endforelse
                 </div>
             </article>
@@ -486,7 +486,7 @@
                 </div>
                 <div class="mt-3 space-y-2">
                     @forelse ($recentComments as $comment)
-                        <div class="rounded-lg border border-gray-200 px-3 py-2 dark:border-gray-700">
+                        <div class="rounded-lg border border-glass px-3 py-2 dark:border-white/10">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <p class="text-sm font-medium text-gray-800 dark:text-gray-100">{{ $comment->guest_name ?: __('Guest') }}</p>
@@ -500,7 +500,7 @@
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ optional($comment->created_at)->diffForHumans() }}</p>
                         </div>
                     @empty
-                        <p class="rounded-lg border border-dashed border-gray-300 p-4 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">{{ __('No comments yet.') }}</p>
+                        <p class="rounded-lg border border-dashed border-[var(--field-line)] p-4 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">{{ __('No comments yet.') }}</p>
                     @endforelse
                 </div>
             </article>
@@ -514,7 +514,7 @@
                 <div class="mt-3 space-y-2">
                     @forelse ($upcomingBirthdays as $person)
                         @php($daysFromToday = (int) $person->days_from_today)
-                        <a href="{{ route('admin.people.show', $person->id) }}" class="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-900/60">
+                        <a href="{{ route('admin.people.show', $person->id) }}" class="flex items-center gap-3 rounded-lg border border-glass px-3 py-2 hover:bg-[var(--glass-hover)] dark:border-white/10 dark:hover:bg-white/5">
                             <img
                                 src="{{ $person->pictureUrl }}"
                                 alt="{{ trim(($person->name ?? '') . ' ' . ($person->surname ?? '')) }}"
@@ -537,7 +537,7 @@
                             </span>
                         </a>
                     @empty
-                        <p class="rounded-lg border border-dashed border-gray-300 p-4 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">{{ __('No birthdays found in this range.') }}</p>
+                        <p class="rounded-lg border border-dashed border-[var(--field-line)] p-4 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">{{ __('No birthdays found in this range.') }}</p>
                     @endforelse
                 </div>
             </article>
@@ -550,10 +550,10 @@
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Quick Actions') }}</h3>
                 <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-                    <a href="{{ route('admin.posts.create') }}" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-900">{{ __('Create New Post') }}</a>
-                    <a href="{{ route('admin.people.create') }}" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-900">{{ __('Add New Person') }}</a>
-                    <a href="{{ route('admin.reports') }}" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-900">{{ __('Open Financial Reports') }}</a>
-                    <a href="{{ route('admin.import.index') }}" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-900">{{ __('Run CSV Import') }}</a>
+                    <a href="{{ route('admin.posts.create') }}" class="rounded-lg border border-[var(--field-line)] px-3 py-2 text-sm font-medium hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5">{{ __('Create New Post') }}</a>
+                    <a href="{{ route('admin.people.create') }}" class="rounded-lg border border-[var(--field-line)] px-3 py-2 text-sm font-medium hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5">{{ __('Add New Person') }}</a>
+                    <a href="{{ route('admin.reports') }}" class="rounded-lg border border-[var(--field-line)] px-3 py-2 text-sm font-medium hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5">{{ __('Open Financial Reports') }}</a>
+                    <a href="{{ route('admin.import.index') }}" class="rounded-lg border border-[var(--field-line)] px-3 py-2 text-sm font-medium hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5">{{ __('Run CSV Import') }}</a>
                 </div>
             </div>
         </section>

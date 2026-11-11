@@ -89,7 +89,7 @@
 
         <label class="inline-flex cursor-pointer items-center gap-2 sm:pb-2.5">
             <input type="hidden" name="status" value="Passive">
-            <input type="checkbox" name="status" value="Active" class="h-5 w-5 rounded border-gray-300 text-[var(--color-brand)] focus:ring-[var(--color-brand)]" @checked($selectedStatus === 'Active')>
+            <input type="checkbox" name="status" value="Active" class="h-5 w-5 rounded border-[var(--field-line)] text-[var(--color-brand)] focus:ring-[var(--color-brand)]" @checked($selectedStatus === 'Active')>
             <span class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ __('Active') }}</span>
         </label>
     </div>
@@ -106,11 +106,11 @@
 </div>
 
 <div class="mt-6 flex items-center gap-3">
-    <button class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900" type="submit">
+    <button class="admin-btn admin-btn-primary" type="submit">
         {{ $isEdit ? __('Update Stakeholder') : __('Create Stakeholder') }}
     </button>
 
-    <a href="{{ route('admin.stakeholders.index') }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium dark:border-gray-700">
+    <a href="{{ route('admin.stakeholders.index') }}" class="admin-btn admin-btn-ghost">
         {{ __('Cancel') }}
     </a>
 </div>

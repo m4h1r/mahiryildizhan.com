@@ -9,6 +9,8 @@ use App\Models\EyeColor;
 use App\Models\Gender;
 use App\Models\HairColor;
 use App\Models\Person;
+use App\Models\Stakeholder;
+use App\Support\Crm\CrmRules;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,7 +27,7 @@ class PersonController extends Controller
         $dir = strtolower((string) $request->string('dir', 'asc')) === 'desc' ? 'desc' : 'asc';
 
         $query = Person::query()
-            ->with(['gender', 'father', 'mother', 'partner'])
+            ->with(['gender', 'father', 'mother', 'partner', 'latestAssessment', 'primaryFace'])
             ->orderBy($sort, $dir)
             ->orderBy('id', 'asc');
 
@@ -40,6 +42,17 @@ class PersonController extends Controller
 
         if ($genderId = $request->integer('gender_id')) {
             $query->where('gender_id', $genderId);
+        }
+
+        $scope = $request->string('scope')->toString();
+        if (array_key_exists($scope, config('crm.relationship_scopes'))) {
+            // "both" counts as personal and as professional.
+            $query->where(fn ($q) => $q->where('relationship_scope', $scope)
+                ->when($scope !== 'both', fn ($q) => $q->orWhere('relationship_scope', 'both')));
+        }
+
+        if ($request->boolean('missing_assessment')) {
+            $query->whereDoesntHave('assessments');
         }
 
         if ($alive = $request->string('alive')->toString()) {
@@ -57,7 +70,7 @@ class PersonController extends Controller
             'heading' => 'People',
             'people' => $query->paginate(20)->withQueryString(),
             'genders' => Gender::query()->orderBy('name')->get(),
-            'filters' => $request->only(['q', 'gender_id', 'alive', 'sort', 'dir']),
+            'filters' => $request->only(['q', 'gender_id', 'alive', 'scope', 'missing_assessment', 'sort', 'dir']),
         ]);
     }
 
@@ -95,7 +108,13 @@ class PersonController extends Controller
 
     public function show(Person $person): View
     {
-        $person->load(['gender', 'father', 'mother', 'partner', 'eyeColor', 'bloodType', 'hairColor']);
+        $person->load([
+            'gender', 'father', 'mother', 'partner', 'eyeColor', 'bloodType', 'hairColor',
+            'stakeholder', 'channels', 'faces', 'assessments', 'primaryFace',
+        ]);
+
+        $selected = $person->assessments->firstWhere('id', (int) request()->integer('assessment'))
+            ?? $person->assessments->first();
 
         $interactions = $person->interactions()
             ->with('type')
@@ -108,22 +127,27 @@ class PersonController extends Controller
             'heading' => 'Person Detail',
             'person' => $person,
             'interactions' => $interactions,
+            'assessment' => $selected,
+            'lastInteractionAt' => $person->interactions()->max('date'),
+            'children' => $person->allChildren(),
         ]);
     }
 
     public function store(StorePersonRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        unset($data['picture_file']);
+        $data = CrmRules::cleanTags($request->validated());
+        $channels = $data['channels'] ?? [];
+        unset($data['picture_file'], $data['channels']);
 
         if ($request->hasFile('picture_file')) {
             $path = $request->file('picture_file')->store('people', 'public');
             $data['picture'] = '/storage/'.$path;
         }
 
-        Person::query()->create($data);
+        $person = Person::query()->create($data);
+        $this->syncChannels($person, $channels);
 
-        return to_route('admin.people.index')->with('success', __('Person created.'));
+        return to_route('admin.people.show', $person)->with('success', __('Person created.'));
     }
 
     public function edit(Person $person): View
@@ -138,8 +162,9 @@ class PersonController extends Controller
 
     public function update(StorePersonRequest $request, Person $person): RedirectResponse
     {
-        $data = $request->validated();
-        unset($data['picture_file']);
+        $data = CrmRules::cleanTags($request->validated());
+        $channels = $data['channels'] ?? [];
+        unset($data['picture_file'], $data['channels']);
 
         if ($request->hasFile('picture_file')) {
             if ($person->picture && str_starts_with($person->picture, '/storage/people/')) {
@@ -150,8 +175,9 @@ class PersonController extends Controller
         }
 
         $person->update($data);
+        $this->syncChannels($person, $channels);
 
-        return to_route('admin.people.index')->with('success', __('Person updated.'));
+        return to_route('admin.people.show', $person)->with('success', __('Person updated.'));
     }
 
     public function destroy(Person $person): RedirectResponse
@@ -320,18 +346,38 @@ class PersonController extends Controller
         ]);
     }
 
+    /**
+     * @param  array<int, array<string, mixed>>  $rows
+     */
+    private function syncChannels(Person $person, array $rows): void
+    {
+        $keep = [];
+
+        foreach (array_values($rows) as $row) {
+            $attributes = [
+                'type' => $row['type'],
+                'value' => trim((string) $row['value']),
+                'label' => $row['label'] ?? null,
+                'is_primary' => (bool) ($row['is_primary'] ?? false),
+            ];
+
+            $channel = ! empty($row['id']) ? $person->channels()->whereKey($row['id'])->first() : null;
+            $channel ? $channel->update($attributes) : $channel = $person->channels()->create($attributes);
+            $keep[] = $channel->id;
+        }
+
+        $person->channels()->whereNotIn('id', $keep)->delete();
+    }
+
     private function formData(?int $excludeId = null): array
     {
         return [
+            'stakeholders' => Stakeholder::query()->orderBy('title')->orderBy('name')->get(['id', 'title', 'name', 'surname']),
             'genders' => Gender::query()->orderBy('name')->get(),
             'eyeColors' => EyeColor::query()->orderBy('name')->get(),
             'bloodTypes' => BloodType::query()->orderBy('name')->get(),
             'hairColors' => HairColor::query()->orderBy('name')->get(),
-            'peopleOptions' => Person::query()
-                ->when($excludeId !== null, fn ($query) => $query->where('id', '!=', $excludeId))
-                ->orderBy('name')
-                ->orderBy('surname')
-                ->get(['id', 'name', 'surname', 'birthday']),
+            'excludeId' => $excludeId,
         ];
     }
 

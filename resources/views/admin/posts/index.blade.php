@@ -68,7 +68,7 @@
                                 <td class="hidden md:table-cell">{{ optional($post->category)->name ?: '-' }}</td>
                                 <td class="hidden md:table-cell">{{ optional($post->language)->code ?: '-' }}</td>
                                 <td>
-                                    <span class="inline-flex items-center rounded-full border border-gray-200 px-2 py-0.5 text-xs font-medium dark:border-gray-700">{{ ucfirst($post->status) }}</span>
+                                    <span class="inline-flex items-center rounded-full border border-glass px-2 py-0.5 text-xs font-medium dark:border-white/10">{{ ucfirst($post->status) }}</span>
                                 </td>
                                 <td class="hidden text-xs text-gray-600 dark:text-gray-300 lg:table-cell">
                                     {{ number_format((int) $post->word_count) }} {{ __('words') }} / {{ (int) $post->reading_time }} {{ __('min') }}<br>

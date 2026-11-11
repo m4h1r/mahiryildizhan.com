@@ -29,7 +29,7 @@
             x-transition.opacity
             style="display: none"
             @click="window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' })"
-            class="flex h-11 w-11 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+            class="admin-btn admin-btn-primary h-11 w-11 rounded-full p-0"
             aria-label="{{ __('Scroll to bottom') }}"
             title="{{ __('Scroll to bottom') }}"
         >
@@ -43,7 +43,7 @@
             x-transition.opacity
             style="display: none"
             @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
-            class="flex h-11 w-11 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+            class="admin-btn admin-btn-primary h-11 w-11 rounded-full p-0"
             aria-label="{{ __('Scroll to top') }}"
             title="{{ __('Scroll to top') }}"
         >
@@ -82,9 +82,9 @@
                     @foreach($yearMarkers as $marker)
                         <div class="pointer-events-none absolute left-0 right-0 z-[1] flex items-center"
                              style="top: {{ $marker['px'] }}px">
-                            <div class="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
+                            <div class="h-px flex-1 bg-gray-100 dark:bg-white/[0.06]"></div>
                             <span class="shrink-0 px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">{{ $marker['year'] }}</span>
-                            <div class="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
+                            <div class="h-px flex-1 bg-gray-100 dark:bg-white/[0.06]"></div>
                         </div>
                     @endforeach
 
@@ -278,7 +278,7 @@
              x-transition:leave="transition ease-in duration-150"
              x-transition:leave-start="opacity-100 scale-100"
              x-transition:leave-end="opacity-0 scale-95"
-             class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-gray-900">
+             class="w-full max-w-lg overflow-hidden rounded-2xl glass-strong">
             <template x-if="modalEvent">
                 <div>
                     <template x-if="modalEvent.image">
@@ -291,7 +291,7 @@
                                 <h2 x-text="modalEvent.title" class="text-base font-bold text-gray-900 dark:text-gray-100"></h2>
                             </div>
                             <button @click="modalOpen = false"
-                                    class="shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+                                    class="shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
                                 </svg>

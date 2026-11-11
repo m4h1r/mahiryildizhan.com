@@ -35,7 +35,7 @@
                     @if ($centerPerson)
                         <a
                             href="{{ route('admin.people.show', $centerPerson) }}"
-                            class="absolute left-1/2 top-1/2 z-20 block w-28 -translate-x-1/2 -translate-y-1/2 rounded-2xl border-2 border-red-500 bg-white p-2 text-center shadow-lg transition-transform duration-200 ease-out hover:scale-[1.2] hover:shadow-2xl dark:bg-gray-900"
+                            class="absolute left-1/2 top-1/2 z-20 block w-28 -translate-x-1/2 -translate-y-1/2 rounded-2xl border-2 border-red-500 bg-white p-2 text-center shadow-lg transition-transform duration-200 ease-out hover:scale-[1.2] hover:shadow-2xl dark:bg-white/[0.06]"
                         >
                             <img
                                 src="{{ $centerPerson->picture_url }}"
@@ -50,7 +50,7 @@
                         <div class="circle-card-slot absolute left-0 top-0 z-10">
                             <a
                                 href="{{ route('admin.people.show', $woman) }}"
-                                class="circle-card block w-24 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-red-200 bg-white p-2 text-center shadow-md transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.2] hover:shadow-xl dark:border-red-900/50 dark:bg-gray-900"
+                                class="circle-card block w-24 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-red-200 bg-white p-2 text-center shadow-md transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.2] hover:shadow-xl dark:border-red-900/50 dark:bg-white/[0.06]"
                             >
                                 <img
                                     src="{{ $woman->picture_url }}"
@@ -66,7 +66,7 @@
                         <div class="candidate-card-slot absolute left-0 top-0 hidden">
                             <a
                                 href="{{ route('admin.people.show', $candidate) }}"
-                                class="candidate-card block w-24 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-amber-300 bg-white p-2 text-center shadow-md transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.2] hover:shadow-xl dark:border-amber-700/60 dark:bg-gray-900"
+                                class="candidate-card block w-24 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-amber-300 bg-white p-2 text-center shadow-md transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.2] hover:shadow-xl dark:border-amber-700/60 dark:bg-white/[0.06]"
                             >
                                 <img
                                     src="{{ $candidate->picture_url }}"

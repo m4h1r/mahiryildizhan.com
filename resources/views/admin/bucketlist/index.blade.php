@@ -4,7 +4,7 @@
     <div class="space-y-6">
 
         {{-- İstatistik header --}}
-        <section class="card-admin border border-purple-200/70 bg-gradient-to-br from-purple-50 to-fuchsia-50 dark:border-purple-800/60 dark:from-purple-950/30 dark:to-fuchsia-950/30">
+        <section class="card-admin border border-purple-200/70 bg-gradient-to-br from-purple-50/55 to-fuchsia-50/35 dark:border-purple-800/60 dark:from-purple-500/10 dark:to-fuchsia-500/5">
             <div class="flex flex-wrap items-center justify-between gap-4">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Bucket List İlerlemesi</p>
@@ -28,26 +28,26 @@
             <div class="mb-3 flex items-center justify-between">
                 <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-200">
                     Satın Alınacaklar
-                    <span class="ml-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500 dark:bg-gray-800 dark:text-gray-400">{{ $purchaseItems->count() }}</span>
+                    <span class="ml-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500 dark:bg-white/[0.06] dark:text-gray-400">{{ $purchaseItems->count() }}</span>
                 </h2>
                 <a href="{{ route('admin.purchase-items.create') }}?is_bucketlist=1" class="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">+ Ekle</a>
             </div>
 
             @if ($purchaseItems->isEmpty())
-                <p class="rounded-xl border border-dashed border-gray-300 p-5 text-center text-sm text-gray-400 dark:border-gray-700">
+                <p class="rounded-xl border border-dashed border-[var(--field-line)] p-5 text-center text-sm text-gray-400 dark:border-white/10">
                     Bucket list'e eklenmiş alım yok.
                 </p>
             @else
                 <div class="card-admin overflow-hidden p-0">
-                    <ul class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <ul class="divide-y divide-[var(--glass-line)]">
                         @foreach ($purchaseItems as $item)
-                            <li class="flex items-center gap-3 px-4 py-3 transition hover:bg-gray-50/60 dark:hover:bg-gray-900/30 {{ $item->is_completed ? 'opacity-60' : '' }}">
+                            <li class="flex items-center gap-3 px-4 py-3 transition hover:bg-[var(--glass-hover)] dark:hover:bg-white/5 {{ $item->is_completed ? 'opacity-60' : '' }}">
                                 <form method="POST" action="{{ route('admin.purchase-items.toggle-complete', $item->id) }}">
                                     @csrf
                                     @method('PATCH')
                                     <button
                                         type="submit"
-                                        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition {{ $item->is_completed ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-gray-300 hover:border-emerald-400 dark:border-gray-600' }}"
+                                        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition {{ $item->is_completed ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-[var(--field-line)] hover:border-emerald-400 dark:border-white/10' }}"
                                     >
                                         @if ($item->is_completed)
                                             <svg class="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2 6l3 3 5-5"/></svg>
@@ -83,26 +83,26 @@
             <div class="mb-3 flex items-center justify-between">
                 <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-200">
                     Yapılacaklar
-                    <span class="ml-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500 dark:bg-gray-800 dark:text-gray-400">{{ $todoItems->count() }}</span>
+                    <span class="ml-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500 dark:bg-white/[0.06] dark:text-gray-400">{{ $todoItems->count() }}</span>
                 </h2>
                 <a href="{{ route('admin.todo-items.create') }}?is_bucketlist=1" class="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">+ Ekle</a>
             </div>
 
             @if ($todoItems->isEmpty())
-                <p class="rounded-xl border border-dashed border-gray-300 p-5 text-center text-sm text-gray-400 dark:border-gray-700">
+                <p class="rounded-xl border border-dashed border-[var(--field-line)] p-5 text-center text-sm text-gray-400 dark:border-white/10">
                     Bucket list'e eklenmiş görev yok.
                 </p>
             @else
                 <div class="card-admin overflow-hidden p-0">
-                    <ul class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <ul class="divide-y divide-[var(--glass-line)]">
                         @foreach ($todoItems as $item)
-                            <li class="flex items-center gap-3 px-4 py-3 transition hover:bg-gray-50/60 dark:hover:bg-gray-900/30 {{ $item->is_completed ? 'opacity-60' : '' }}">
+                            <li class="flex items-center gap-3 px-4 py-3 transition hover:bg-[var(--glass-hover)] dark:hover:bg-white/5 {{ $item->is_completed ? 'opacity-60' : '' }}">
                                 <form method="POST" action="{{ route('admin.todo-items.toggle-complete', $item->id) }}">
                                     @csrf
                                     @method('PATCH')
                                     <button
                                         type="submit"
-                                        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition {{ $item->is_completed ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-gray-300 hover:border-emerald-400 dark:border-gray-600' }}"
+                                        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition {{ $item->is_completed ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-[var(--field-line)] hover:border-emerald-400 dark:border-white/10' }}"
                                     >
                                         @if ($item->is_completed)
                                             <svg class="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2 6l3 3 5-5"/></svg>
@@ -119,7 +119,7 @@
                                 </div>
                                 <div class="shrink-0 flex items-center gap-3 text-xs text-gray-400">
                                     @if ($item->due_date)
-                                        <span class="rounded-full px-2 py-0.5 {{ $item->due_date->isPast() && !$item->is_completed ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-gray-100 dark:bg-gray-800' }}">
+                                        <span class="rounded-full px-2 py-0.5 {{ $item->due_date->isPast() && !$item->is_completed ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-gray-100 dark:bg-white/[0.06]' }}">
                                             {{ $item->due_date->format('d M Y') }}
                                         </span>
                                     @endif

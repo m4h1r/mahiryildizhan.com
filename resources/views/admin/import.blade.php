@@ -6,8 +6,8 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('CSV Import Pipeline') }}</p>
             <h2 class="mt-1 text-xl font-semibold">{{ __('Run Import') }}</h2>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                {{ __('Place CSV files in') }} <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-gray-800">database/csv/{table}.csv</code> {{ __('locally.') }}
-                {{ __('Production reads from') }} <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-gray-800">storage/app/import/{table}.csv</code>.
+                {{ __('Place CSV files in') }} <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-white/[0.06]">database/csv/{table}.csv</code> {{ __('locally.') }}
+                {{ __('Production reads from') }} <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-white/[0.06]">storage/app/import/{table}.csv</code>.
             </p>
 
             {{-- Import All button --}}
@@ -16,7 +16,7 @@
                 <input type="hidden" name="import_all" value="1">
                 <button
                     type="submit"
-                    class="w-full rounded-md bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white dark:bg-white dark:text-gray-900">
+                    class="admin-btn admin-btn-primary w-full">
                     ⬆ {{ __('Import All Tables') }}
                 </button>
             </form>
@@ -58,7 +58,7 @@
                     <span>{{ __('Dry run only') }}</span>
                 </label>
 
-                <button type="submit" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 dark:border-gray-600 dark:text-gray-200">
+                <button type="submit" class="admin-btn admin-btn-ghost">
                     {{ __('Import Selected Table') }}
                 </button>
             </form>
@@ -75,7 +75,7 @@
             @if ($report)
                 <pre class="mt-4 overflow-x-auto rounded-lg bg-gray-950 p-4 text-xs leading-6 text-gray-100">{{ json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
             @else
-                <div class="mt-4 rounded-lg border border-dashed border-gray-300 p-6 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                <div class="mt-4 rounded-lg border border-dashed border-[var(--field-line)] p-6 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
                     {{ __('No import report yet.') }}
                 </div>
             @endif

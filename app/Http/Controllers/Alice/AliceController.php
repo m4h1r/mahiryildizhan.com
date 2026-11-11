@@ -86,7 +86,18 @@ abstract class AliceController extends Controller
 
     protected function storeAuditOldData(Request $request, mixed $model): void
     {
+        // A FormRequest copies the attribute bag instead of sharing it, so also
+        // write to the original request instance that the audit middleware sees.
         $request->attributes->set('audit_old_data', $model?->toArray());
+        request()->attributes->set('audit_old_data', $model?->toArray());
+    }
+
+    /**
+     * Name the audited table for nested routes (people/{id}/assessments → person_assessments).
+     */
+    protected function auditTable(string $table): void
+    {
+        request()->attributes->set('audit_table', $table);
     }
 
     protected function formatMoney(?string $amount): string

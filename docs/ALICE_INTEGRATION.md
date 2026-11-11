@@ -265,32 +265,113 @@ DELETE /incomes/{id}
 
 ---
 
-### 👤 Kişiler (People)
+### 👤 Kişiler (People) — Kişi Kartı
+
+Her kişi bir **kişi kartıdır**: künye + iletişim kanalları + kişilik envanteri (sürümlü analizler) + yüz verisi.
+Şablonun tamamı makine-okunur olarak `GET /meta/person-card-schema` adresinde (JSON Schema, `config/crm.php`'den üretilir).
+Bir ajan kartı doldurmadan önce bu şemayı okumalıdır.
 
 ```
-GET    /people
-GET    /people/{id}
+GET    /people                     ?q= &gender_id= &relationship_scope=personal|professional|both
+                                   &alice_slug= &missing_assessment=1 &include=channels,latest_assessment,faces
+GET    /people/{id}                ?include=channels,latest_assessment,faces
+GET    /people/{id}/card           tek çağrıda tam kart (kanallar + son analiz + yüz meta)
 POST   /people
 PATCH  /people/{id}
-DELETE /people/{id}
+DELETE /people/{id}                (soft delete)
 ```
 
-**Filtreler:** `q` (isim/email/telefon), `gender_id`
-
-**Store payload:**
+**Store payload (kart alanları dahil):**
 ```json
 {
-  "name": "Yusuf",
-  "surname": "Naltekin",
-  "mobile": "+90 505 123 45 67",
-  "email": "yusuf@example.com",
-  "birthday": "1990-03-15",
+  "name": "Eray",
+  "surname": "Civelek",
+  "second_surname": null,
+  "nickname": "Kanka",
+  "birth_day": 14, "birth_month": 6, "birth_year": null,
   "gender_id": 1,
-  "notes": "Eski iş arkadaşı"
+  "relationship_scope": "both",
+  "relationship_bases": ["friendship", "work"],
+  "relationship_label": "en yakın arkadaş",
+  "company": "DP World", "job_title": "Operasyon Müdürü",
+  "character_summary": "Rahat, uzlaşmacı, planları sallamayan.",
+  "interests": ["tango", "tenis"], "hobbies": ["mangal"], "tendencies": ["uzlaşmacı"],
+  "met_at": "2015-09-01", "met_how": "üniversite",
+  "alice_slug": "eray-civelek"
 }
 ```
 
-**Response:** `full_name`, `picture_url`, zodiac bilgisi dahil
+- Doğum tarihi **gün/ay/yıl ayrı** tutulur; üçü de varsa `birthday` türetilir. Eski usul `birthday: "1990-03-15"` göndermek de parçaları doldurur.
+- `relationship_scope`: ilişkinin bireysel mi, profesyonel mi, ikisi birden mi olduğu. `relationship_bases`: `friendship, work, romantic, sexual, kinship, mentorship`.
+- Response: `full_name`, `zodiac`, `picture_url`, tüm kart alanları; `include` ile ilişkiler.
+
+#### Kanallar (telefon, e-posta, sosyal medya)
+```
+GET    /people/{id}/channels
+POST   /people/{id}/channels          {"type": "instagram", "value": "@eraycivelek", "label": null, "is_primary": false}
+PATCH  /people/{id}/channels/{cid}
+DELETE /people/{id}/channels/{cid}
+```
+`type`: `phone, email, whatsapp, telegram, instagram, x, linkedin, facebook, tiktok, youtube, github, website, other`. Response'ta tıklanabilir `url` gelir.
+
+#### Kişilik envanteri (5 katmanlı analiz)
+Her `POST` yeni bir **snapshot**'tır; kartta `assessed_at`'e göre en yenisi gösterilir, eskiler "Değerlendirme geçmişi"dir.
+```
+GET    /people/{id}/assessments       (sayfalı, yeniden eskiye)
+POST   /people/{id}/assessments
+GET    /people/{id}/assessments/{aid} ?with_raw=1
+PATCH  /people/{id}/assessments/{aid}
+DELETE /people/{id}/assessments/{aid}
+```
+```json
+{
+  "assessed_at": "2026-11-03",
+  "source": "alice",
+  "overall_confidence": 0.8,
+  "relationship_label": "arkadaslik",
+  "big_five": {
+    "openness": {"score": 58, "confidence": 0.5, "evidence": "pratik odaklı…"},
+    "agreeableness": {"score": 88, "confidence": 0.8, "evidence": "neredeyse hiç çatışma yok…"}
+  },
+  "relationship_bases": {"friendship": {"score": 92}, "work": {"score": 35}},
+  "metrics": {"closeness": {"score": 82, "note": "…"}, "trust": {"score": 90}, "conflict_load": {"score": 10}},
+  "attachment_style": null,
+  "attachment_note": "Net stil için yeterli gözlem yok.",
+  "values": {"benevolence": {"score": 80, "note": "…"}},
+  "dark_triad": {"narcissism": {"score": 10}},
+  "dark_triad_note": "Belirgin işaret yok.",
+  "approach": {"works": ["Kriz anında yanında."], "triggers": ["İş yoğunluğu planları erteletebiliyor."], "red_flags": []},
+  "summary": "Markdown künye/özet",
+  "notes": "Markdown",
+  "history_note": "Eski relations.db'den taşındı",
+  "source_message_count": 938,
+  "raw": {"...": "isteğe bağlı orijinal yük"}
+}
+```
+- Skorlar 0–100, `confidence` 0–1. Yalnızca gözlemlenen anahtarları gönder; boş katmanlar kartta "veri yok" olarak görünür.
+- Katman anahtarları: `big_five` (openness, conscientiousness, extraversion, agreeableness, emotional_stability), `metrics` (closeness, reciprocity, power_balance, trust, conflict_load, momentum), `values` (Schwartz: self_direction, stimulation, hedonism, achievement, power, security, conformity, tradition, benevolence, universalism), `dark_triad` (narcissism, machiavellianism, psychopathy), `attachment_style` (secure, anxious, avoidant, disorganized).
+- Analizi olmayan kişileri bulmak için: `GET /people?missing_assessment=1`.
+
+#### Yüz verisi (biyometrik — KVKK özel nitelikli)
+```
+GET    /people/{id}/faces             ?with_embedding=1 (yalnızca GET'te; yazma yanıtlarında asla dönmez)
+POST   /people/{id}/faces             multipart: image=@yuz.jpg + embedding (JSON metin) + embedding_model
+                                      veya JSON: {"image_base64": "...", "embedding": [0.01, …], "embedding_model": "arcface-r100", "quality": 0.92}
+GET    /people/{id}/faces/{fid}
+GET    /people/{id}/faces/{fid}/image (webp, özel disk)
+DELETE /people/{id}/faces/{fid}       (dosya hemen silinir, kayıt soft delete)
+```
+- `image`, `image_base64` veya `embedding`'den en az biri gerekli; `embedding` gönderiliyorsa `embedding_model` zorunlu.
+- Görseller `storage/app/private/people-faces/{id}/` altında, EXIF temizlenmiş webp; embedding DB'de **şifreli** (`encrypted:array`). Audit log ve idempotency kayıtlarına embedding girmez.
+- İlk eklenen yüz otomatik birincil olur; `is_primary: true` ile değiştirilebilir.
+
+#### Alice panelinden içe aktarma
+```bash
+php artisan crm:import-alice --dry-run                       # Alice paneline erişebilen makinede
+php artisan crm:import-alice --url=http://100.68.67.4:8770 --export=alice-kisiler.json
+php artisan crm:import-alice --from=alice-kisiler.json       # sunucuda (Tailscale erişimi yoksa)
+```
+Eşleştirme sırası: `panel_id` → `people.id`, `alice_slug`, ad+soyad; bulunamazsa kişi oluşturulur (`--no-create` ile atlanır). Aynı tarihli içe aktarma tekrar çalışırsa günceller, çoğaltmaz. Elle girilmiş kart alanlarının üzerine yazılmaz.
 
 ---
 
@@ -763,6 +844,14 @@ curl -X POST "$BASE_URL/foods" \
 ---
 
 ## 12. CHANGELOG
+
+### v1.2.0 — 2026-11-12
+- **Yeni:** Kişi kartı (CRM). `people`'a takma ad, gün/ay/yıl doğum, ilişki kapsamı (bireysel/profesyonel/ikisi), ilişki bazları, şirket/ünvan, stakeholder bağı, karakter, ilgi/hobi/eğilim listeleri, tanışma bilgisi ve `alice_slug` eklendi.
+- **Yeni:** `people/{id}/channels`, `people/{id}/assessments` (5 katmanlı kişilik envanteri, sürümlü), `people/{id}/faces` (şifreli embedding + özel disk görsel), `people/{id}/card`, `GET /meta/person-card-schema`.
+- **Yeni:** `people` filtreleri `relationship_scope`, `alice_slug`, `missing_assessment`, `include`.
+- **Yeni:** `php artisan crm:import-alice` — Alice panelindeki analizleri karta aktarır.
+- **Fix:** Person response artık `zodiac`, `father_id`, `mother_id`, `partner_id` döndürüyor (doküman daha önce zodiac'ı vaat ediyordu ama dönmüyordu).
+- Audit log'da iç içe kaynaklar doğru tabloya yazılır (`person_assessments`, `person_channels`, `person_faces`).
 
 ### v1.1.1 — 2026-07-26
 - **Yeni:** `foods`'a `protein_per_100g` alanı eklendi (100g başına gram, `required` — mevcut kayıtlar migration ile `0` olarak dolduruldu). Store/update payload'larına ve `consumptions` response'undaki hesaplanan `protein` alanına dahil edildi.

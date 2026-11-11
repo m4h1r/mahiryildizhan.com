@@ -45,7 +45,7 @@
                                     @elseif ($subscriber->status === 'pending')
                                         <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">{{ __('Pending') }}</span>
                                     @else
-                                        <span class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-400">{{ __('Unsubscribed') }}</span>
+                                        <span class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600 dark:bg-white/[0.06] dark:text-gray-400">{{ __('Unsubscribed') }}</span>
                                     @endif
                                 </td>
                                 <td class="hidden md:table-cell">{{ optional($subscriber->subscribed_at)->toDateTimeString() }}</td>

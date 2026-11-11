@@ -6,7 +6,11 @@ use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Intervention\Zodiac\Sign;
 use Intervention\Zodiac\Western\Signs\Aquarius;
 use Intervention\Zodiac\Western\Signs\Aries;
@@ -21,6 +25,19 @@ use Intervention\Zodiac\Western\Signs\Scorpio;
 use Intervention\Zodiac\Western\Signs\Taurus;
 use Intervention\Zodiac\Western\Signs\Virgo;
 
+/**
+ * @property Carbon|null $birthday
+ * @property Carbon|null $deathday
+ * @property Carbon|null $met_at
+ * @property int|null $birth_day
+ * @property int|null $birth_month
+ * @property int|null $birth_year
+ * @property array<int, string>|null $relationship_bases
+ * @property array<int, string>|null $interests
+ * @property array<int, string>|null $hobbies
+ * @property array<int, string>|null $tendencies
+ * @property-read string $picture_url
+ */
 class Person extends Model
 {
     use HasFactory;
@@ -31,7 +48,11 @@ class Person extends Model
         'name',
         'surname',
         'second_surname',
+        'nickname',
         'birthday',
+        'birth_day',
+        'birth_month',
+        'birth_year',
         'deathday',
         'birth_place',
         'death_place',
@@ -47,6 +68,19 @@ class Person extends Model
         'email',
         'notes',
         'address',
+        'relationship_scope',
+        'relationship_label',
+        'relationship_bases',
+        'company',
+        'job_title',
+        'stakeholder_id',
+        'character_summary',
+        'interests',
+        'hobbies',
+        'tendencies',
+        'met_at',
+        'met_how',
+        'alice_slug',
         'created_by',
     ];
 
@@ -55,8 +89,170 @@ class Person extends Model
         return [
             'birthday' => 'date',
             'deathday' => 'date',
+            'birth_day' => 'integer',
+            'birth_month' => 'integer',
+            'birth_year' => 'integer',
+            'relationship_bases' => 'array',
+            'interests' => 'array',
+            'hobbies' => 'array',
+            'tendencies' => 'array',
+            'met_at' => 'date',
             'created_by' => 'integer',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        // Keep the birth parts and the full `birthday` in sync. Parts win when
+        // both change; a full date is derived only when day, month and year exist.
+        static::saving(function (Person $person): void {
+            $partsDirty = $person->isDirty(['birth_day', 'birth_month', 'birth_year']);
+
+            if (! $partsDirty && $person->isDirty('birthday')) {
+                $date = $person->birthday ? Carbon::parse($person->birthday) : null;
+                $person->birth_day = $date?->day;
+                $person->birth_month = $date?->month;
+                $person->birth_year = $date?->year;
+
+                return;
+            }
+
+            if ($partsDirty) {
+                $d = $person->birth_day;
+                $m = $person->birth_month;
+                $y = $person->birth_year;
+                $person->birthday = ($d && $m && $y && checkdate($m, $d, $y))
+                    ? Carbon::createFromDate($y, $m, $d)->startOfDay()
+                    : null;
+            }
+        });
+
+        // D9: child tables have no DB cascade (people use SoftDeletes), so a hard
+        // delete clears them here — including the private face image files.
+        static::forceDeleting(function (Person $person): void {
+            PersonFace::withTrashed()->where('person_id', $person->id)->get()->each->forceDelete();
+            PersonChannel::withTrashed()->where('person_id', $person->id)->forceDelete();
+            PersonAssessment::withTrashed()->where('person_id', $person->id)->forceDelete();
+        });
+    }
+
+    /**
+     * @return HasMany<PersonChannel, $this>
+     */
+    public function channels(): HasMany
+    {
+        return $this->hasMany(PersonChannel::class)->orderByDesc('is_primary')->orderBy('type');
+    }
+
+    /**
+     * @return HasMany<PersonFace, $this>
+     */
+    public function faces(): HasMany
+    {
+        return $this->hasMany(PersonFace::class)->orderByDesc('is_primary')->latest('id');
+    }
+
+    /**
+     * @return HasOne<PersonFace, $this>
+     */
+    public function primaryFace(): HasOne
+    {
+        return $this->hasOne(PersonFace::class)->ofMany(['is_primary' => 'max', 'id' => 'max']);
+    }
+
+    /**
+     * @return HasMany<PersonAssessment, $this>
+     */
+    public function assessments(): HasMany
+    {
+        return $this->hasMany(PersonAssessment::class)->orderByDesc('assessed_at')->orderByDesc('id');
+    }
+
+    /**
+     * @return HasOne<PersonAssessment, $this>
+     */
+    public function latestAssessment(): HasOne
+    {
+        return $this->hasOne(PersonAssessment::class)->ofMany(['assessed_at' => 'max', 'id' => 'max']);
+    }
+
+    /**
+     * @return BelongsTo<Stakeholder, $this>
+     */
+    public function stakeholder(): BelongsTo
+    {
+        return $this->belongsTo(Stakeholder::class);
+    }
+
+    /**
+     * Avatar for admin screens: the public picture, else the primary face image
+     * (streamed through the admin-only route, never copied to a public disk).
+     */
+    public function avatarUrl(): string
+    {
+        if ($this->picture) {
+            return $this->picture_url;
+        }
+
+        $face = $this->relationLoaded('primaryFace') ? $this->primaryFace : $this->primaryFace()->first();
+        if ($face && $face->image_path) {
+            return route('admin.people.faces.image', [$this->id, $face->id]);
+        }
+
+        return $this->picture_url;
+    }
+
+    public function scopeLabel(): ?string
+    {
+        return $this->relationship_scope
+            ? __(config('crm.relationship_scopes.'.$this->relationship_scope, $this->relationship_scope))
+            : null;
+    }
+
+    /**
+     * Birth date as far as it is known: "12 Mart 1990", "12 Mart", "1990".
+     */
+    public function birthLabel(): ?string
+    {
+        $d = $this->birth_day;
+        $m = $this->birth_month;
+        $y = $this->birth_year;
+
+        if ($d && $m && checkdate($m, $d, $y ?: 2000)) {
+            $date = Carbon::createFromDate($y ?: 2000, $m, $d);
+
+            return $y ? $date->translatedFormat('j F Y') : $date->translatedFormat('j F');
+        }
+        if ($m && $y) {
+            return Carbon::createFromDate($y, $m, 1)->translatedFormat('F Y');
+        }
+
+        return $y ? (string) $y : null;
+    }
+
+    public function age(): ?int
+    {
+        if (! $this->birth_year) {
+            return null;
+        }
+        $end = $this->deathday ?? now();
+        if ($this->birth_month && $this->birth_day && checkdate($this->birth_month, $this->birth_day, $this->birth_year)) {
+            return (int) floor(Carbon::createFromDate($this->birth_year, $this->birth_month, $this->birth_day)->diffInYears($end, true));
+        }
+
+        return (int) $end->year - $this->birth_year;
+    }
+
+    /**
+     * Date used for zodiac: works with day + month even when the year is unknown.
+     */
+    private function zodiacDate(): ?Carbon
+    {
+        if ($this->birth_day && $this->birth_month && checkdate($this->birth_month, $this->birth_day, 2000)) {
+            return Carbon::createFromDate(2000, $this->birth_month, $this->birth_day);
+        }
+
+        return $this->birthday ? Carbon::parse($this->birthday) : null;
     }
 
     public function creator()
@@ -155,20 +351,19 @@ class Person extends Model
 
     public function zodiacName(): ?string
     {
-        if (! $this->birthday) {
-            return null;
-        }
+        $date = $this->zodiacDate();
 
-        return Sign::fromDate($this->birthday)->localize('tr')->name();
+        return $date ? Sign::fromDate($date)->localize('tr')->name() : null;
     }
 
     public function zodiacSymbol(): ?string
     {
-        if (! $this->birthday) {
+        $date = $this->zodiacDate();
+        if (! $date) {
             return null;
         }
 
-        return match (Sign::fromDate($this->birthday)::class) {
+        return match (Sign::fromDate($date)::class) {
             Aries::class => '♈︎',
             Taurus::class => '♉︎',
             Gemini::class => '♊︎',

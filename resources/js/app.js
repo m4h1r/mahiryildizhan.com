@@ -513,4 +513,7 @@ window.addEventListener('pageshow', setupAppDialog);
 document.addEventListener('DOMContentLoaded', setupConfirmForms);
 window.addEventListener('pageshow', setupConfirmForms);
 
-Alpine.start();
+// Started in a microtask so entry points that import this module (admin.js)
+// can register their Alpine data helpers first; the whole module graph
+// finishes evaluating before the microtask runs.
+queueMicrotask(() => Alpine.start());

@@ -32,13 +32,13 @@
         </section>
 
         <section class="card-admin overflow-hidden">
-            <div class="border-b border-gray-200 px-4 py-3 dark:border-gray-800">
+            <div class="border-b border-glass px-4 py-3 dark:border-white/10">
                 <h2 class="text-sm font-semibold">{{ __('Media Library') }}</h2>
             </div>
 
             <div class="grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 @forelse ($mediaItems as $item)
-                    <article class="rounded-xl border border-gray-200 p-3 dark:border-gray-800">
+                    <article class="rounded-xl border border-glass p-3 dark:border-white/10">
                         <img src="{{ $item->url('thumbnail') }}" alt="{{ $item->alt ?: $item->filename }}" class="aspect-video w-full rounded-lg object-cover">
                         <p class="mt-2 truncate text-sm font-medium">{{ $item->filename }}</p>
                         <p class="text-xs text-gray-500">{{ strtoupper($item->mime_type) }}</p>
@@ -48,7 +48,7 @@
                         @if (! empty($item->variant_paths))
                             <div class="mt-2 flex flex-wrap gap-1">
                                 @foreach (array_keys($item->variant_paths) as $variant)
-                                    <span class="rounded-full border border-gray-300 px-2 py-0.5 text-[10px] font-medium uppercase text-gray-600 dark:border-gray-700 dark:text-gray-300">{{ $variant }}</span>
+                                    <span class="rounded-full border border-[var(--field-line)] px-2 py-0.5 text-[10px] font-medium uppercase text-gray-600 dark:border-white/10 dark:text-gray-300">{{ $variant }}</span>
                                 @endforeach
                             </div>
                         @endif
@@ -65,7 +65,7 @@
                 @endforelse
             </div>
 
-            <div class="border-t border-gray-200 px-4 py-3 dark:border-gray-800">
+            <div class="border-t border-glass px-4 py-3 dark:border-white/10">
                 {{ $mediaItems->links() }}
             </div>
         </section>

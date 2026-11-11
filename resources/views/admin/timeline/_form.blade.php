@@ -18,7 +18,7 @@
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200" x-data="{ color: {{ Js::from(old('color', $event->color ?? '#3B82F6')) }} }">
         <span class="mb-1 block">{{ __('Color') }}</span>
         <div class="flex items-center gap-3">
-            <input type="color" x-model="color" class="h-11 w-16 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700">
+            <input type="color" x-model="color" class="h-11 w-16 cursor-pointer rounded-lg border border-[var(--field-line)] dark:border-white/10">
             <input type="text" name="color" x-model="color" class="form-input-admin font-mono" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
         </div>
     </label>
@@ -105,13 +105,13 @@
 
         {{-- Preview --}}
         <div x-show="imageUrl" class="mb-3 flex items-start gap-3">
-            <img :src="imageUrl" class="h-24 w-40 rounded-lg border border-gray-200 object-cover dark:border-gray-700" alt="{{ __('Selected image') }}">
+            <img :src="imageUrl" class="h-24 w-40 rounded-lg border border-glass object-cover dark:border-white/10" alt="{{ __('Selected image') }}">
             <button type="button" @click="clearImage()" class="mt-1 text-xs text-red-500 hover:underline">{{ __('Remove') }}</button>
         </div>
 
         {{-- Action buttons --}}
         <div class="flex flex-wrap items-center gap-2">
-            <label class="cursor-pointer rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+            <label class="admin-btn-sm admin-btn-ghost cursor-pointer">
                 <span x-show="!uploading">{{ __('Upload new image') }}</span>
                 <span x-show="uploading" x-cloak>{{ __('Uploading…') }}</span>
                 <input type="file" accept="image/*" class="hidden" @change="uploadFile($event)" :disabled="uploading">
@@ -119,14 +119,14 @@
             <button
                 type="button"
                 @click="showLibrary = !showLibrary; if(showLibrary && mediaItems.length === 0) fetchLibrary(1)"
-                class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                class="admin-btn-sm admin-btn-ghost"
             >
                 <span x-text="showLibrary ? '{{ __('Close library') }}' : '{{ __('Select from library') }}'"></span>
             </button>
         </div>
 
         {{-- Library panel --}}
-        <div x-show="showLibrary" x-cloak class="mt-3 rounded-lg border border-gray-300 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+        <div x-show="showLibrary" x-cloak class="mt-3 rounded-xl glass-well p-3">
             <div class="mb-3 flex gap-2">
                 <input
                     type="text"
@@ -135,7 +135,7 @@
                     class="form-input-admin flex-1"
                     placeholder="{{ __('Search media…') }}"
                 >
-                <button type="button" @click="fetchLibrary(1)" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-medium dark:border-gray-700">{{ __('Refresh') }}</button>
+                <button type="button" @click="fetchLibrary(1)" class="admin-btn-sm admin-btn-ghost">{{ __('Refresh') }}</button>
             </div>
             <p x-show="loadingLibrary" class="text-xs text-gray-500">{{ __('Loading…') }}</p>
             <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -143,7 +143,7 @@
                     <button
                         type="button"
                         @click="selectMedia(item)"
-                        class="rounded-md border border-gray-200 p-2 text-left hover:border-blue-500 dark:border-gray-700"
+                        class="rounded-md border border-glass p-2 text-left hover:border-blue-500 dark:border-white/10"
                         :class="imageUrl === item.url ? 'ring-2 ring-blue-500' : ''"
                     >
                         <img :src="item.thumbnail_url" :alt="item.alt || item.filename" class="aspect-video w-full rounded object-cover">
@@ -152,9 +152,9 @@
                 </template>
             </div>
             <div class="mt-3 flex items-center justify-between text-xs text-gray-500" x-show="libraryLastPage > 1">
-                <button type="button" @click="fetchLibrary(libraryPage - 1)" :disabled="libraryPage <= 1" class="rounded-md border border-gray-300 px-2 py-1 disabled:opacity-50 dark:border-gray-700">{{ __('Prev') }}</button>
+                <button type="button" @click="fetchLibrary(libraryPage - 1)" :disabled="libraryPage <= 1" class="admin-btn-sm admin-btn-ghost">{{ __('Prev') }}</button>
                 <span x-text="`Page ${libraryPage} / ${libraryLastPage}`"></span>
-                <button type="button" @click="fetchLibrary(libraryPage + 1)" :disabled="libraryPage >= libraryLastPage" class="rounded-md border border-gray-300 px-2 py-1 disabled:opacity-50 dark:border-gray-700">{{ __('Next') }}</button>
+                <button type="button" @click="fetchLibrary(libraryPage + 1)" :disabled="libraryPage >= libraryLastPage" class="admin-btn-sm admin-btn-ghost">{{ __('Next') }}</button>
             </div>
         </div>
     </div>
@@ -191,6 +191,6 @@
 </div>
 
 <div class="mt-6 flex items-center gap-3">
-    <button class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-gray-900" type="submit">{{ $isEdit ? __('Update Event') : __('Create Event') }}</button>
-    <a href="{{ route('admin.timeline.index') }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium dark:border-gray-700">{{ __('Cancel') }}</a>
+    <button class="admin-btn admin-btn-primary" type="submit">{{ $isEdit ? __('Update Event') : __('Create Event') }}</button>
+    <a href="{{ route('admin.timeline.index') }}" class="admin-btn admin-btn-ghost">{{ __('Cancel') }}</a>
 </div>
