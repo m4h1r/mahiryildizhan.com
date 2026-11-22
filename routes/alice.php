@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Alice\AdageController;
+use App\Http\Controllers\Alice\AgendaEventController;
 use App\Http\Controllers\Alice\ConsumptionController;
 use App\Http\Controllers\Alice\ExpenseController;
 use App\Http\Controllers\Alice\FoodController;
@@ -13,13 +14,16 @@ use App\Http\Controllers\Alice\PersonChannelController;
 use App\Http\Controllers\Alice\PersonController;
 use App\Http\Controllers\Alice\PersonFaceController;
 use App\Http\Controllers\Alice\PostController;
+use App\Http\Controllers\Alice\ProjectController;
 use App\Http\Controllers\Alice\PurchaseItemController;
+use App\Http\Controllers\Alice\ReadingLogController;
 use App\Http\Controllers\Alice\SettingController;
 use App\Http\Controllers\Alice\StakeholderController;
 use App\Http\Controllers\Alice\SubscriberController;
 use App\Http\Controllers\Alice\SyncController;
 use App\Http\Controllers\Alice\TimelineEventController;
 use App\Http\Controllers\Alice\TodoItemController;
+use App\Http\Controllers\Alice\WealthEntryController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/alice')
@@ -98,6 +102,20 @@ Route::prefix('v1/alice')
         // Personal management
         Route::apiResource('todo-items', TodoItemController::class)->except(['create', 'edit']);
         Route::apiResource('purchase-items', PurchaseItemController::class)->except(['create', 'edit']);
+
+        // Sync v2 (S5) entities: projects, agenda events, wealth entries, reading logs.
+        foreach ([
+            'projects' => ProjectController::class,
+            'agenda_events' => AgendaEventController::class,
+            'wealth_entries' => WealthEntryController::class,
+            'reading_logs' => ReadingLogController::class,
+        ] as $path => $controller) {
+            Route::get($path, [$controller, 'index']);
+            Route::post($path, [$controller, 'store']);
+            Route::get($path.'/{id}', [$controller, 'show'])->whereNumber('id');
+            Route::match(['put', 'patch'], $path.'/{id}', [$controller, 'update'])->whereNumber('id');
+            Route::delete($path.'/{id}', [$controller, 'destroy'])->whereNumber('id');
+        }
 
         // Nutrition tracking
         Route::apiResource('foods', FoodController::class)->except(['create', 'edit']);

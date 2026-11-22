@@ -2,12 +2,20 @@
 
 namespace App\Support\Sync;
 
+use App\Http\Resources\Alice\AgendaEventResource;
 use App\Http\Resources\Alice\PersonAssessmentResource;
 use App\Http\Resources\Alice\PersonResource;
+use App\Http\Resources\Alice\ProjectResource;
+use App\Http\Resources\Alice\ReadingLogResource;
 use App\Http\Resources\Alice\TodoItemResource;
+use App\Http\Resources\Alice\WealthEntryResource;
+use App\Models\AgendaEvent;
 use App\Models\Person;
 use App\Models\PersonAssessment;
+use App\Models\Project;
+use App\Models\ReadingLog;
 use App\Models\TodoItem;
+use App\Models\WealthEntry;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -26,6 +34,10 @@ class SyncRegistry
         'people' => [Person::class, PersonResource::class, ['gender', 'bloodType', 'eyeColor', 'hairColor']],
         'assessments' => [PersonAssessment::class, PersonAssessmentResource::class, []],
         'todo-items' => [TodoItem::class, TodoItemResource::class, []],
+        'projects' => [Project::class, ProjectResource::class, []],
+        'agenda_events' => [AgendaEvent::class, AgendaEventResource::class, []],
+        'wealth_entries' => [WealthEntry::class, WealthEntryResource::class, []],
+        'reading_logs' => [ReadingLog::class, ReadingLogResource::class, []],
     ];
 
     /**

@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Alice;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Validator;
 
 abstract class AliceController extends Controller
 {
@@ -142,6 +144,29 @@ abstract class AliceController extends Controller
     protected function auditTable(string $table): void
     {
         request()->attributes->set('audit_table', $table);
+    }
+
+    /**
+     * Validate with the shared Alice 422 envelope (code validation_failed), for
+     * controllers that build rules inline instead of through a FormRequest.
+     *
+     * @param  array<string, mixed>  $rules
+     * @return array<string, mixed>
+     */
+    protected function validateAlice(Request $request, array $rules): array
+    {
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            throw new HttpResponseException(response()->json([
+                'error' => ['code' => 'validation_failed', 'message' => 'Doğrulama hatası', 'fields' => $validator->errors()->toArray()],
+            ], 422));
+        }
+
+        /** @var array<string, mixed> $validated */
+        $validated = $validator->validated();
+
+        return $validated;
     }
 
     protected function formatMoney(?string $amount): string
