@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Contracts\SyncSource;
+use App\Traits\Syncable;
 use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,13 +38,27 @@ use Illuminate\Support\Str;
  * @property array<string, array<int, string>>|null $approach
  * @property array<string, mixed>|null $raw
  */
-class PersonAssessment extends Model
+class PersonAssessment extends Model implements SyncSource
 {
     use HasFactory;
     use SoftDeletes;
+    use Syncable;
     use TracksCreatedBy;
 
     public const LAYERS = ['big_five', 'relationship_bases', 'metrics', 'values', 'dark_triad'];
+
+    /**
+     * An assessment change is a change to the person for Alice: touch the parent
+     * so its own sync_changes row (and version bump) is written too.
+     *
+     * @var array<int, string>
+     */
+    protected $touches = ['person'];
+
+    public static function syncEntity(): string
+    {
+        return 'assessments';
+    }
 
     protected $fillable = [
         'person_id', 'assessed_at', 'source', 'overall_confidence', 'relationship_label',

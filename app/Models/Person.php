@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Contracts\SyncSource;
+use App\Traits\Syncable;
 use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -39,11 +41,17 @@ use Intervention\Zodiac\Western\Signs\Virgo;
  * @property array<int, string>|null $tendencies
  * @property-read string $picture_url
  */
-class Person extends Model
+class Person extends Model implements SyncSource
 {
     use HasFactory;
     use SoftDeletes;
+    use Syncable;
     use TracksCreatedBy;
+
+    public static function syncEntity(): string
+    {
+        return 'people';
+    }
 
     protected $fillable = [
         'name',
