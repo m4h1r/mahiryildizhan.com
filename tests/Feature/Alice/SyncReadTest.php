@@ -100,6 +100,23 @@ class SyncReadTest extends AliceTestCase
         $this->assertSame('A', $response->json('data.0.name'));
     }
 
+    public function test_snapshot_paginates(): void
+    {
+        foreach (range(1, 5) as $i) {
+            Person::create(['name' => "P{$i}", 'surname' => 'X', 'notes' => '']);
+        }
+
+        $first = $this->aliceGet('sync/snapshot', ['entity' => 'people', 'per_page' => 2])->assertOk();
+        $first->assertJsonPath('meta.total', 5);
+        $first->assertJsonPath('meta.per_page', 2);
+        $first->assertJsonPath('has_more', true);
+        $this->assertCount(2, $first->json('data'));
+
+        $last = $this->aliceGet('sync/snapshot', ['entity' => 'people', 'per_page' => 2, 'page' => 3])->assertOk();
+        $last->assertJsonPath('has_more', false);
+        $this->assertCount(1, $last->json('data'));
+    }
+
     public function test_snapshot_rejects_unknown_entity(): void
     {
         $this->aliceGet('sync/snapshot', ['entity' => 'dragons'])
