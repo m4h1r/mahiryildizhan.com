@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Intervention\Zodiac\Interfaces\SignInterface;
 use Intervention\Zodiac\Sign;
 use Intervention\Zodiac\Western\Signs\Aquarius;
 use Intervention\Zodiac\Western\Signs\Aries;
@@ -245,14 +246,48 @@ class Person extends Model
 
     /**
      * Date used for zodiac: works with day + month even when the year is unknown.
+     *
+     * Always normalised to the start of the day. The zodiac library builds each
+     * sign's period with the cusp day's boundary at midnight, so any time-of-day
+     * on a cusp birthday (e.g. 20 Apr, 23 Oct, 21 Dec) falls past the boundary and
+     * matches no sign. Carbon::createFromDate() also stamps the *current* time, so
+     * both branches must be pinned to 00:00:00.
      */
     private function zodiacDate(): ?Carbon
     {
         if ($this->birth_day && $this->birth_month && checkdate($this->birth_month, $this->birth_day, 2000)) {
-            return Carbon::createFromDate(2000, $this->birth_month, $this->birth_day);
+            return Carbon::createFromDate(2000, $this->birth_month, $this->birth_day)->startOfDay();
         }
 
-        return $this->birthday ? Carbon::parse($this->birthday) : null;
+        if (! $this->birthday) {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($this->birthday)->startOfDay();
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Resolve the zodiac sign without ever letting the library throw: invalid or
+     * out-of-range dates (legacy zero dates parse to year -1) degrade to null
+     * instead of turning a person listing into a 500.
+     */
+    private function zodiacSign(): ?SignInterface
+    {
+        $date = $this->zodiacDate();
+
+        if (! $date) {
+            return null;
+        }
+
+        try {
+            return Sign::fromDate($date);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     public function creator()
@@ -351,19 +386,17 @@ class Person extends Model
 
     public function zodiacName(): ?string
     {
-        $date = $this->zodiacDate();
-
-        return $date ? Sign::fromDate($date)->localize('tr')->name() : null;
+        return $this->zodiacSign()?->localize('tr')->name();
     }
 
     public function zodiacSymbol(): ?string
     {
-        $date = $this->zodiacDate();
-        if (! $date) {
+        $sign = $this->zodiacSign();
+        if (! $sign) {
             return null;
         }
 
-        return match (Sign::fromDate($date)::class) {
+        return match ($sign::class) {
             Aries::class => '♈︎',
             Taurus::class => '♉︎',
             Gemini::class => '♊︎',
