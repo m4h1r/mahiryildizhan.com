@@ -331,18 +331,6 @@ parameters:
 			path: app/Http/Controllers/Admin/TimelineController.php
 
 		-
-			message: '#^Cannot call method toDateString\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: app/Http/Controllers/Admin/TodoItemController.php
-
-		-
-			message: '#^Cannot call method toDateTimeString\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Admin/TodoItemController.php
-
-		-
 			message: '#^Relation ''language'' is not found in App\\Models\\Adage model\.$#'
 			identifier: larastan.relationExistence
 			count: 2
@@ -1355,84 +1343,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/Alice/TimelineEventResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$completed_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$cost_try\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$description\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$due_date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$importance\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$is_bucketlist\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$is_completed\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$time_cost_hours\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$title\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$updated_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Alice\\TodoItemResource\:\:\$urgency\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Alice/TodoItemResource.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\Comment\:\:\$post\.$#'

@@ -8,7 +8,13 @@ use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $version
+ * @property Carbon|null $due_date
+ * @property Carbon|null $completed_at
+ */
 class TodoItem extends Model implements SyncSource
 {
     use HasFactory, SoftDeletes, Syncable, TracksCreatedBy;

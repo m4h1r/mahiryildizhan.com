@@ -39,6 +39,7 @@ use Intervention\Zodiac\Western\Signs\Virgo;
  * @property array<int, string>|null $interests
  * @property array<int, string>|null $hobbies
  * @property array<int, string>|null $tendencies
+ * @property int $version
  * @property-read string $picture_url
  */
 class Person extends Model implements SyncSource

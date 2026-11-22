@@ -15,6 +15,7 @@ class PersonAssessmentResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'version' => $this->version,
             'person_id' => $this->person_id,
             'assessed_at' => $this->assessed_at?->toDateString(),
             'source' => $this->source,

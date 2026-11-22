@@ -17,6 +17,7 @@ use App\Http\Controllers\Alice\PurchaseItemController;
 use App\Http\Controllers\Alice\SettingController;
 use App\Http\Controllers\Alice\StakeholderController;
 use App\Http\Controllers\Alice\SubscriberController;
+use App\Http\Controllers\Alice\SyncController;
 use App\Http\Controllers\Alice\TimelineEventController;
 use App\Http\Controllers\Alice\TodoItemController;
 use Illuminate\Support\Facades\Route;
@@ -28,9 +29,17 @@ Route::prefix('v1/alice')
         // Health check (auth only, no audit)
         Route::get('/health', fn () => response()->json([
             'status' => 'ok',
-            'version' => '1.2.0',
+            'version' => (string) config('alice.api_version'),
             'timestamp' => now()->toIso8601String(),
         ]));
+
+        // Sync v2 read side: cursor feed, drift digest, snapshot (initial/repair).
+        Route::prefix('sync')->group(function () {
+            Route::get('/head', [SyncController::class, 'head']);
+            Route::get('/changes', [SyncController::class, 'changes']);
+            Route::get('/digest', [SyncController::class, 'digest']);
+            Route::get('/snapshot', [SyncController::class, 'snapshot']);
+        });
 
         // Meta / Lookup endpoints (read-only, no write middleware needed)
         Route::prefix('meta')->group(function () {

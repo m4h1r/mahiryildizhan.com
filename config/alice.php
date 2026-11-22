@@ -1,6 +1,9 @@
 <?php
 
 return [
+    // Sync v2 contract version reported by /health and /sync/head.
+    'api_version' => '1.4.0',
+
     'allowed_ips' => array_filter(
         explode(',', env('ALICE_ALLOWED_IPS', ''))
     ),

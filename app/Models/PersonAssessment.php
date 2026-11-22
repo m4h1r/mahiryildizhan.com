@@ -37,6 +37,7 @@ use Illuminate\Support\Str;
  * @property array<string, array<string, mixed>>|null $dark_triad
  * @property array<string, array<int, string>>|null $approach
  * @property array<string, mixed>|null $raw
+ * @property int $version
  */
 class PersonAssessment extends Model implements SyncSource
 {

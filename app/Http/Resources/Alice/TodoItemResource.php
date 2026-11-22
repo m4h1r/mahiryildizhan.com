@@ -2,15 +2,20 @@
 
 namespace App\Http\Resources\Alice;
 
+use App\Models\TodoItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin TodoItem
+ */
 class TodoItemResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
+            'version' => $this->version,
             'title' => $this->title,
             'description' => $this->description,
             'cost_try' => $this->cost_try,
