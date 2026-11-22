@@ -54,21 +54,41 @@ abstract class AliceTestCase extends TestCase
         );
     }
 
-    protected function alicePatch(string $path, array $data = []): TestResponse
+    protected function alicePatch(string $path, array $data = [], array $headers = []): TestResponse
     {
         return $this->patchJson(
             '/api/v1/alice/'.ltrim($path, '/'),
             $data,
-            $this->aliceHeaders()
+            $this->aliceHeaders($headers)
         );
     }
 
-    protected function aliceDelete(string $path): TestResponse
+    protected function aliceDelete(string $path, array $headers = []): TestResponse
     {
         return $this->deleteJson(
             '/api/v1/alice/'.ltrim($path, '/'),
             [],
-            $this->aliceHeaders()
+            $this->aliceHeaders($headers)
         );
+    }
+
+    /**
+     * A unique Idempotency-Key header for sync-entity POSTs.
+     *
+     * @return array<string, string>
+     */
+    protected function idempotencyKey(?string $key = null): array
+    {
+        return ['Idempotency-Key' => $key ?? 'test-'.uniqid('', true)];
+    }
+
+    /**
+     * An If-Match header for sync-entity PATCH/DELETE.
+     *
+     * @return array<string, string>
+     */
+    protected function ifMatch(int $version): array
+    {
+        return ['If-Match' => (string) $version];
     }
 }

@@ -19,6 +19,7 @@ class PersonAssessmentResource extends JsonResource
             'person_id' => $this->person_id,
             'assessed_at' => $this->assessed_at?->toDateString(),
             'source' => $this->source,
+            'external_ref' => $this->external_ref,
             'overall_confidence' => $this->overall_confidence,
             'relationship_label' => $this->relationship_label,
             'big_five' => $this->big_five ?? (object) [],

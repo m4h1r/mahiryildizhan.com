@@ -53,6 +53,50 @@ abstract class AliceController extends Controller
         ], 409);
     }
 
+    /**
+     * Sync v2 (S4): a sync-entity POST must carry an Idempotency-Key. Returns a 422
+     * when it is missing; the AliceIdempotency middleware handles the replay itself.
+     */
+    protected function requireIdempotencyKey(Request $request): ?JsonResponse
+    {
+        if (trim((string) $request->header('Idempotency-Key')) !== '') {
+            return null;
+        }
+
+        return response()->json([
+            'error' => ['code' => 'idempotency_key_required', 'message' => 'Idempotency-Key başlığı zorunludur'],
+        ], 422);
+    }
+
+    /**
+     * Sync v2 (S4): optimistic concurrency for PATCH/DELETE. If-Match must equal the
+     * current version — otherwise 428 (missing) or 412 version_conflict carrying the
+     * current record so Alice can reconcile.
+     *
+     * @param  array<string, mixed>|null  $currentRecord
+     */
+    protected function guardVersion(Request $request, int $currentVersion, ?array $currentRecord = null): ?JsonResponse
+    {
+        $ifMatch = trim((string) $request->header('If-Match'));
+
+        if ($ifMatch === '') {
+            return response()->json([
+                'error' => 'precondition_required',
+                'version' => $currentVersion,
+            ], 428);
+        }
+
+        if ((int) $ifMatch !== $currentVersion) {
+            return response()->json([
+                'error' => 'version_conflict',
+                'current' => $currentRecord,
+                'version' => $currentVersion,
+            ], 412);
+        }
+
+        return null;
+    }
+
     protected function applySort(Builder $query, Request $request, array $allowed): Builder
     {
         $sort = $request->query('sort', '-created_at');

@@ -29,6 +29,7 @@ use Illuminate\Support\Str;
  * @property int $person_id
  * @property Carbon|null $assessed_at
  * @property string $source
+ * @property string|null $external_ref
  * @property float|null $overall_confidence
  * @property array<string, array<string, mixed>>|null $big_five
  * @property array<string, array<string, mixed>>|null $relationship_bases
@@ -62,7 +63,7 @@ class PersonAssessment extends Model implements SyncSource
     }
 
     protected $fillable = [
-        'person_id', 'assessed_at', 'source', 'overall_confidence', 'relationship_label',
+        'person_id', 'assessed_at', 'source', 'external_ref', 'overall_confidence', 'relationship_label',
         'big_five', 'relationship_bases', 'metrics', 'attachment_style', 'attachment_note',
         'values', 'dark_triad', 'dark_triad_note', 'approach', 'summary', 'notes',
         'history_note', 'source_message_count', 'raw', 'created_by',

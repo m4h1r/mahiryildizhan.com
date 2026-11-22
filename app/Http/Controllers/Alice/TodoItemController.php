@@ -37,6 +37,10 @@ class TodoItemController extends AliceController
 
     public function store(StoreTodoItemRequest $request): JsonResponse
     {
+        if ($conflict = $this->requireIdempotencyKey($request)) {
+            return $conflict;
+        }
+
         $item = TodoItem::create($request->validated());
 
         return $this->success(new TodoItemResource($item), 201);
@@ -47,6 +51,10 @@ class TodoItemController extends AliceController
         $item = TodoItem::find($id);
         if (! $item) {
             return $this->notFound();
+        }
+
+        if ($conflict = $this->guardVersion($request, $item->version, (new TodoItemResource($item))->resolve())) {
+            return $conflict;
         }
 
         $this->storeAuditOldData($request, $item);
@@ -67,6 +75,10 @@ class TodoItemController extends AliceController
         $item = TodoItem::find($id);
         if (! $item) {
             return $this->notFound();
+        }
+
+        if ($conflict = $this->guardVersion($request, $item->version, (new TodoItemResource($item))->resolve())) {
+            return $conflict;
         }
 
         $this->storeAuditOldData($request, $item);

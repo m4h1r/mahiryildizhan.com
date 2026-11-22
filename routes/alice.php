@@ -23,7 +23,7 @@ use App\Http\Controllers\Alice\TodoItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/alice')
-    ->middleware(['alice.auth', 'alice.idempotency', 'alice.dryrun', 'alice.audit'])
+    ->middleware(['alice.auth', 'throttle:alice', 'alice.idempotency', 'alice.dryrun', 'alice.audit'])
     ->group(function () {
 
         // Health check (auth only, no audit)

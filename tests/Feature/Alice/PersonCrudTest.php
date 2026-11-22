@@ -21,7 +21,7 @@ class PersonCrudTest extends AliceTestCase
             'name' => 'Yusuf',
             'surname' => 'Naltekin',
             'mobile' => '+905051234567',
-        ])
+        ], $this->idempotencyKey())
             ->assertStatus(201)
             ->assertJsonPath('data.full_name', 'Yusuf Naltekin');
 
@@ -30,7 +30,7 @@ class PersonCrudTest extends AliceTestCase
 
     public function test_store_validation_fails_without_name(): void
     {
-        $this->alicePost('people', ['surname' => 'Naltekin'])
+        $this->alicePost('people', ['surname' => 'Naltekin'], $this->idempotencyKey())
             ->assertStatus(422)
             ->assertJsonPath('error.code', 'validation_failed');
     }
@@ -53,7 +53,7 @@ class PersonCrudTest extends AliceTestCase
     {
         $person = Person::create(['name' => 'Ali', 'surname' => 'Veli', 'notes' => '']);
 
-        $this->alicePatch("people/{$person->id}", ['mobile' => '+905059876543'])
+        $this->alicePatch("people/{$person->id}", ['mobile' => '+905059876543'], $this->ifMatch($person->version))
             ->assertStatus(200)
             ->assertJsonPath('data.mobile', '+905059876543');
     }
@@ -62,7 +62,7 @@ class PersonCrudTest extends AliceTestCase
     {
         $person = Person::create(['name' => 'Ali', 'surname' => 'Veli', 'notes' => '']);
 
-        $this->aliceDelete("people/{$person->id}")->assertStatus(200);
+        $this->aliceDelete("people/{$person->id}", $this->ifMatch($person->version))->assertStatus(200);
         $this->assertSoftDeleted('people', ['id' => $person->id]);
     }
 
