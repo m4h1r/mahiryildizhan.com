@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Alice;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Validator;
 
 abstract class AliceController extends Controller
 {
@@ -51,6 +53,50 @@ abstract class AliceController extends Controller
         return response()->json([
             'error' => ['code' => 'conflict', 'message' => $message],
         ], 409);
+    }
+
+    /**
+     * Sync v2 (S4): a sync-entity POST must carry an Idempotency-Key. Returns a 422
+     * when it is missing; the AliceIdempotency middleware handles the replay itself.
+     */
+    protected function requireIdempotencyKey(Request $request): ?JsonResponse
+    {
+        if (trim((string) $request->header('Idempotency-Key')) !== '') {
+            return null;
+        }
+
+        return response()->json([
+            'error' => ['code' => 'idempotency_key_required', 'message' => 'Idempotency-Key başlığı zorunludur'],
+        ], 422);
+    }
+
+    /**
+     * Sync v2 (S4): optimistic concurrency for PATCH/DELETE. If-Match must equal the
+     * current version — otherwise 428 (missing) or 412 version_conflict carrying the
+     * current record so Alice can reconcile.
+     *
+     * @param  array<string, mixed>|null  $currentRecord
+     */
+    protected function guardVersion(Request $request, int $currentVersion, ?array $currentRecord = null): ?JsonResponse
+    {
+        $ifMatch = trim((string) $request->header('If-Match'));
+
+        if ($ifMatch === '') {
+            return response()->json([
+                'error' => 'precondition_required',
+                'version' => $currentVersion,
+            ], 428);
+        }
+
+        if ((int) $ifMatch !== $currentVersion) {
+            return response()->json([
+                'error' => 'version_conflict',
+                'current' => $currentRecord,
+                'version' => $currentVersion,
+            ], 412);
+        }
+
+        return null;
     }
 
     protected function applySort(Builder $query, Request $request, array $allowed): Builder
@@ -98,6 +144,29 @@ abstract class AliceController extends Controller
     protected function auditTable(string $table): void
     {
         request()->attributes->set('audit_table', $table);
+    }
+
+    /**
+     * Validate with the shared Alice 422 envelope (code validation_failed), for
+     * controllers that build rules inline instead of through a FormRequest.
+     *
+     * @param  array<string, mixed>  $rules
+     * @return array<string, mixed>
+     */
+    protected function validateAlice(Request $request, array $rules): array
+    {
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            throw new HttpResponseException(response()->json([
+                'error' => ['code' => 'validation_failed', 'message' => 'Doğrulama hatası', 'fields' => $validator->errors()->toArray()],
+            ], 422));
+        }
+
+        /** @var array<string, mixed> $validated */
+        $validated = $validator->validated();
+
+        return $validated;
     }
 
     protected function formatMoney(?string $amount): string

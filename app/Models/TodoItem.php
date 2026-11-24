@@ -2,14 +2,27 @@
 
 namespace App\Models;
 
+use App\Contracts\SyncSource;
+use App\Traits\Syncable;
 use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
-class TodoItem extends Model
+/**
+ * @property int $version
+ * @property Carbon|null $due_date
+ * @property Carbon|null $completed_at
+ */
+class TodoItem extends Model implements SyncSource
 {
-    use HasFactory, SoftDeletes, TracksCreatedBy;
+    use HasFactory, SoftDeletes, Syncable, TracksCreatedBy;
+
+    public static function syncEntity(): string
+    {
+        return 'todo-items';
+    }
 
     protected $fillable = [
         'title',

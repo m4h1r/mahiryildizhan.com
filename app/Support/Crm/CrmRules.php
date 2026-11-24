@@ -65,6 +65,7 @@ final class CrmRules
         $rules = [
             'assessed_at' => [$required, 'date'],
             'source' => ['nullable', Rule::in(config('crm.assessment_sources'))],
+            'external_ref' => ['nullable', 'string', 'max:191'],
             'overall_confidence' => ['nullable', 'numeric', 'between:0,1'],
             'relationship_label' => ['nullable', 'string', 'max:255'],
             'attachment_style' => ['nullable', Rule::in(array_keys(config('crm.attachment_styles')))],

@@ -11,7 +11,10 @@ use App\Models\PurchaseItem;
 use App\Models\Setting;
 use App\Models\TodoItem;
 use App\Observers\ActivityLogObserver;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -37,6 +40,14 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Password::defaults(fn () => Password::min(12)->uncompromised());
+
+        // Alice (Pi) bridge: cap at config('alice.rate_limit') req/min per token/IP;
+        // the throttle middleware answers 429 with Retry-After automatically.
+        RateLimiter::for('alice', function (Request $request) {
+            $key = optional($request->user())->getAuthIdentifier() ?: $request->ip();
+
+            return Limit::perMinute((int) config('alice.rate_limit', 120))->by('alice:'.$key);
+        });
 
         // Pulse dashboard (W6) — admin only, in every environment.
         Gate::define('viewPulse', fn ($user = null) => (bool) optional($user)->is_admin);

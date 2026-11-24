@@ -54,6 +54,10 @@ class PersonController extends AliceController
 
     public function store(StorePersonRequest $request): JsonResponse
     {
+        if ($conflict = $this->requireIdempotencyKey($request)) {
+            return $conflict;
+        }
+
         $person = Person::create(CrmRules::cleanTags($request->validated()));
         $person->load(['gender', 'bloodType', 'eyeColor', 'hairColor']);
 
@@ -65,6 +69,11 @@ class PersonController extends AliceController
         $person = Person::find($id);
         if (! $person) {
             return $this->notFound();
+        }
+
+        $person->load(['gender', 'bloodType', 'eyeColor', 'hairColor']);
+        if ($conflict = $this->guardVersion($request, $person->version, (new PersonResource($person))->resolve())) {
+            return $conflict;
         }
 
         $this->storeAuditOldData($request, $person);
@@ -79,6 +88,11 @@ class PersonController extends AliceController
         $person = Person::find($id);
         if (! $person) {
             return $this->notFound();
+        }
+
+        $person->load(['gender', 'bloodType', 'eyeColor', 'hairColor']);
+        if ($conflict = $this->guardVersion($request, $person->version, (new PersonResource($person))->resolve())) {
+            return $conflict;
         }
 
         $this->storeAuditOldData($request, $person);

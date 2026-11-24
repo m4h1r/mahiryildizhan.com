@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Contracts\SyncSource;
+use App\Traits\Syncable;
 use App\Traits\TracksCreatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +29,7 @@ use Illuminate\Support\Str;
  * @property int $person_id
  * @property Carbon|null $assessed_at
  * @property string $source
+ * @property string|null $external_ref
  * @property float|null $overall_confidence
  * @property array<string, array<string, mixed>>|null $big_five
  * @property array<string, array<string, mixed>>|null $relationship_bases
@@ -35,17 +38,32 @@ use Illuminate\Support\Str;
  * @property array<string, array<string, mixed>>|null $dark_triad
  * @property array<string, array<int, string>>|null $approach
  * @property array<string, mixed>|null $raw
+ * @property int $version
  */
-class PersonAssessment extends Model
+class PersonAssessment extends Model implements SyncSource
 {
     use HasFactory;
     use SoftDeletes;
+    use Syncable;
     use TracksCreatedBy;
 
     public const LAYERS = ['big_five', 'relationship_bases', 'metrics', 'values', 'dark_triad'];
 
+    /**
+     * An assessment change is a change to the person for Alice: touch the parent
+     * so its own sync_changes row (and version bump) is written too.
+     *
+     * @var array<int, string>
+     */
+    protected $touches = ['person'];
+
+    public static function syncEntity(): string
+    {
+        return 'assessments';
+    }
+
     protected $fillable = [
-        'person_id', 'assessed_at', 'source', 'overall_confidence', 'relationship_label',
+        'person_id', 'assessed_at', 'source', 'external_ref', 'overall_confidence', 'relationship_label',
         'big_five', 'relationship_bases', 'metrics', 'attachment_style', 'attachment_note',
         'values', 'dark_triad', 'dark_triad_note', 'approach', 'summary', 'notes',
         'history_note', 'source_message_count', 'raw', 'created_by',

@@ -36,6 +36,10 @@ class PersonAssessmentController extends AliceController
 
     public function store(PersonAssessmentRequest $request, int $person): JsonResponse
     {
+        if ($conflict = $this->requireIdempotencyKey($request)) {
+            return $conflict;
+        }
+
         $this->auditTable('person_assessments');
         $model = Person::find($person);
         if (! $model) {
@@ -44,6 +48,17 @@ class PersonAssessmentController extends AliceController
 
         $data = CrmRules::cleanAssessment($request->validated());
         $data['source'] ??= 'alice';
+
+        // A repeated external_ref for the same person is the same card: 409 + existing id.
+        if (! empty($data['external_ref'])) {
+            $existing = PersonAssessment::where('person_id', $person)
+                ->where('external_ref', $data['external_ref'])
+                ->first();
+
+            if ($existing) {
+                return response()->json(['error' => 'external_ref_conflict', 'id' => $existing->id], 409);
+            }
+        }
 
         $assessment = $model->assessments()->create($data);
 
@@ -58,6 +73,10 @@ class PersonAssessmentController extends AliceController
             return $this->notFound();
         }
 
+        if ($conflict = $this->guardVersion($request, $model->version, (new PersonAssessmentResource($model))->resolve())) {
+            return $conflict;
+        }
+
         $this->storeAuditOldData($request, $model);
         $model->update(CrmRules::cleanAssessment($request->validated()));
 
@@ -70,6 +89,10 @@ class PersonAssessmentController extends AliceController
         $model = PersonAssessment::where('person_id', $person)->find($assessment);
         if (! $model) {
             return $this->notFound();
+        }
+
+        if ($conflict = $this->guardVersion($request, $model->version, (new PersonAssessmentResource($model))->resolve())) {
+            return $conflict;
         }
 
         $this->storeAuditOldData($request, $model);

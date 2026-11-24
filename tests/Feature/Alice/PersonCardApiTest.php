@@ -42,13 +42,13 @@ class PersonCardApiTest extends AliceTestCase
             'relationship_bases' => ['friendship'],
             'hobbies' => ['yoga'],
             'alice_slug' => 'yesim-kocak',
-        ])->assertCreated()
+        ], $this->idempotencyKey())->assertCreated()
             ->assertJsonPath('data.relationship_scope', 'personal')
             ->assertJsonPath('data.hobbies', ['yoga'])
             ->assertJsonPath('data.birth_month', 9)
             ->assertJsonPath('data.birthday', null);
 
-        $this->alicePost('people', ['name' => 'X', 'surname' => 'Y', 'relationship_scope' => 'enemy'])
+        $this->alicePost('people', ['name' => 'X', 'surname' => 'Y', 'relationship_scope' => 'enemy'], $this->idempotencyKey())
             ->assertStatus(422)
             ->assertJsonPath('error.code', 'validation_failed');
     }
@@ -78,7 +78,7 @@ class PersonCardApiTest extends AliceTestCase
             'big_five' => ['openness' => ['score' => 58, 'confidence' => 0.5, 'evidence' => 'pratik odaklı']],
             'relationship_bases' => ['friendship' => ['score' => 92], 'work' => ['score' => 35]],
             'approach' => ['works' => ['Kriz anında yanında.', ''], 'red_flags' => []],
-        ])->assertCreated()
+        ], $this->idempotencyKey())->assertCreated()
             ->assertJsonPath('data.source', 'alice')
             ->assertJsonPath('data.big_five.openness.score', 58)
             ->assertJsonPath('data.approach.works', ['Kriz anında yanında.']);
@@ -86,7 +86,7 @@ class PersonCardApiTest extends AliceTestCase
         $this->alicePost("people/{$person->id}/assessments", [
             'assessed_at' => '2026-11-10',
             'metrics' => ['trust' => ['score' => 91]],
-        ])->assertCreated();
+        ], $this->idempotencyKey())->assertCreated();
 
         $this->aliceGet("people/{$person->id}/assessments")->assertJsonPath('meta.total', 2)
             ->assertJsonPath('data.0.assessed_at', '2026-11-10');
@@ -100,15 +100,16 @@ class PersonCardApiTest extends AliceTestCase
         $this->alicePost("people/{$person->id}/assessments", [
             'assessed_at' => '2026-11-11',
             'big_five' => ['openness' => ['score' => 140]],
-        ])->assertStatus(422);
+        ], $this->idempotencyKey())->assertStatus(422);
     }
 
     public function test_nested_writes_are_audited_under_their_own_table(): void
     {
         $person = $this->person();
-        $id = $this->alicePost("people/{$person->id}/assessments", ['assessed_at' => '2026-11-03'])->json('data.id');
+        $created = $this->alicePost("people/{$person->id}/assessments", ['assessed_at' => '2026-11-03'], $this->idempotencyKey());
+        $id = $created->json('data.id');
 
-        $this->alicePatch("people/{$person->id}/assessments/{$id}", ['metrics' => ['trust' => ['score' => 70]]])->assertOk();
+        $this->alicePatch("people/{$person->id}/assessments/{$id}", ['metrics' => ['trust' => ['score' => 70]]], $this->ifMatch($created->json('data.version')))->assertOk();
 
         $this->assertSame(
             ['person_assessments', 'person_assessments'],
@@ -207,7 +208,7 @@ class PersonCardApiTest extends AliceTestCase
         $this->person(['alice_slug' => 'taken']);
         $other = $this->person(['name' => 'Other']);
 
-        $this->alicePatch("people/{$other->id}", ['alice_slug' => 'taken'])->assertStatus(422);
-        $this->alicePatch("people/{$other->id}", ['alice_slug' => 'free'])->assertOk();
+        $this->alicePatch("people/{$other->id}", ['alice_slug' => 'taken'], $this->ifMatch($other->version))->assertStatus(422);
+        $this->alicePatch("people/{$other->id}", ['alice_slug' => 'free'], $this->ifMatch($other->version))->assertOk();
     }
 }

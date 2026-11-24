@@ -29,7 +29,8 @@ class AliceIdempotency
 
         if ($existing && ! $existing->isExpired()) {
             return response()->json($existing->response_body, $existing->status_code)
-                ->header('X-Idempotent-Replayed', 'true');
+                ->header('X-Idempotent-Replayed', 'true')
+                ->header('Idempotent-Replay', 'true');
         }
 
         // Delete expired entry if exists

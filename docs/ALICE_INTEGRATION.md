@@ -843,7 +843,56 @@ curl -X POST "$BASE_URL/foods" \
 
 ---
 
+## 13. Sync v2 — Çift Yönlü Senkron (health `1.4.0`)
+
+**İlke:** Site DB tek gerçek kaynaktır. Hem Alice Panel (Pi) hem site dashboard'u aynı DB'ye yazar.
+Pi, `sync_changes` günlüğünden değişiklikleri çeker ve yerel aynasını (`mirror.db`) günceller.
+
+### 13.1 Senkron varlıkları
+`people`, `assessments`, `todo-items`, `projects`, `agenda_events`, `wealth_entries`, `reading_logs`.
+Her senkron kaydı bir `version` (unsignedInteger, 1'den başlar, her güncellemede +1) taşır. `assessments` kayıtları `person_id` içerir.
+
+### 13.2 Okuma uçları
+
+| Uç | Yanıt |
+|---|---|
+| `GET /sync/head` | `{"api_version":"1.4.0","cursor":<en büyük sync_changes.id>,"server_time":"ISO8601"}` — ucuz, cache'siz |
+| `GET /sync/changes?after=<cursor>&limit=500` | `{"data":[{change_id,entity,id,op,version,updated_at,record|null}],"next_cursor":int,"has_more":bool}`. `op=delete` → `record=null`. Sıra `change_id` artan. `limit` ≤ 1000 |
+| `GET /sync/digest` | `{"entities":{"people":{"count","max_version","hash"},…}}` — `count` silinmemiş kayıt sayısı; `hash` = silinmemiş `"<id>:<version>"` satırlarının (string artan sıralı, `\n` birleşik) sha1'i; kayıt yoksa `sha1('')` |
+| `GET /sync/snapshot?entity=<ad>&page=&per_page=200` | tam sayfalı döküm (ilk kurulum/onarım) + başlangıç anındaki `cursor`. Bilinmeyen entity → `422 unknown_entity` |
+
+### 13.3 Yazma uçları ve çakışma
+- `POST /{entity}` — **`Idempotency-Key` zorunlu** (yoksa `422 idempotency_key_required`). Aynı anahtar tekrarında ilk yanıt + `Idempotent-Replay: true` başlığı. Yanıt `{data: record}`, `record.version` dahil.
+- `PATCH /{entity}/{id}`, `DELETE /{entity}/{id}` — **`If-Match: <version>` zorunlu**. Başlık yoksa `428`; sürüm uyuşmazsa `412` + `{"error":"version_conflict","current":<güncel record>,"version":<n>}`. DELETE soft-delete + tombstone.
+- `POST /people/{id}/assessments` — `external_ref` (nullable, `(person_id, external_ref)` unique). Aynı `external_ref` → `409` + `{"error":"external_ref_conflict","id":<mevcut>}`. Pi: `alice-card:<slug>:<assessed_at>`, `relations-db:<person_id>`.
+- `?dry_run=1` korunur. Rate limit: ≤120 istek/dk → `429` + `Retry-After`.
+
+### 13.4 Entity şemaları (snake_case)
+- **projects**: `slug` (unique, ≤80), `name`, `area?`, `status` (fikir/gelistirme/aktif/pasif/arsiv), `progress?` (0-100), `note?`, `due?`, `due_postponed`, `idea_date?`, `local_path?`, `repo_url?`, `scope_ref?`.
+- **agenda_events**: `title`, `starts_at`, `ends_at?`, `all_day`, `location?`, `notes?`, `source_ref?` (unique, örn. `gcal:<id>`).
+- **wealth_entries**: `kind`, `label`, `amount` (14,2), `currency` (3), `as_of`, `note?`.
+- **reading_logs**: `book_title`, `author?`, `pages`, `read_on`, `note?`.
+- **todo-items**: mevcut alanlar değişmedi; `version` eklendi.
+
+### 13.5 İlk kurulum ve onarım
+1. Pi `GET /sync/head` ile `cursor`'u alır.
+2. Her entity için `GET /sync/snapshot` ile mevcut durumu çeker (toplu CSV import da bu yolla mutabık kalınır; satır bazlı günlük tutulmaz).
+3. Bundan sonra `GET /sync/changes?after=<cursor>` ile artımlı ilerler.
+4. Drift şüphesinde `GET /sync/digest` ile `hash`/`count` karşılaştırır; uyuşmazlıkta ilgili entity'yi snapshot'tan onarır.
+
+---
+
 ## 12. CHANGELOG
+
+### v1.4.0 — 2026-11-23 (Sync v2)
+- **Yeni:** Sync v2 çift yönlü senkron altyapısı. `sync_changes` değişim günlüğü (cursor), senkron modellerde `version` ve optimistic concurrency.
+- **Yeni:** Okuma uçları `GET /sync/head`, `/sync/changes`, `/sync/digest`, `/sync/snapshot`.
+- **Yeni:** Yazma semantiği — `POST` için `Idempotency-Key` zorunlu (`Idempotent-Replay` başlığı), `PATCH/DELETE` için `If-Match` + `412 version_conflict`.
+- **Yeni:** `assessments.external_ref` (person bazında unique) + `409 external_ref_conflict`.
+- **Yeni:** Senkron varlıkları `projects`, `agenda_events`, `wealth_entries`, `reading_logs`.
+- **Değişti:** `people`, `todo-items`, `assessments` resource'larına `version` alanı eklendi (additive). Health `1.2.0` → `1.4.0`.
+- **Fix (S0):** Cusp (burç sınırı) doğum günü + saat taşıyan eski kayıtlarda `GET /people` 500 veriyordu; `zodiacName()` artık güne normalize edip hataya karşı korumalı.
+- **Operasyonel:** Alice grubu `120 istek/dk` throttle (`429` + `Retry-After`). Admin menüsü Alice ile hizalı 6 başlığa indirildi (fazlalıklar "Gelişmiş" altında).
 
 ### v1.2.0 — 2026-11-12
 - **Yeni:** Kişi kartı (CRM). `people`'a takma ad, gün/ay/yıl doğum, ilişki kapsamı (bireysel/profesyonel/ikisi), ilişki bazları, şirket/ünvan, stakeholder bağı, karakter, ilgi/hobi/eğilim listeleri, tanışma bilgisi ve `alice_slug` eklendi.
